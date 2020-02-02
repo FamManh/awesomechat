@@ -44,3 +44,5 @@ server/.npm
 
 # Optional REPL history
 server/.node_repl_history
+
+server/yarn.lock
