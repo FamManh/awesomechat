@@ -8,7 +8,8 @@ import {
     Badge,
     Row,
     Button,
-    Dropdown
+    Dropdown,
+    Divider
 } from "antd";
 import {
     CheckCircle,
@@ -20,9 +21,11 @@ import {
     UserPlus,
     MoreHorizontal,
     Users,
-    MessageCircle
+    MessageCircle,
+    Bell
 } from "react-feather";
 import authActions from '../AuthPage/actions';
+import { getUserInfo } from "../shared/getUserInfo";
 const { Sider, Header } = Layout;
 const { Search } = Input;
 
@@ -226,29 +229,44 @@ function ChatSidebar() {
 
     const messageHeader = (
         <Menu mode="horizontal" className="border-0">
-            <Menu.Item key="read" style={{ width: "50%", textAlign: "center" }}>
+            <Menu.Item key="Message" style={{ width: "33%", textAlign: "center" }}>
                 <a href="javascript:;">
                     <MessageCircle size={20} strokeWidth={1} />
                 </a>
             </Menu.Item>
             <Menu.Item
-                key="favorite"
-                style={{ width: "50%", textAlign: "center" }}
+                key="friends"
+                style={{ width: "33%", textAlign: "center" }}
             >
                 <a href="javascript:;">
                     <Users size={20} strokeWidth={1} />
+                </a>
+            </Menu.Item>
+            <Menu.Item
+                key="notifications"
+                style={{ width: "33%", textAlign: "center" }}
+            >
+                <a href="javascript:;">
+                    <Bell size={20} strokeWidth={1} />
                 </a>
             </Menu.Item>
         </Menu>
     );
 
     const menu = (
-        <Menu style={{width: "150px"}}>
-            <Menu.Item key="0" onClick={authActions.doSignout}>
-                <a>Sign out</a>
-            </Menu.Item>
+        <Menu style={{ width: "150px" }}>
             <Menu.Item key="0">
+                <a>Update info</a>
+            </Menu.Item>
+            <Menu.Item key="1">
+                <a>Change password</a>
+            </Menu.Item>
+            <Menu.Item key="2">
                 <a>Settings</a>
+            </Menu.Item>
+            <Menu.Divider />
+            <Menu.Item key="3" onClick={authActions.doSignout}>
+                <a>Sign out</a>
             </Menu.Item>
         </Menu>
     );
@@ -274,7 +292,10 @@ function ChatSidebar() {
                     src="/static/images/avatar.jpg"
                 />
                 <span className="ml-3" style={{ lineHeight: "1" }}>
-                    <span style={{ display: "block" }}>Manh Pham</span>
+                    <span style={{ display: "block" }}>
+                        {getUserInfo() &&
+                            getUserInfo().lastname + " " + getUserInfo().firstname}
+                    </span>
                     <small className="text-muted">
                         <span>Online</span>
                     </small>
