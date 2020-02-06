@@ -1,8 +1,29 @@
 import React, { useState } from "react";
-import { Avatar, Input, Layout, List, Menu, Badge } from "antd";
-import { CheckCircle, Heart, RefreshCcw, Star } from "react-feather";
-
-const { Sider } = Layout;
+import {
+    Avatar,
+    Input,
+    Layout,
+    List,
+    Menu,
+    Badge,
+    Row,
+    Button,
+    Dropdown
+} from "antd";
+import {
+    CheckCircle,
+    Heart,
+    RefreshCcw,
+    Star,
+    Phone,
+    Video,
+    UserPlus,
+    MoreHorizontal,
+    Users,
+    MessageCircle
+} from "react-feather";
+import authActions from '../AuthPage/actions';
+const { Sider, Header } = Layout;
 const { Search } = Input;
 
 function ChatSidebar() {
@@ -205,31 +226,76 @@ function ChatSidebar() {
 
     const messageHeader = (
         <Menu mode="horizontal" className="border-0">
-            <Menu.Item key="read">
+            <Menu.Item key="read" style={{ width: "50%", textAlign: "center" }}>
                 <a href="javascript:;">
-                    <CheckCircle size={20} strokeWidth={1} />
+                    <MessageCircle size={20} strokeWidth={1} />
                 </a>
             </Menu.Item>
-            <Menu.Item key="favorite">
+            <Menu.Item
+                key="favorite"
+                style={{ width: "50%", textAlign: "center" }}
+            >
                 <a href="javascript:;">
-                    <Heart size={20} strokeWidth={1} />
-                </a>
-            </Menu.Item>
-            <Menu.Item key="star">
-                <a href="javascript:;">
-                    <Star size={20} strokeWidth={1} />
-                </a>
-            </Menu.Item>
-            <Menu.Item key="refresh">
-                <a href="javascript:;">
-                    <RefreshCcw size={20} strokeWidth={1} />
+                    <Users size={20} strokeWidth={1} />
                 </a>
             </Menu.Item>
         </Menu>
     );
 
+    const menu = (
+        <Menu style={{width: "150px"}}>
+            <Menu.Item key="0" onClick={authActions.doSignout}>
+                <a>Sign out</a>
+            </Menu.Item>
+            <Menu.Item key="0">
+                <a>Settings</a>
+            </Menu.Item>
+        </Menu>
+    );
+
+    const userInfo = (
+        <Header
+            style={{
+                display: "flex",
+                alignItems: "center",
+                padding: "0.3rem 1.5rem",
+                zIndex: "1",
+                boxShadow:
+                    "0 2px 2px rgba(0, 0, 0, 0.02), 0 1px 0 rgba(0, 0, 0, 0.02)",
+                height: "auto",
+                lineHeight: "auto",
+                backgroundColor: "#fff"
+            }}
+        >
+            <Row type="flex" align="middle">
+                <Avatar
+                    shape="circle"
+                    size={40}
+                    src="/static/images/avatar.jpg"
+                />
+                <span className="ml-3" style={{ lineHeight: "1" }}>
+                    <span style={{ display: "block" }}>Manh Pham</span>
+                    <small className="text-muted">
+                        <span>Online</span>
+                    </small>
+                </span>
+            </Row>
+            <span className="mr-auto" />
+            <div>
+                <Dropdown overlay={menu} trigger={["click"]}>
+                    <Button
+                        className="ant-dropdown-link"
+                        style={{ border: "0" }}
+                    >
+                        <MoreHorizontal size={20} strokeWidth={1} />
+                    </Button>
+                </Dropdown>
+            </div>
+        </Header>
+    );
+
     return (
-        <Sider width={260}>
+        <Sider width={300}>
             <div
                 style={{
                     display: "flex",
@@ -240,8 +306,9 @@ function ChatSidebar() {
                     borderRight: "1px solid rgba(0, 0, 0, 0.05)"
                 }}
             >
-                {/* {messageHeader} */}
-                {messageFooter}
+                {userInfo}
+                {messageHeader}
+                {/* {messageFooter} */}
                 {messagesSidebar}
             </div>
         </Sider>

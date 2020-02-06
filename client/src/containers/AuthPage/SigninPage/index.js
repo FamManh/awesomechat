@@ -17,8 +17,8 @@ const Content = styled.div`
 const Signin = ({ form }) => {
     const dispatch = useDispatch();
 
-    const doSubmit = ({ username, password }) => {
-        dispatch(actions.doSignin(username, password));
+    const doSubmit = (userInfo) => {
+        dispatch(actions.doSignin(userInfo));
     };
     return (
         <Row
@@ -37,15 +37,13 @@ const Signin = ({ form }) => {
                     </Link>
                     <h5 className="mb-0 mt-3">Sign in</h5>
 
-                    <p className="text-muted">
-                        get started with our service
-                    </p>
+                    <p className="text-muted">get started with our service</p>
                 </div>
 
                 {/* Display errors  */}
                 <div className="mb-3">
                     <Text type="danger">
-                        {/* {useSelector(selectors.selectErrorMessage)} */}
+                        {useSelector(selectors.selectSigninError)}
                     </Text>
                 </div>
                 <Form
@@ -119,14 +117,9 @@ const Signin = ({ form }) => {
 
                     <div className="text-center">
                         <small className="text-muted">
-                            <span>
-                                Don't have an account yet?
-                            </span>{" "}
+                            <span>Don't have an account yet?</span>{" "}
                             <Link to="/signup">
-                                <span>
-                                    &nbsp;{" "}
-                                    Create one now!
-                                </span>
+                                <span>&nbsp; Create one now!</span>
                             </Link>
                         </small>
                     </div>

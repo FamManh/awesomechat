@@ -1,8 +1,8 @@
 {
-  "name": "express-rest-es2017-boilerplate",
+  "name": "awesome-chat",
   "version": "1.2.2",
-  "description": "Express boilerplate for building RESTful APIs",
-  "author": "Daniel Sousa <sousa.dfs@gmail.com>",
+  "description": "Awesome chat",
+  "author": "Manh",
   "main": "src/index.js",
   "private": false,
   "license": "MIT",

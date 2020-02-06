@@ -17,43 +17,54 @@ const roles = ['user', 'admin'];
  * User Schema
  * @private
  */
-const userSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    match: /^\S+@\S+\.\S+$/,
-    required: true,
-    unique: true,
-    trim: true,
-    lowercase: true,
+const userSchema = new mongoose.Schema(
+  {
+    email: {
+      type: String,
+      match: /^\S+@\S+\.\S+$/,
+      required: true,
+      unique: true,
+      trim: true,
+      lowercase: true
+    },
+    password: {
+      type: String,
+      required: true,
+      minlength: 6,
+      maxlength: 128
+    },
+    firstname: {
+      type: String,
+      maxlength: 20,
+      minlength: 2,
+      index: true,
+      trim: true
+    },
+    lastname: {
+      type: String,
+      maxlength: 20,
+      minlength: 2,
+      index: true,
+      trim: true
+    },
+    services: {
+      facebook: String,
+      google: String
+    },
+    role: {
+      type: String,
+      enum: roles,
+      default: "user"
+    },
+    picture: {
+      type: String,
+      trim: true
+    }
   },
-  password: {
-    type: String,
-    required: true,
-    minlength: 6,
-    maxlength: 128,
-  },
-  name: {
-    type: String,
-    maxlength: 128,
-    index: true,
-    trim: true,
-  },
-  services: {
-    facebook: String,
-    google: String,
-  },
-  role: {
-    type: String,
-    enum: roles,
-    default: 'user',
-  },
-  picture: {
-    type: String,
-    trim: true,
-  },
-}, {
-  timestamps: true,
-});
+  {
+    timestamps: true
+  }
+);
 
 /**
  * Add your
@@ -82,7 +93,15 @@ userSchema.pre('save', async function save(next) {
 userSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['id', 'name', 'email', 'picture', 'role', 'createdAt'];
+    const fields = [
+      "id",
+      "firstname",
+      "lastname",
+      "email",
+      "picture",
+      "role",
+      "createdAt"
+    ];
 
     fields.forEach((field) => {
       transformed[field] = this[field];
@@ -150,7 +169,7 @@ userSchema.statics = {
 
     const user = await this.findOne({ email }).exec();
     const err = {
-      status: httpStatus.UNAUTHORIZED,
+      status: httpStatus.BAD_REQUEST,
       isPublic: true,
     };
     if (password) {

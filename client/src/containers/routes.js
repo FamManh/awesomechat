@@ -11,15 +11,7 @@ const privateRoutes = [
 ]
 
 const publicRoutes = [
-    {
-        path: "/",
-        exact: true,
-        loader: () => import("./ChatPage"),
-        menu: false,
-        label: "Trang chủ",
-        permissionRequired: null,
-        icon: "home"
-    }
+   
 ];
 
 
