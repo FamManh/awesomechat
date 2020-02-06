@@ -1,35 +1,61 @@
-import {
-    SIGNIN_START,
-    SIGNIN_SUCCESS,
-    SIGNIN_ERROR,
-    ERROR_MESSAGE_CLEAR
-} from "./constants";
+import * as constants from "./constants";
 import { getHistory } from "../configureStore";
-import { fetchSignin } from "./service";
+import { fetchSignin, fetchSignup } from "./service";
 import Errors from "../shared/error/errors";
 
 const actions = {
     doClearErrorMessage: () => {
-        return { type: ERROR_MESSAGE_CLEAR };
+        return { type: constants.ERROR_MESSAGE_CLEAR };
     },
 
-    doSignin: (username, password) => async dispatch => {
+    doSignout: () => {
+        window.localStorage.removeItem("asauth");
+        getHistory().push("/signin");
+    },
+
+    doSignin: userInfo => async dispatch => {
         try {
-            dispatch({ type: SIGNIN_START });
+            dispatch({ type: constants.SIGNIN_START });
 
             // call api: signin
-            let response = await fetchSignin(username, password);
+            let response = await fetchSignin(userInfo);
 
             window.localStorage.setItem(
-                "ssauth",
+                "asauth",
                 JSON.stringify(response.data)
             );
-            dispatch({ type: SIGNIN_SUCCESS, payload: response.data });
+            dispatch({
+                type: constants.SIGNIN_SUCCESS,
+                payload: response.data
+            });
             getHistory().push("/");
         } catch (error) {
-            Errors.handle(error);
             dispatch({
-                type: SIGNIN_ERROR
+                type: constants.SIGNIN_ERROR,
+                payload: Errors.selectMessage(error)
+            });
+        }
+    },
+    doSignup: userInfo => async dispatch => {
+        try {
+            dispatch({ type: constants.SIGNUP_START });
+
+            // call api: signin
+            let response = await fetchSignup(userInfo);
+
+            window.localStorage.setItem(
+                "asauth",
+                JSON.stringify(response.data)
+            );
+            dispatch({
+                type: constants.SIGNUP_SUCCESS,
+                payload: response.data
+            });
+            getHistory().push("/");
+        } catch (error) {
+            dispatch({
+                type: constants.SIGNUP_ERROR,
+                payload: Errors.selectMessage(error)
             });
         }
     }

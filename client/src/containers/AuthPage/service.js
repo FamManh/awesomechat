@@ -1,11 +1,19 @@
-// import sgapi from '../../api/sgapi';
+import asapi from "../../api/asapi";
 
-const fetchSignin = async (username, password) => {
-    // const response = await sgapi.post("/auth/login", {
-    //     username,
-    //     password
-    // });
-    // return response;
-}
+export const fetchSignin = async ({ email, password }) => {
+    const response = await asapi.post("/auth/login", {
+        email,
+        password
+    });
+    return response;
+};
 
-export { fetchSignin };
+export const fetchSignup = async ({ firstname, lastname, email, password }) => {
+    const response = await asapi.post("/auth/register", {
+        firstname,
+        lastname,
+        email,
+        password
+    });
+    return response;
+};

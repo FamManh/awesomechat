@@ -1,15 +1,21 @@
 import Message from "../message";
 import { getHistory } from "../../configureStore";
 
-const DEFAULT_ERROR_MESSAGE = "Đã có lỗi xảy ra, vui lòng thử lại sau.";
+const DEFAULT_ERROR_MESSAGE = "Something went wrong!";
 
 function selectErrorMessage(error) {
+    if (error.response.data.errors) {
+        let errorMsg = "";
+
+        error.response.data.errors.forEach(item => {
+            errorMsg += item.messages[0] + "\n";
+        });
+        return errorMsg;
+    }
     if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        return (
-            error.response.data.message + ` .Code: (${selectErrorCode(error)})`
-        );
+        return error.response.data.message;
         // console.log(error.response.status);
     }
     // Something happened in setting up the request that triggered an Error

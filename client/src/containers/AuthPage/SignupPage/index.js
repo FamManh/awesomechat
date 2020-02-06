@@ -18,8 +18,8 @@ const Content = styled.div`
 const Signup = ({ form }) => {
     const dispatch = useDispatch();
 
-    const doSubmit = ({ firstname, lastname, email, password }) => {
-        dispatch(actions.doSignup(firstname, lastname, email, password));
+    const doSubmit = (userInfo) => {
+        dispatch(actions.doSignup(userInfo));
     };
 
     return (
@@ -45,13 +45,12 @@ const Signup = ({ form }) => {
                 {/* Display errors  */}
                 <div className="mb-3">
                     <Text type="danger">
-                        {/* {useSelector(selectors.selectErrorMessage)} */}
+                        {useSelector(selectors.selectSigupError)}
                     </Text>
                 </div>
 
                 <Form
                     layout="vertical"
-                    // onSubmit={formik.handleSubmit}
                     onSubmit={e => {
                         e.preventDefault();
                         form.validateFields((err, values) => {
@@ -179,12 +178,12 @@ const Signup = ({ form }) => {
                                     message: "Please input your Password!"
                                 },
                                 {
-                                    min: 2,
-                                    message: "At less 2 characters!"
+                                    min: 6,
+                                    message: "At less 6 characters!"
                                 },
                                 {
-                                    max: 20,
-                                    message: "Must be 20 characters or less!"
+                                    max: 128,
+                                    message: "Must be 128 characters or less!"
                                 }
                             ]
                         })(

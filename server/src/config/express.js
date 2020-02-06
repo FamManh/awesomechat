@@ -44,7 +44,7 @@ passport.use('facebook', strategies.facebook);
 passport.use('google', strategies.google);
 
 // mount api v1 routes
-app.use('/v1', routes);
+app.use("/asapi", routes);
 
 // if error is not an instanceOf APIError, convert it.
 app.use(error.converter);

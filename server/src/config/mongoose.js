@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const logger = require('./../config/logger');
 const { mongo, env } = require('./vars');
 
+console.log(mongo.uri);
 // set mongoose Promise to Bluebird
 mongoose.Promise = Promise;
 
