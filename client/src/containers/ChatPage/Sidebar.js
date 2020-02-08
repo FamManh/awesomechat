@@ -73,9 +73,7 @@ function ChatSidebar() {
                     textAlign: "center"
                 }}
             >
-                <a href="javascript:;">
-                    <MessageCircle size={20} strokeWidth={1} />
-                </a>
+                <MessageCircle size={20} strokeWidth={1} />
             </Menu.Item>
             <Menu.Item
                 key="contact"
@@ -84,9 +82,7 @@ function ChatSidebar() {
                     textAlign: "center"
                 }}
             >
-                <a href="javascript:;">
-                    <Users size={20} strokeWidth={1} />
-                </a>
+                <Users size={20} strokeWidth={1} />
             </Menu.Item>
             <Menu.Item
                 key="user"
@@ -95,9 +91,7 @@ function ChatSidebar() {
                     textAlign: "center"
                 }}
             >
-                <a href="javascript:;">
-                    <SearchIcon size={20} strokeWidth={1} />
-                </a>
+                <SearchIcon size={20} strokeWidth={1} />
             </Menu.Item>
             <Menu.Item
                 key="notification"
@@ -106,9 +100,7 @@ function ChatSidebar() {
                     textAlign: "center"
                 }}
             >
-                <a href="javascript:;">
-                    <Bell size={20} strokeWidth={1} />
-                </a>
+                <Bell size={20} strokeWidth={1} />
             </Menu.Item>
         </Menu>
     );
