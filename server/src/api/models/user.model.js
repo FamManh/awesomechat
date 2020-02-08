@@ -37,14 +37,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       maxlength: 20,
       minlength: 2,
-      index: true,
       trim: true
     },
     lastname: {
       type: String,
       maxlength: 20,
       minlength: 2,
-      index: true,
       trim: true
     },
     services: {
@@ -99,7 +97,6 @@ userSchema.method({
       "lastname",
       "email",
       "picture",
-      "role",
       "createdAt"
     ];
 
@@ -196,17 +193,20 @@ userSchema.statics = {
    * @param {number} limit - Limit number of users to be returned.
    * @returns {Promise<User[]>}
    */
-  list({
-    page = 1, perPage = 30, name, email, role,
+  async list({
+    page = 1, perPage = 30, term
   }) {
-    const options = omitBy({ name, email, role }, isNil);
-
-    return this.find(options)
-      .sort({ createdAt: -1 })
-      .skip(perPage * (page - 1))
-      .limit(perPage)
-      .exec();
-  },
+       const reg = new RegExp(term, "i");
+        
+       let options = term
+         ? { $or: [{ firstname: reg }, { lastname: reg }] }
+         : {};
+       return this.find(options)
+         .sort({ createdAt: -1 })
+         .skip(perPage * (page - 1))
+         .limit(perPage)
+         .exec();
+     },
 
   /**
    * Return new validation error

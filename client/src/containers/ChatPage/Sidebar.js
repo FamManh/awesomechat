@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Avatar,
     Input,
@@ -22,161 +22,21 @@ import {
     MoreHorizontal,
     Users,
     MessageCircle,
-    Bell
+    Bell,
+    Search as SearchIcon
 } from "react-feather";
-import authActions from '../AuthPage/actions';
+import { Link, useLocation } from "react-router-dom";
+import authActions from "../AuthPage/actions";
 import { getUserInfo } from "../shared/getUserInfo";
+import MessageList from "./MessageList";
+import ContactList from "../ContactPage/list/List";
+import UserList from "../UserPage/list/List";
 const { Sider, Header } = Layout;
 const { Search } = Input;
 
 function ChatSidebar() {
-    const [selectedIndex, setSelectedIndex] = useState(0);
-    const MockContacts = [
-        {
-            name: "Bobby Sullivan",
-            status: "Mollis Nullam",
-            avatar: (
-                <Badge dot status="success">
-                    <Avatar
-                        size={48}
-                        style={{ color: "#f56a00", backgroundColor: "#fde3cf" }}
-                    >
-                        B
-                    </Avatar>
-                </Badge>
-            )
-        },
-        {
-            name: "Bryan Morgan",
-            status: "Risus Justo",
-            avatar: <Avatar size={48} src="/static/images/face4.jpg" />
-        },
-        {
-            name: "Phillip Caroll",
-            status: "Mollis Nibh",
-            avatar: (
-                <Avatar
-                    size={48}
-                    style={{
-                        color: "rgb(34, 245, 0)",
-                        backgroundColor: "rgb(207, 253, 219)"
-                    }}
-                >
-                    P
-                </Avatar>
-            )
-        },
-        {
-            name: "Brandon Boyd",
-            status: "Dolor Mattis",
-            avatar: <Avatar size={48} src="/static/images/face1.jpg" />
-        },
-        {
-            name: "Laura Mason",
-            status: "Commodo Amet",
-            avatar: <Avatar size={48} src="/static/images/face3.jpg" />
-        },
-        {
-            name: "Barbara Chapman",
-            status: "Tellus Sollicitudin",
-            avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-        },
-        {
-            name: "Barbara Chapman",
-            status: "Tellus Sollicitudin",
-            avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-        },
-        {
-            name: "Barbara Chapman",
-            status: "Tellus Sollicitudin",
-            avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-        },
-        {
-            name: "Barbara Chapman",
-            status: "Tellus Sollicitudin",
-            avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-        },
-        {
-            name: "Barbara Chapman",
-            status: "Tellus Sollicitudin",
-            avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-        },
-        {
-            name: "Barbara Chapman",
-            status: "Tellus Sollicitudin",
-            avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-        },
-        {
-            name: "Barbara Chapman",
-            status: "Tellus Sollicitudin",
-            avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-        },
-        {
-            name: "Barbara Chapman",
-            status: "Tellus Sollicitudin",
-            avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-        },
-        {
-            name: "Barbara Chapman",
-            status: "Tellus Sollicitudin",
-            avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-        },
-        {
-            name: "Barbara Chapman",
-            status: "Tellus Sollicitudin",
-            avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-        },
-        {
-            name: "Barbara Chapman",
-            status: "Tellus Sollicitudin",
-            avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-        },
-        {
-            name: "Barbara Chapman",
-            status: "Tellus Sollicitudin",
-            avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-        },
-        {
-            name: "Barbara Chapman",
-            status: "Tellus Sollicitudin",
-            avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-        },
-        {
-            name: "Barbara Chapman",
-            status: "Tellus Sollicitudin",
-            avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-        },
-        {
-            name: "Doris Baker",
-            status: "Nibh Adipiscing",
-            avatar: <Avatar size={48} src="/static/images/face1.jpg" />
-        },
-        {
-            name: "Doris Marshall",
-            status: "Tellus Sollicitudin",
-            avatar: (
-                <Avatar
-                    size={48}
-                    style={{
-                        color: "rgb(143, 0, 245)",
-                        backgroundColor: "rgb(214, 207, 253)"
-                    }}
-                >
-                    D
-                </Avatar>
-            )
-        },
-        {
-            name: "Andrew Weber",
-            status: "Nibh Adipiscing",
-            avatar: <Avatar size={48} src="/static/images/face4.jpg" />
-        },
-        {
-            name: "John Doe",
-            status: "Nibh Adipiscing",
-            avatar: <Avatar size={48} src="/static/images/face5.jpg" />
-        }
-    ];
+
+    const [currentTab, setCurrentTab] = useState("user");
 
     const messageFooter = (
         <div className="py-3 px-3" style={{ backgroundColor: "#fff" }}>
@@ -184,67 +44,67 @@ function ChatSidebar() {
         </div>
     );
 
-    const messagesSidebar = (
-        <List
-            className="scroll-y flex-1 bg-transparent"
-            itemLayout="horizontal"
-            dataSource={MockContacts}
-            renderItem={(item, index) => (
-                <List.Item
-                    onClick={() => setSelectedIndex(index)}
-                    style={{
-                        backgroundColor:
-                            selectedIndex === index ? "#e6f7ff" : "#fff"
-                    }}
-                    className={`${
-                        selectedIndex === index ? "" : "border-0"
-                    } border-0 px-4 py-3`}
-                >
-                    <List.Item.Meta
-                        avatar={item.avatar}
-                        title={
-                            <small
-                                style={{
-                                    display: "flex",
-                                    width: "100%"
-                                }}
-                            >
-                                <span
-                                    className={`${
-                                        selectedIndex === index
-                                            ? "ant-menu-item-selected"
-                                            : ""
-                                    } `}
-                                >
-                                    {item.name}
-                                </span>
-                            </small>
-                        }
-                        description={<span>{item.status}</span>}
-                    />
-                </List.Item>
-            )}
-        />
-    );
+    const messagesSidebar = () => {
+        if (currentTab === "contact") {
+            return <ContactList />;
+        } else if (currentTab === "notification") {
+            return <div>Notifications</div>;
+        } else if (currentTab === "user") {
+            return <UserList/>;
+        }
+        return <MessageList />;
+    };
+
+    const handleMenuClick = e => {
+        setCurrentTab(e.key);
+    };
 
     const messageHeader = (
-        <Menu mode="horizontal" className="border-0">
-            <Menu.Item key="Message" style={{ width: "33%", textAlign: "center" }}>
+        <Menu
+            mode="horizontal"
+            className="border-0"
+            selectedKeys={[currentTab]}
+            onClick={handleMenuClick}
+        >
+            <Menu.Item
+                key="message"
+                style={{
+                    width: "25%",
+                    textAlign: "center"
+                }}
+            >
                 <a href="javascript:;">
                     <MessageCircle size={20} strokeWidth={1} />
                 </a>
             </Menu.Item>
             <Menu.Item
-                key="friends"
-                style={{ width: "33%", textAlign: "center" }}
+                key="contact"
+                style={{
+                    width: "25%",
+                    textAlign: "center"
+                }}
             >
                 <a href="javascript:;">
                     <Users size={20} strokeWidth={1} />
                 </a>
             </Menu.Item>
             <Menu.Item
-                key="notifications"
-                style={{ width: "33%", textAlign: "center" }}
+                key="user"
+                style={{
+                    width: "25%",
+                    textAlign: "center"
+                }}
+            >
+                <a href="javascript:;">
+                    <SearchIcon size={20} strokeWidth={1} />
+                </a>
+            </Menu.Item>
+            <Menu.Item
+                key="notification"
+                style={{
+                    width: "25%",
+                    textAlign: "center"
+                }}
             >
                 <a href="javascript:;">
                     <Bell size={20} strokeWidth={1} />
@@ -294,7 +154,9 @@ function ChatSidebar() {
                 <span className="ml-3" style={{ lineHeight: "1" }}>
                     <span style={{ display: "block" }}>
                         {getUserInfo() &&
-                            getUserInfo().lastname + " " + getUserInfo().firstname}
+                            getUserInfo().lastname +
+                                " " +
+                                getUserInfo().firstname}
                     </span>
                     <small className="text-muted">
                         <span>Online</span>
@@ -330,7 +192,7 @@ function ChatSidebar() {
                 {userInfo}
                 {messageHeader}
                 {/* {messageFooter} */}
-                {messagesSidebar}
+                {messagesSidebar()}
             </div>
         </Sider>
     );

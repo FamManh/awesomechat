@@ -1,0 +1,91 @@
+import * as constants from "./constants";
+import produce from "immer";
+const initialState = {
+    initLoading: true,
+    dataLoading: false,
+    findLoading: false,
+    saveLoading: false,
+    destroyLoading: false,
+    exportLoading: false,
+    error: null,
+    redirectTo: "/contact",
+    selectedRowKeys: [],
+    selectedRows: [],
+    record: null,
+    contacts: []
+};
+
+const contactReducer = (state = initialState, { type, payload }) =>
+    produce(state, draft => {
+        switch (type) {
+            case constants.CONTACT_CREATE_START:
+                draft.saveLoading = true;
+                draft.error = null;
+                break;
+            case constants.CONTACT_CREATE_SUCCESS:
+                draft.saveLoading = false;
+                draft.error = null;
+                break;
+            case constants.CONTACT_CREATE_ERROR:
+                draft.saveLoading = false;
+                draft.error = payload;
+                break;
+            case constants.CONTACT_GET_START:
+                draft.dataLoading = true;
+                draft.error = null;
+                break;
+            case constants.CONTACT_GET_SUCCESS:
+                draft.dataLoading = false;
+                draft.contacts = payload;
+                draft.error = null;
+                break;
+            case constants.CONTACT_GET_ERROR:
+                draft.dataLoading = false;
+                draft.error = payload;
+                break;
+            case constants.CONTACT_UPDATE_START:
+                draft.saveLoading = true;
+                draft.error = null;
+                break;
+            case constants.CONTACT_UPDATE_SUCCESS:
+                draft.saveLoading = false;
+                draft.error = null;
+                break;
+            case constants.CONTACT_UPDATE_ERROR:
+                draft.saveLoading = false;
+                draft.error = payload;
+                break;
+            case constants.CONTACT_DESTROY_START:
+                draft.destroyLoading = true;
+                draft.error = null;
+                break;
+            case constants.CONTACT_DESTROY_SUCCESS:
+                draft.destroyLoading = false;
+                draft.contacts = state.contacts.filter(
+                    contact => contact.id !== payload
+                );
+                draft.error = null;
+                break;
+            case constants.CONTACT_DESTROY_ERROR:
+                draft.destroyLoading = false;
+                draft.error = payload;
+                break;
+            case constants.CONTACT_FIND_START:
+                draft.findLoading = true;
+                draft.error = null;
+                break;
+            case constants.CONTACT_FIND_SUCCESS:
+                draft.findLoading = false;
+                draft.record = payload;
+                draft.error = null;
+                break;
+            case constants.CONTACT_FIND_ERROR:
+                draft.findLoading = false;
+                draft.error = payload;
+                break;
+            default:
+                break;
+        }
+    });
+
+export default contactReducer;

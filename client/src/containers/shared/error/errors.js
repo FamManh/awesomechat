@@ -4,7 +4,7 @@ import { getHistory } from "../../configureStore";
 const DEFAULT_ERROR_MESSAGE = "Something went wrong!";
 
 function selectErrorMessage(error) {
-    if (error.response.data.errors) {
+    if (error.response && error.response.data && error.response.data.errors) {
         let errorMsg = "";
 
         error.response.data.errors.forEach(item => {
