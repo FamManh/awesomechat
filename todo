@@ -1,1 +1,4 @@
-# Tạo chức năng đăng nhập và đăng xuất
+# Load message InfiniteScroll antd List component
+
+# validate add contact
+    - check userid and query params not should equal
