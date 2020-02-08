@@ -10,12 +10,19 @@ const routes = require('../api/routes/v1');
 const { logs } = require('./vars');
 const strategies = require('./passport');
 const error = require('../api/middlewares/error');
-
+const http = require('http');
+const socketio = require('socket.io');
+const initSockets = require('../api/sockets');
 /**
 * Express instance
 * @public
 */
 const app = express();
+
+// Init server with socket.io and express app
+let server = http.createServer(app);
+let io = socketio(server);
+
 
 // request logging. dev: console | production: file
 app.use(morgan(logs));
@@ -40,11 +47,14 @@ app.use(cors());
 // enable authentication
 app.use(passport.initialize());
 passport.use('jwt', strategies.jwt);
-passport.use('facebook', strategies.facebook);
-passport.use('google', strategies.google);
+// passport.use('facebook', strategies.facebook);
+// passport.use('google', strategies.google);
 
 // mount api v1 routes
 app.use("/asapi", routes);
+
+// Init all sockets
+initSockets(io);
 
 // if error is not an instanceOf APIError, convert it.
 app.use(error.converter);
@@ -55,4 +65,4 @@ app.use(error.notFound);
 // error handler, send stacktrace only during development
 app.use(error.handler);
 
-module.exports = app;
+module.exports = server;

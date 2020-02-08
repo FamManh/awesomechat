@@ -4,6 +4,7 @@ import { getHistory } from "../configureStore";
 import Message from "../shared/message";
 import Errors from "../shared/error/errors";
 import services from "./service";
+import socket from '../socket';
 
 const messageUpdateSuccess = "Cập nhật chi nhánh thành công.";
 const messageCreateSuccess = "Tạo chi nhánh thành công.";
@@ -54,7 +55,7 @@ const actions = {
             });
 
             await services.createFn(userInfo.id);
-
+            socket.emit("add-new-contact", { contactId: userInfo.id });
             dispatch({
                 type: userConstants.USER_ADD_CONTACT_SUCCESS,
                 payload: { ...userInfo, type: "requestSent" }
