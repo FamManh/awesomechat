@@ -142,9 +142,49 @@ exports.update = async (req, res, next) => {
  */
 exports.list = async (req, res, next) => {
   try {
-    const contacts = await Contact.list(req.query);
-    const transformedContacts = contacts.map(contact => contact.transform());
-    res.json(transformedContacts);
+    let currentUserId = req.user.id;
+
+    // get type
+    const type = ["request", "contact", "requestsent"].includes(
+      req.query.type.toLowerCase()
+    )
+      ? req.query.type.toLowerCase()
+      : "contact";
+
+    // get conditions
+    let options = {};
+    if (type === "request") {
+      options = {
+        $and: [{ status: false }, { contactId: currentUserId }]
+      };
+    } else if (type === "requestsent") {
+      options = {
+        $and: [{ status: false }, { userId: currentUserId }]
+      };
+    } else {
+      options = {
+        $and: [
+          {
+            $or: [{ contactId: currentUserId }, { userId: currentUserId }]
+          },
+          { status: true }
+        ]
+      };
+    }
+    const contacts = await Contact.find(options)
+      .populate("userId", "id firstname lastname email picture createdAt")
+      .populate("contactId", "id firstname lastname email picture createdAt");
+
+    // get list users
+    let responseList = [];
+    contacts.forEach(item => {
+      if (item.userId.id == currentUserId) {
+        responseList.push(item.contactId.transform());
+      } else if (item.contactId.id == currentUserId) {
+        responseList.push(item.userId.transform());
+      }
+    });
+    res.json(responseList);
   } catch (error) {
     next(error);
   }

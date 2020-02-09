@@ -8,7 +8,6 @@ const uuidv4 = require('uuid/v4');
 const APIError = require('../utils/APIError');
 const { env, jwtSecret, jwtExpirationInterval } = require('../../config/vars');
 
-
 /**
  * Contact Schema
  * @private
@@ -16,12 +15,12 @@ const { env, jwtSecret, jwtExpirationInterval } = require('../../config/vars');
 const contactSchema = new mongoose.Schema(
   {
     userId: {
-      type: String,
-      required: true
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "User"
     },
     contactId: {
-      type: String,
-      required: true
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "User"
     },
     status: {
       type: Boolean,

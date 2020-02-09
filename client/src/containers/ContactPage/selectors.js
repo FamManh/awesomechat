@@ -7,11 +7,6 @@ const selectInitLoading = createSelector(
     contact => contact.initLoading
 );
 
-const selectDataLoading = createSelector(
-    [selectRaw],
-    contact => contact.dataLoading
-);
-
 const selectSaveLoading = createSelector(
     [selectRaw],
     contact => contact.saveLoading
@@ -27,41 +22,30 @@ const selectFindLoading = createSelector(
     contact => contact.findLoading
 );
 
-const selectExportLoading = createSelector(
-    [selectRaw],
-    contact => contact.exportLoading
-);
-
 const selectErrorMessage = createSelector([selectRaw], contact => contact.error);
 
 const selectContacts = createSelector([selectRaw], contact => contact.contacts);
+const selectRequests = createSelector([selectRaw], contact => contact.requests);
+const selectRequestsSent = createSelector(
+    [selectRaw],
+    contact => contact.requestsSent
+);
 
 const selectRecord = createSelector([selectRaw], contact => contact.record)
-
-const selectSelectedRowKeys = createSelector(
-    [selectRaw],
-    contact => contact.selectedRowKeys
-);
-
-const selectSelectedRows = createSelector(
-    [selectRaw],
-    contact => contact.selectedRows
-);
 
 
 
 const selectors = {
-    selectDataLoading,
     selectInitLoading,
     selectSaveLoading,
     selectErrorMessage,
     selectContacts,
-    selectSelectedRows,
-    selectSelectedRowKeys,
+    selectRequests,
+    selectRequestsSent,
     selectDestroyLoading,
     selectRecord,
-    selectFindLoading,
-    selectExportLoading
+    selectFindLoading
+    
 };
 
 export default selectors;

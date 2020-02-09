@@ -1,5 +1,5 @@
 import * as constants from "./constants";
-import * as userConstants from '../UserPage/constants';
+import * as userConstants from "../UserPage/constants";
 import { getHistory } from "../configureStore";
 import Message from "../shared/message";
 import Errors from "../shared/error/errors";
@@ -11,11 +11,11 @@ const messageCreateSuccess = "Tạo chi nhánh thành công.";
 const messageDeleteSuccess = "Xóa chi nhánh thành công.";
 
 const actions = {
-    list: (filter = {}) => async dispatch => {
+    listContacts: () => async dispatch => {
         try {
             dispatch({ type: constants.CONTACT_GET_START });
 
-            let response = await services.listFn(filter);
+            let response = await services.getListFn({ type: "contact" });
 
             dispatch({
                 type: constants.CONTACT_GET_SUCCESS,
@@ -25,6 +25,40 @@ const actions = {
             Errors.handle(error);
             dispatch({
                 type: constants.CONTACT_GET_ERROR
+            });
+        }
+    },
+    listRequests: () => async dispatch => {
+        try {
+            dispatch({ type: constants.REQUEST_GET_START });
+
+            let response = await services.getListFn({ type: "request" });
+
+            dispatch({
+                type: constants.REQUEST_GET_SUCCESS,
+                payload: response.data
+            });
+        } catch (error) {
+            Errors.handle(error);
+            dispatch({
+                type: constants.REQUEST_GET_ERROR
+            });
+        }
+    },
+    listRequestsSent: () => async dispatch => {
+        try {
+            dispatch({ type: constants.REQUEST_SENT_GET_START });
+
+            let response = await services.getListFn({ type: "requestsent" });
+
+            dispatch({
+                type: constants.REQUEST_SENT_GET_SUCCESS,
+                payload: response.data
+            });
+        } catch (error) {
+            Errors.handle(error);
+            dispatch({
+                type: constants.REQUEST_SENT_GET_ERROR
             });
         }
     },
@@ -79,7 +113,11 @@ const actions = {
             dispatch({
                 type: userConstants.USER_UPDATE_CONTACT_SUCCESS,
                 payload: { ...userInfo, type: "contact" }
+            });
 
+            dispatch({
+                type: constants.CONTACT_UPDATE_SUCCESS,
+                payload: { ...userInfo, type: "contact" }
             });
 
             Message.success(messageUpdateSuccess);
@@ -92,20 +130,42 @@ const actions = {
         }
     },
 
-    doDestroyAll: ids => async dispatch => {
-        await ids.forEach(async id => {
-            dispatch(actions.doDestroy(id));
-        });
-    },
-
-    doDestroy: userInfo => async dispatch => {
+    doDestroyContact: userInfo => async dispatch => {
         try {
             dispatch({
-                type: userConstants.USER_REMOVE_CONTACT_START
+                type: constants.CONTACT_DESTROY_START
             });
 
             await services.destroyFn(userInfo.id);
 
+            dispatch({
+                type: constants.CONTACT_DESTROY_SUCCESS,
+                payload: userInfo.id
+            });
+            dispatch({
+                type: userConstants.USER_REMOVE_CONTACT_SUCCESS,
+                payload: { ...userInfo, type: 'notContact' }
+            });
+            Message.success(messageDeleteSuccess);
+        } catch (error) {
+            Errors.handle(error);
+            dispatch({
+                type: constants.CONTACT_DESTROY_ERROR
+            });
+        }
+    },
+    doDestroyRequest: userInfo => async dispatch => {
+        try {
+            dispatch({
+                type: constants.REQUEST_DESTROY_START
+            });
+
+            await services.destroyFn(userInfo.id);
+
+            dispatch({
+                type: constants.REQUEST_DESTROY_SUCCESS,
+                payload: userInfo.id
+            });
             dispatch({
                 type: userConstants.USER_REMOVE_CONTACT_SUCCESS,
                 payload: { ...userInfo, type: "notContact" }
@@ -114,7 +174,31 @@ const actions = {
         } catch (error) {
             Errors.handle(error);
             dispatch({
-                type: userConstants.USER_REMOVE_CONTACT_ERROR
+                type: constants.REQUEST_DESTROY_ERROR
+            });
+        }
+    },
+    doDestroyRequestSent: userInfo => async dispatch => {
+        try {
+            dispatch({
+                type: constants.REQUEST_SENT_DESTROY_START
+            });
+
+            await services.destroyFn(userInfo.id);
+
+            dispatch({
+                type: constants.REQUEST_SENT_DESTROY_SUCCESS,
+                payload: userInfo.id
+            });
+            dispatch({
+                type: userConstants.USER_REMOVE_CONTACT_SUCCESS,
+                payload: { ...userInfo, type: "notContact" }
+            });
+            Message.success(messageDeleteSuccess);
+        } catch (error) {
+            Errors.handle(error);
+            dispatch({
+                type: constants.REQUEST_SENT_DESTROY_ERROR
             });
         }
     }
