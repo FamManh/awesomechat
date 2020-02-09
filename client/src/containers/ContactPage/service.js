@@ -1,10 +1,14 @@
 import asapi from "../../api/asapi";
 
 const services = {
-    listFn: async ({term}) => {
+    listFn: async ({ term }) => {
         let url = "/user";
         url = term ? url + `?term=${term}` : url;
         const response = await asapi.get(url);
+        return response;
+    },
+    getListFn: async ({ type }) => {
+        const response = await asapi.get(`/contact?type=${type}`);
         return response;
     },
 

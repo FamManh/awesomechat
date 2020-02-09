@@ -12,7 +12,12 @@ const initialState = {
     selectedRowKeys: [],
     selectedRows: [],
     record: null,
-    contacts: []
+    contactLoading: false,
+    requestLoading: false,
+    requestSentLoading: false,
+    contacts: [],
+    requests: [],
+    requestsSent: []
 };
 
 const contactReducer = (state = initialState, { type, payload }) =>
@@ -31,16 +36,42 @@ const contactReducer = (state = initialState, { type, payload }) =>
                 draft.error = payload;
                 break;
             case constants.CONTACT_GET_START:
-                draft.dataLoading = true;
+                draft.contactLoading = true;
                 draft.error = null;
                 break;
             case constants.CONTACT_GET_SUCCESS:
-                draft.dataLoading = false;
+                draft.contactLoading = false;
                 draft.contacts = payload;
                 draft.error = null;
                 break;
             case constants.CONTACT_GET_ERROR:
-                draft.dataLoading = false;
+                draft.contactLoading = false;
+                draft.error = payload;
+                break;
+            case constants.REQUEST_GET_START:
+                draft.requestLoading = true;
+                draft.error = null;
+                break;
+            case constants.REQUEST_GET_SUCCESS:
+                draft.requestLoading = false;
+                draft.requests = payload;
+                draft.error = null;
+                break;
+            case constants.REQUEST_GET_ERROR:
+                draft.requestLoading = false;
+                draft.error = payload;
+                break;
+            case constants.REQUEST_SENT_GET_START:
+                draft.requestSentLoading = true;
+                draft.error = null;
+                break;
+            case constants.REQUEST_SENT_GET_SUCCESS:
+                draft.requestSentLoading = false;
+                draft.requestsSent = payload;
+                draft.error = null;
+                break;
+            case constants.REQUEST_SENT_GET_ERROR:
+                draft.requestSentLoading = false;
                 draft.error = payload;
                 break;
             case constants.CONTACT_UPDATE_START:
@@ -49,6 +80,8 @@ const contactReducer = (state = initialState, { type, payload }) =>
                 break;
             case constants.CONTACT_UPDATE_SUCCESS:
                 draft.saveLoading = false;
+                draft.contacts.push(payload);
+                draft.requests = state.requests.filter(item=>item.id !== payload.id)
                 draft.error = null;
                 break;
             case constants.CONTACT_UPDATE_ERROR:
@@ -67,6 +100,36 @@ const contactReducer = (state = initialState, { type, payload }) =>
                 draft.error = null;
                 break;
             case constants.CONTACT_DESTROY_ERROR:
+                draft.destroyLoading = false;
+                draft.error = payload;
+                break;
+            case constants.REQUEST_DESTROY_START:
+                draft.destroyLoading = true;
+                draft.error = null;
+                break;
+            case constants.REQUEST_DESTROY_SUCCESS:
+                draft.destroyLoading = false;
+                draft.requests = state.requests.filter(
+                    contact => contact.id !== payload
+                );
+                draft.error = null;
+                break;
+            case constants.REQUEST_DESTROY_ERROR:
+                draft.destroyLoading = false;
+                draft.error = payload;
+                break;
+            case constants.REQUEST_SENT_DESTROY_START:
+                draft.destroyLoading = true;
+                draft.error = null;
+                break;
+            case constants.REQUEST_SENT_DESTROY_SUCCESS:
+                draft.destroyLoading = false;
+                draft.requestsSent = state.requestsSent.filter(
+                    contact => contact.id !== payload
+                );
+                draft.error = null;
+                break;
+            case constants.REQUEST_SENT_DESTROY_ERROR:
                 draft.destroyLoading = false;
                 draft.error = payload;
                 break;

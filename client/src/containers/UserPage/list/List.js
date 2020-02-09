@@ -13,7 +13,16 @@ import {
     Icon,
     Tooltip
 } from "antd";
-import { PhoneCall, Phone, Video, UserPlus, UserMinus, MessageCircle, UserCheck, UserX } from "react-feather";
+import {
+    PhoneCall,
+    Phone,
+    Video,
+    UserPlus,
+    UserMinus,
+    MessageCircle,
+    UserCheck,
+    UserX
+} from "react-feather";
 import Search from "antd/lib/input/Search";
 import { useDispatch, useSelector } from "react-redux";
 import actions from "../actions";
@@ -24,22 +33,28 @@ const UserList = () => {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const dispatch = useDispatch();
     const users = useSelector(selectors.selectUsers);
-    const handleSearch = (term) => {
-        dispatch(actions.list({term}));
-    }
+    const handleSearch = term => {
+        dispatch(actions.list({ term }));
+    };
 
     const searchbar = (
         <div className="py-3 px-3" style={{ backgroundColor: "#fff" }}>
-            <Search placeholder="Search contact" onSearch={handleSearch}/>
+            <Search placeholder="Search contact" onSearch={handleSearch} />
         </div>
     );
 
-    const handleAddContactClick = (userInfo) => {
+    const handleAddContactClick = userInfo => {
         dispatch(contactActions.doCreate(userInfo));
-    }
+    };
 
     const handleRemoveContactClick = userInfo => {
-        dispatch(contactActions.doDestroy(userInfo));
+        if (userInfo.type === "request") {
+            dispatch(contactActions.doDestroyRequest(userInfo));
+        } else if (userInfo.type === "requestSent") {
+            dispatch(contactActions.doDestroyRequestSent(userInfo));
+        } else if (userInfo.type === "contact") {
+            dispatch(contactActions.doDestroyContact(userInfo));
+        }
     };
 
     const handleConfirmContactClick = userInfo => {
