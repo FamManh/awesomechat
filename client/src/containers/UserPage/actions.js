@@ -44,6 +44,29 @@ const actions = {
         }
     },
 
+    doUpdateAvatar: data => async dispatch => {
+        try {
+            dispatch({
+                type: constants.USER_UPDATE_START
+            });
+
+            await services.updateMediaFn(data);
+
+            dispatch({
+                type: constants.USER_UPDATE_SUCCESS
+            });
+
+            Message.success(messageUpdateSuccess);
+
+            // getHistory().push("/constants.USER");
+        } catch (error) {
+            Errors.handle(error);
+
+            dispatch({
+                type: constants.USER_UPDATE_ERROR
+            });
+        }
+    },
     // doCreate: id => async dispatch => {
     //     try {
     //         dispatch({
@@ -66,29 +89,29 @@ const actions = {
     //     }
     // },
 
-    // doUpdate: (id, values) => async dispatch => {
-    //     try {
-    //         dispatch({
-    //             type: constants.USER_UPDATE_START
-    //         });
+    doUpdate: (userInfo) => async dispatch => {
+        try {
+            dispatch({
+                type: constants.USER_UPDATE_START
+            });
 
-    //         await services.updateFn(id, values);
+            await services.updateFn(userInfo);
 
-    //         dispatch({
-    //             type: constants.USER_UPDATE_SUCCESS
-    //         });
+            dispatch({
+                type: constants.USER_UPDATE_SUCCESS
+            });
 
-    //         Message.success(messageUpdateSuccess);
+            Message.success(messageUpdateSuccess);
 
-    //         getHistory().push("/constants.USER");
-    //     } catch (error) {
-    //         Errors.handle(error);
+            // getHistory().push("/constants.USER");
+        } catch (error) {
+            Errors.handle(error);
 
-    //         dispatch({
-    //             type: constants.USER_UPDATE_ERROR
-    //         });
-    //     }
-    // },
+            dispatch({
+                type: constants.USER_UPDATE_ERROR
+            });
+        }
+    },
 
     // doDestroyAll: ids => async dispatch => {
     //     await ids.forEach(async id => {

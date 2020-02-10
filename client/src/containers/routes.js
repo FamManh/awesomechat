@@ -7,8 +7,26 @@ const privateRoutes = [
         label: "Trang chủ",
         permissionRequired: null,
         icon: "home"
+    },
+    {
+        path: "/user/:userId/update",
+        exact: true,
+        loader: () => import("./UserPage/form/FormPage"),
+        menu: false,
+        label: "Trang chủ",
+        permissionRequired: null,
+        icon: "home"
+    },
+    {
+        path: "/user/:userId/update-password",
+        exact: true,
+        loader: () => import("./UserPage/form/UpdatePassword"),
+        menu: false,
+        label: "Trang chủ",
+        permissionRequired: null,
+        icon: "home"
     }
-]
+];
 
 const publicRoutes = [
    

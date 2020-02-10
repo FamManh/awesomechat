@@ -86,6 +86,27 @@ userSchema.pre('save', async function save(next) {
 });
 
 /**
+ * Add your
+ * - pre-save hooks
+ * - validations
+ * - virtuals
+ */
+userSchema.pre('update', async function (next) {
+  try {
+    if (!this.isModified('password')) return next();
+
+    const rounds = env === 'test' ? 1 : 10;
+
+    const hash = await bcrypt.hash(this.password, rounds);
+    this.password = hash;
+
+    return next();
+  } catch (error) {
+    return next(error);
+  }
+});
+
+/**
  * Methods
  */
 userSchema.method({

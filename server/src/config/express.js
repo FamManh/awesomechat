@@ -19,6 +19,9 @@ const initSockets = require('../api/sockets');
 */
 const app = express();
 
+//static file
+app.use(express.static('public'));
+
 // Init server with socket.io and express app
 let server = http.createServer(app);
 let io = socketio(server);
@@ -52,6 +55,7 @@ passport.use('jwt', strategies.jwt);
 
 // mount api v1 routes
 app.use("/asapi", routes);
+
 
 // Init all sockets
 initSockets(io);
