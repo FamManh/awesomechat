@@ -74,16 +74,27 @@ const UserList = () => {
                         <List.Item.Meta
                             avatar={
                                 <Badge dot status="success">
-                                    <Avatar
-                                        size={48}
-                                        style={{
-                                            color: "#f56a00",
-                                            backgroundColor: "#fde3cf"
-                                        }}
-                                    >
-                                        {item.firstname[0].toUpperCase() +
-                                            item.lastname[0].toUpperCase()}
-                                    </Avatar>
+                                    {item.picture ? (
+                                        <Avatar
+                                            src={
+                                                process.env
+                                                    .REACT_APP_STATIC_URI +
+                                                "/" +
+                                                item.picture
+                                            }
+                                        />
+                                    ) : (
+                                        <Avatar
+                                            size={48}
+                                            style={{
+                                                color: "#f56a00",
+                                                backgroundColor: "#fde3cf"
+                                            }}
+                                        >
+                                            {item.firstname[0].toUpperCase() +
+                                                item.lastname[0].toUpperCase()}
+                                        </Avatar>
+                                    )}
                                 </Badge>
                             }
                             title={

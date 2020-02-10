@@ -3,6 +3,16 @@ const { omit } = require("lodash");
 const User = require("../models/user.model");
 const Contact = require("../models/contact.model");
 const _ = require("lodash");
+const uuidv4 = require("uuid/v4");
+const multer = require("multer");
+const fsExtra = require("fs-extra");
+const APIError = require("../utils/APIError");
+
+const {
+  avatarDirectory,
+  avatarTypes,
+  avatarLimitSize
+} = require("../../config/vars");
 /**
  * Load user and append to req.
  * @public
@@ -68,16 +78,34 @@ exports.replace = async (req, res, next) => {
  * Update existing user
  * @public
  */
-exports.update = (req, res, next) => {
-  const ommitRole = req.locals.user.role !== "admin" ? "role" : "";
+exports.update = async (req, res, next) => {
+  let user = await User.get(req.user.id);
+  const ommitRole = user.role !== "admin" ? "role" : "";
+  
   const updatedUser = omit(req.body, ommitRole);
-  const user = Object.assign(req.locals.user, updatedUser);
-
+  user = Object.assign(user, updatedUser);
   user
     .save()
     .then(savedUser => res.json(savedUser.transform()))
-    .catch(e => next(User.checkDuplicateEmail(e)));
+    .catch(e => next(User.checkDuplicateUsername(e)));
+    
 };
+
+/**
+ * Update user's password
+ * @public
+ */
+// exports.updatePassword = (req, res, next) => {
+//   let user = await User.get(req.user.id);
+//   const ommitRole = user.role !== "admin" ? "role" : "";
+//   const updatedUser = omit(req.body, ommitRole);
+//   user = Object.assign(user, updatedUser);
+//   user
+//     .save()
+//     .then(savedUser => res.json(savedUser.transform()))
+//     .catch(e => next(User.checkDuplicateUsername(e)));
+    
+// };
 
 /**
  * Get user list
@@ -85,64 +113,63 @@ exports.update = (req, res, next) => {
  */
 exports.list = async (req, res, next) => {
   try {
-        // search user to add contact
-        let currentUserId = req.user.id;
-        let users = await User.list({ ...req.query });
-        // get userids list
-        let usersId = [];
-        users.forEach(item => {
-          usersId.push(item.id);
-        });
-        let contacts = await Contact.find({
-          $or: [
-            {
-              $and: [{ userId: { $in: usersId } }, { contactId: currentUserId }]
-            },
-            {
-              $and: [{ userId: currentUserId }, { contactId: { $in: usersId } }]
+    // search user to add contact
+    let currentUserId = req.user.id;
+    let users = await User.list({ ...req.query });
+    // get userids list
+    let usersId = [];
+    users.forEach(item => {
+      usersId.push(item.id);
+    });
+    let contacts = await Contact.find({
+      $or: [
+        {
+          $and: [{ userId: { $in: usersId } }, { contactId: currentUserId }]
+        },
+        {
+          $and: [{ userId: currentUserId }, { contactId: { $in: usersId } }]
+        }
+      ]
+    });
+
+    let responseUsers = [];
+    users = users.map(user => user.transform());
+
+    users.forEach(userItem => {
+      let tempItem = { ...userItem, type: "notContact" };
+      if (userItem.id == currentUserId) {
+        tempItem.type = "you";
+      } else {
+        contacts.forEach(contactItem => {
+          if (userItem.id == contactItem.userId) {
+            // request sent
+            if (contactItem.status) {
+              // accepted
+              tempItem.type = "contact";
+              return;
+            } else {
+              tempItem.type = "request";
+              return;
             }
-          ]
+          } else if (userItem.id == contactItem.contactId) {
+            // request
+            if (contactItem.status) {
+              // accepted
+              tempItem.type = "contact";
+              return;
+            } else {
+              tempItem.type = "requestSent";
+              return;
+            }
+          }
         });
+      }
+      responseUsers.push(tempItem);
+    });
 
-        let responseUsers = [];
-        users = users.map(user => user.transform());
-
-        users.forEach(userItem => {
-          let tempItem = { ...userItem, type: "notContact" };
-          if (userItem.id == currentUserId){
-            tempItem.type = "you";
-          }else{
-
-                 contacts.forEach(contactItem => {
-                   if (userItem.id == contactItem.userId) {
-                     // request sent
-                     if (contactItem.status) {
-                       // accepted
-                       tempItem.type = "contact";
-                       return;
-                     } else {
-                       tempItem.type = "request";
-                       return;
-                     }
-                   } else if (userItem.id == contactItem.contactId) {
-                     // request
-                     if (contactItem.status) {
-                       // accepted
-                       tempItem.type = "contact";
-                       return;
-                     } else {
-                       tempItem.type = "requestSent";
-                       return;
-                     }
-                   }
-                 });
-               }
-          responseUsers.push(tempItem);
-        });
-
-        // const transformedUsers = users.map(user => user.transform());
-        res.json(responseUsers);
-      } catch (error) {
+    // const transformedUsers = users.map(user => user.transform());
+    res.json(responseUsers);
+  } catch (error) {
     next(error);
   }
 };
@@ -158,4 +185,60 @@ exports.remove = (req, res, next) => {
     .remove()
     .then(() => res.status(httpStatus.NO_CONTENT).end())
     .catch(e => next(e));
+};
+
+let storageAvatar = multer.diskStorage({
+  destination: (req, file, callback) => {
+    callback(null, avatarDirectory);
+  },
+  filename: (req, file, callback) => {
+    let math = avatarTypes;
+    if (math.indexOf(file.mimetype) === -1) {
+      return callback(transErrors.avatar_type, null);
+    }
+    let avatarName = `${Date.now()}-${uuidv4()}-${file.originalname}`;
+    callback(null, avatarName);
+  }
+});
+
+let avatarUploadFile = multer({
+  storage: storageAvatar,
+  limits: { fileSize: avatarLimitSize }
+}).single("avatar");
+
+exports.updateAvatar = (req, res, next) => {
+  avatarUploadFile(req, res, async err => {
+    try {
+      if (!req.file) {
+        throw new APIError({
+          message: "Please select a file.",
+          status: httpStatus.BAD_REQUEST
+        });
+      }
+    
+      let updateUserItem = {
+        picture: 'images/users/' + req.file.filename,
+        updatedAt: Date.now()
+      };
+
+      // update user
+      let userUpdate = await User.findOneAndUpdate(
+        { _id: req.user.id },
+        updateUserItem
+      );
+
+      // Delete old user picture
+      if (userUpdate.picture) {
+        await fsExtra.remove(`${avatarDirectory}/${userUpdate.picture}`); // return old item after updated
+      }
+
+      let result = {
+        message: "success",
+        picture: `${avatarDirectory}/${updateUserItem.picture}`
+      };
+      return res.send(result);
+    } catch (error) {
+      next(error);
+    }
+  });
 };

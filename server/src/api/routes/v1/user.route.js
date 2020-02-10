@@ -8,6 +8,9 @@ const {
   replaceUser,
   updateUser,
 } = require('../../validations/user.validation');
+const multer = require("multer");
+const uuidv4 = require('uuid/v4');
+
 
 const router = express.Router();
 
@@ -16,9 +19,11 @@ const router = express.Router();
  */
 router.param('userId', controller.load);
 
+router.route("/avatar").post(authorize(LOGGED_USER), controller.updateAvatar)
+
 
 router
-  .route('/')
+  .route("/")
   /**
    * @api {get} v1/users List Users
    * @apiDescription Get a list of users
@@ -66,7 +71,35 @@ router
    * @apiError (Unauthorized 401)  Unauthorized     Only authenticated users can create the data
    * @apiError (Forbidden 403)     Forbidden        Only admins can create the data
    */
-  .post(authorize(LOGGED_USER), validate(createUser), controller.create);
+  .post(authorize(LOGGED_USER), validate(createUser), controller.create)
+  /**
+   * @api {patch} v1/users/:id Update User
+   * @apiDescription Update some fields of a user document
+   * @apiVersion 1.0.0
+   * @apiName UpdateUser
+   * @apiGroup User
+   * @apiPermission user
+   *
+   * @apiHeader {String} Authorization   User's access token
+   *
+   * @apiParam  {String}             email     User's email
+   * @apiParam  {String{6..128}}     password  User's password
+   * @apiParam  {String{..128}}      [name]    User's name
+   * @apiParam  {String=user,admin}  [role]    User's role
+   * (You must be an admin to change the user's role)
+   *
+   * @apiSuccess {String}  id         User's id
+   * @apiSuccess {String}  name       User's name
+   * @apiSuccess {String}  email      User's email
+   * @apiSuccess {String}  role       User's role
+   * @apiSuccess {Date}    createdAt  Timestamp
+   *
+   * @apiError (Bad Request 400)  ValidationError  Some parameters may contain invalid values
+   * @apiError (Unauthorized 401) Unauthorized Only authenticated users can modify the data
+   * @apiError (Forbidden 403)    Forbidden    Only user with same id or admins can modify the data
+   * @apiError (Not Found 404)    NotFound     User does not exist
+   */
+  .patch(authorize(LOGGED_USER), validate(updateUser), controller.update);
 
 
 router
@@ -143,34 +176,7 @@ router
    * @apiError (Not Found 404)    NotFound     User does not exist
    */
   .put(authorize(LOGGED_USER), validate(replaceUser), controller.replace)
-  /**
-   * @api {patch} v1/users/:id Update User
-   * @apiDescription Update some fields of a user document
-   * @apiVersion 1.0.0
-   * @apiName UpdateUser
-   * @apiGroup User
-   * @apiPermission user
-   *
-   * @apiHeader {String} Authorization   User's access token
-   *
-   * @apiParam  {String}             email     User's email
-   * @apiParam  {String{6..128}}     password  User's password
-   * @apiParam  {String{..128}}      [name]    User's name
-   * @apiParam  {String=user,admin}  [role]    User's role
-   * (You must be an admin to change the user's role)
-   *
-   * @apiSuccess {String}  id         User's id
-   * @apiSuccess {String}  name       User's name
-   * @apiSuccess {String}  email      User's email
-   * @apiSuccess {String}  role       User's role
-   * @apiSuccess {Date}    createdAt  Timestamp
-   *
-   * @apiError (Bad Request 400)  ValidationError  Some parameters may contain invalid values
-   * @apiError (Unauthorized 401) Unauthorized Only authenticated users can modify the data
-   * @apiError (Forbidden 403)    Forbidden    Only user with same id or admins can modify the data
-   * @apiError (Not Found 404)    NotFound     User does not exist
-   */
-  .patch(authorize(LOGGED_USER), validate(updateUser), controller.update)
+  
   /**
    * @api {patch} v1/users/:id Delete User
    * @apiDescription Delete a user

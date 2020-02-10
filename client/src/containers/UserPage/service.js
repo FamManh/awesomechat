@@ -1,7 +1,9 @@
 import asapi from "../../api/asapi";
+import asmediaapi from "../../api/asmediaapi";
+import axios from 'axios';
 
 const services = {
-    listFn: async ({term}) => {
+    listFn: async ({ term }) => {
         let url = "/user";
         url = term ? url + `?term=${term}` : url;
         const response = await asapi.get(url);
@@ -18,8 +20,15 @@ const services = {
         return response;
     },
 
-    updateFn: async (id, user) => {
-        const response = await asapi.patch(`/user/${id}`, user);
+    updateFn: async user => {
+        const response = await asapi.patch(`/user`, user);
+        return response;
+    },
+
+    updateMediaFn: async data => {
+        
+        const response = await asmediaapi.post(`/user/avatar`, data);
+        console.log(response);
         return response;
     },
 
