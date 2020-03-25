@@ -32,9 +32,6 @@ const lessVariables = lessToJs(paletteLess, {
     };
 
 const GlobalStyles = createGlobalStyle`
-  @import url('/static/app.css');
-  @import url('/static/nprogress.css');
-
   *, *:before, *:after {
     box-sizing: inherit;
   }

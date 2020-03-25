@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import actions from "../actions";
 import selectors from "../selectors";
 import Text from "antd/lib/typography/Text";
+
 const { Panel } = Collapse;
 
 const customPanelStyle = {
@@ -262,6 +263,7 @@ const ContactList = () => {
         dispatch(actions.listContacts());
         dispatch(actions.listRequests());
         dispatch(actions.listRequestsSent());
+        
         return () => {};
     }, []);
 

@@ -4,7 +4,8 @@ import { getHistory } from "../configureStore";
 import Message from "../shared/message";
 import Errors from "../shared/error/errors";
 import services from "./service";
-import socket from '../socket';
+import {emitAddNewContact} from './socket';
+// import Socket from '../socket/Socket';
 
 const messageUpdateSuccess = "Cập nhật chi nhánh thành công.";
 const messageCreateSuccess = "Tạo chi nhánh thành công.";
@@ -88,8 +89,9 @@ const actions = {
                 type: userConstants.USER_ADD_CONTACT_START
             });
 
-            await services.createFn(userInfo.id);
-            socket.emit("add-new-contact", { contactId: userInfo.id });
+            const response = await services.createFn(userInfo.id);
+            emitAddNewContact(response.data);
+            
             dispatch({
                 type: userConstants.USER_ADD_CONTACT_SUCCESS,
                 payload: { ...userInfo, type: "requestSent" }
@@ -144,7 +146,7 @@ const actions = {
             });
             dispatch({
                 type: userConstants.USER_REMOVE_CONTACT_SUCCESS,
-                payload: { ...userInfo, type: 'notContact' }
+                payload: { ...userInfo, type: "notContact" }
             });
             Message.success(messageDeleteSuccess);
         } catch (error) {
@@ -201,6 +203,13 @@ const actions = {
                 type: constants.REQUEST_SENT_DESTROY_ERROR
             });
         }
+    },
+    doAdded: data => async dispatch => {
+        console.log(data);
+        dispatch({
+            type: constants.REQUEST_ADDED,
+            payload: data
+        });
     }
 };
 export default actions;
