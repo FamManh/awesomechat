@@ -1,1 +1,6 @@
 # Load message InfiniteScroll antd List component
+
+# add global socket
+
+# login bắt đầu kết nối với socket, logout đóng kết nối socket.
+

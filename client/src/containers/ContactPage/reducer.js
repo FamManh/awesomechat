@@ -23,6 +23,9 @@ const initialState = {
 const contactReducer = (state = initialState, { type, payload }) =>
     produce(state, draft => {
         switch (type) {
+            case constants.REQUEST_ADDED:
+                draft.requests.push(payload);
+                break;
             case constants.CONTACT_CREATE_START:
                 draft.saveLoading = true;
                 draft.error = null;
@@ -81,7 +84,9 @@ const contactReducer = (state = initialState, { type, payload }) =>
             case constants.CONTACT_UPDATE_SUCCESS:
                 draft.saveLoading = false;
                 draft.contacts.push(payload);
-                draft.requests = state.requests.filter(item=>item.id !== payload.id)
+                draft.requests = state.requests.filter(
+                    item => item.id !== payload.id
+                );
                 draft.error = null;
                 break;
             case constants.CONTACT_UPDATE_ERROR:

@@ -1,0 +1,39 @@
+Table user as U{
+  id ObjectId [pk]
+  lastname String
+  firstname String
+  email String
+  password String
+  picture String
+}
+
+Table contact as C{
+  id ObjectId [pk]
+  userId ObjectId 
+  contactId ObjectId 
+  status Boolean
+}
+
+Table message as M{
+  id ObjectId [pk]
+  sender ObjectId
+  receiver ObjectId
+  text String 
+  file ArrayBuffer
+}
+
+Table chatgroup as CG{
+  id ObjectId [pk]
+  name String
+  userAmount Number
+  messageAmount Number
+  admins ArrayObjectId 
+  members ArrayObjectId
+}
+
+Ref: C.userId > U.id
+Ref: C.contactId > U.id
+Ref: M.sender > U.id
+Ref: M.receiver > U.id
+Ref: CG.admins > U.id
+Ref: CG.members > U.id

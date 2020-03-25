@@ -2,7 +2,7 @@ import * as constants from "./constants";
 import { getHistory } from "../configureStore";
 import { fetchSignin, fetchSignup } from "./service";
 import Errors from "../shared/error/errors";
-
+import {socketRestart} from '../rootSocket';
 const actions = {
     doClearErrorMessage: () => {
         return { type: constants.ERROR_MESSAGE_CLEAR };

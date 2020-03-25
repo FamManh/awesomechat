@@ -35,6 +35,7 @@ import { isAuthenticated } from "../shared/routes/permissionChecker";
 const { Sider, Header } = Layout;
 const { Search } = Input;
 
+
 function ChatSidebar() {
 
     const [currentTab, setCurrentTab] = useState("user");
@@ -83,7 +84,9 @@ function ChatSidebar() {
                     textAlign: "center"
                 }}
             >
-                <Users size={20} strokeWidth={1} />
+                <Badge dot={true}>
+                    <Users size={20} strokeWidth={1} />
+                </Badge>
             </Menu.Item>
             <Menu.Item
                 key="user"
@@ -101,7 +104,9 @@ function ChatSidebar() {
                     textAlign: "center"
                 }}
             >
-                <Bell size={20} strokeWidth={1} />
+                <Badge dot={true}>
+                    <Bell size={20} strokeWidth={1} />
+                </Badge>
             </Menu.Item>
         </Menu>
     );
