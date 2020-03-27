@@ -1,117 +1,172 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
+import "emoji-mart/css/emoji-mart.css";
+import { Picker } from "emoji-mart";
 // import "antd/dist/antd.css";
-import { Avatar, Button, Input, Layout, Row, Tooltip, Icon } from "antd";
+import {
+    Avatar,
+    Button,
+    Input,
+    Layout,
+    Row,
+    Tooltip,
+    Result,
+    Icon
+} from "antd";
 import ChatStyled from "./styles/chat";
-
-import { Anchor, Image, Send, Mic, Phone, Video, Info } from "react-feather";
+import format from "date-fns/format";
+import {
+    Anchor,
+    Image,
+    Send,
+    Mic,
+    Phone,
+    Video,
+    Info,
+    Smile
+} from "react-feather";
+import { useSelector, useDispatch } from "react-redux";
+import selectors from "./selectors";
+import actions from "./actions";
+import userSelectors from "../UserPage/selectors";
 
 const { Header } = Layout;
 const { TextArea } = Input;
 
-function ChatContent() {
-    const date = Date.now();
+const getAvatar = (record, size = 40) => {
+    if (!record) return <Avatar size={size} icon="user" />;
 
-    const MockChats = [
-        {
-            message: "Hey.",
-            type: "received",
-            date: new Date(date - 1000 * 60 * 60 * 10)
-        },
-        {
-            message: "How are the wife and kids Taylor?",
-            type: "received",
-            date: new Date(date - 1000 * 60 * 60 * 6)
-        },
-        {
-            message: "Pretty good Samuel.",
-            type: "sent",
-            date: new Date(date - 1000 * 60 * 60 * 3)
-        },
-        {
-            message: "Cras mattis consectetur purus sit amet fermentum.",
-            type: "received",
-            date: new Date(date - 1000 * 60 * 60 * 2)
-        },
-        {
-            message: "Goodnight.",
-            type: "sent",
-            date: new Date(date - 1000 * 60 * 60 * 1)
-        },
-        {
-            message:
-                "Aenean lacinia bibendum nulla sed consectetur. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum.",
-            type: "received",
-            date: new Date(date - 1000 * 60 * 30)
-        },
-        {
-            message:
-                "Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.",
-            type: "sent",
-            date: date
-        },
-        {
-            message: "Received it thanks 😀",
-            type: "received",
-            date: new Date(date - 1000 * 60 * 20)
-        },
-        {
-            message: "Received it thanks 😀",
-            type: "received",
-            date: new Date(date - 1000 * 60 * 20)
-        },
-        {
-            message: "Received it thanks 😀",
-            type: "received",
-            date: new Date(date - 1000 * 60 * 20)
-        },
-        {
-            message: "Received it thanks 😀",
-            type: "received",
-            date: new Date(date - 1000 * 60 * 20)
-        },
-        {
-            message: "Received it thanks 😀",
-            type: "received",
-            date: new Date(date - 1000 * 60 * 20)
-        },
-        {
-            message: "Received it thanks 😀",
-            type: "received",
-            date: new Date(date - 1000 * 60 * 20)
-        },
-        {
-            message: "Received it thanks 😀",
-            type: "received",
-            date: new Date(date - 1000 * 60 * 20)
-        },
-        {
-            message: "Received it thanks 😀",
-            type: "received",
-            date: new Date(date - 1000 * 60 * 20)
-        },
-        {
-            message: "Received it thanks 😀",
-            type: "received",
-            date: new Date(date - 1000 * 60 * 20)
-        },
-        {
-            message: "Received it thanks 😀",
-            type: "received",
-            date: new Date(date - 1000 * 60 * 20)
-        },
-        {
-            message: "You're welcome 👍🏿",
-            type: "sent",
-            date: new Date(date - 1000 * 60 * 10)
-        },
-        {
-            message: "Typing...",
-            type: "received",
-            date: date
-        }
-    ];
+    if (record.picture) {
+        return (
+            <Avatar
+                shape="circle"
+                size={size}
+                src={process.env.REACT_APP_STATIC_URI + "/" + record.picture}
+            />
+        );
+    }
     return (
-        <Layout>
+        <Avatar
+            size={size}
+            style={{
+                color: "#f56a00",
+                backgroundColor: "#fde3cf"
+            }}
+        >
+            {record.firstname[0].toUpperCase() +
+                record.lastname[0].toUpperCase()}
+        </Avatar>
+    );
+};
+
+function ChatContent() {
+    const scrollRef = useRef(null);
+    const inputMessageRef = useRef();
+    const dispatch = useDispatch();
+    const record = useSelector(selectors.selectRecord);
+    const currentUser = useSelector(userSelectors.selectCurrentUser);
+    const [message, setMessage] = useState("");
+    const [emojiVisible, setEmojiVisible] = useState(false)
+    const scrollToBottom = () =>
+        scrollRef.current.scrollIntoView({ behavior: "smooth" });
+
+    const renderMessage = messages => {
+        let lastReceiverId = "";
+        return messages.map((chat, index) => {
+            if (index > 0) {
+                lastReceiverId = messages[index - 1];
+            }
+            return (
+                <div
+                    key={index}
+                    style={{ display: "flex", justifyContent: "flex-start" }}
+                >
+                    {lastReceiverId !== chat.receiver._id ? (
+                        <div style={{ margin: "10px 0 0 0" }}></div>
+                    ) : null}
+                    <div style={{ width: 30 }}>
+                        {chat.sender._id !== currentUser.id &&
+                            getAvatar(record.receiver, 30)}
+                    </div>
+                    <div
+                        key={index}
+                        className={`conversation
+                       						 ${
+                                                 chat.sender._id ===
+                                                 currentUser.id
+                                                     ? "conversation-sent"
+                                                     : "conversation-received"
+                                             }`}
+                    >
+                        {chat.sender._id === currentUser.id ? (
+                            <div className={`body body-sent`}>
+                                <p color="inherit">{chat.message}</p>
+                            </div>
+                        ) : (
+                            <div className={`body body-received text-body`}>
+                                <p color="inherit">{chat.message}</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        });
+    };
+
+    const handleSendClick = () => {
+        if (message.trim() === "") {
+            setMessage("");
+            return;
+        }
+        setMessage("");
+        dispatch(actions.doCreate({ message, receiver: record.receiver.id }));
+        setEmojiVisible(false)
+    };
+
+    if (!record) {
+        return (
+            <Row
+                type="flex"
+                align="middle"
+                justify="center"
+                className="px-3 bg-white mh-page"
+                style={{ minHeight: "100vh", width: "100%" }}
+            >
+                <Result
+                    icon={<Icon type="smile" theme="twoTone" />}
+                    title="Welcome to Awesome Chat"
+                    subTitle="Slogan of Awesome Chat"
+                />
+            </Row>
+        );
+    }
+
+    const addEmoji = e => {
+        setMessage(message+e.native)
+        inputMessageRef.current.focus();
+    }
+
+    const renderEmojiPicker = () => {
+        if(emojiVisible){
+            return (
+                <span>
+                    <Picker
+                        set="facebook"
+                        sheetSize={32}
+                        onSelect={addEmoji}
+                        style={{
+                            position: "absolute",
+                            bottom: "40px",
+                            right: "40px"
+                        }}
+                    />
+                </span>
+            );
+        }
+        return null
+    }
+
+    return (
+        <Layout style={{ position: "relative" }}>
             <Header
                 style={{
                     display: "flex",
@@ -126,13 +181,14 @@ function ChatContent() {
                 }}
             >
                 <Row type="flex" align="middle">
-                    <Avatar
-                        shape="circle"
-                        size={40}
-                        src="/static/images/avatar.jpg"
-                    />
+                    {getAvatar(record ? record.receiver : null)}
+
                     <span className="ml-3" style={{ lineHeight: "1" }}>
-                        <span style={{ display: "block" }}>John Doe</span>
+                        <span style={{ display: "block" }}>
+                            {record
+                                ? `${record.receiver.firstname} ${record.receiver.lastname}`
+                                : ""}
+                        </span>
                         <small className="text-muted">
                             <span>Online</span>
                         </small>
@@ -154,42 +210,8 @@ function ChatContent() {
                     </Button>
                 </div>
             </Header>
-            <ChatStyled>
-                <>
-                    {MockChats.map((chat, index) => (
-                        <div
-                            key={index}
-                            className={`conversation
-                       						 ${
-                                                 chat.type === "sent"
-                                                     ? "conversation-sent"
-                                                     : "conversation-received"
-                                             }`}
-                        >
-                            <div
-                                className={` body shadow-sm
-                          					${
-                                                chat.type === "sent"
-                                                    ? "body-sent"
-                                                    : "body-received text-body"
-                                            }`}
-                            >
-                                <p color="inherit">{chat.message}</p>
-                                <p
-                                    variant="caption"
-                                    className={`date
-                            						${
-                                                        chat.type === "sent"
-                                                            ? "date-sent"
-                                                            : "date-received"
-                                                    } `}
-                                >
-                                    {/* {format(chat.date, 'hh:mm')} */}
-                                </p>
-                            </div>
-                        </div>
-                    ))}
-                </>
+            <ChatStyled ref={scrollRef}>
+                <>{record && renderMessage(record.messages)}</>
             </ChatStyled>
             <div className="px-3 py-2" style={{ background: "#f9f9f9" }}>
                 <div style={{ display: "flex", alignItems: "center" }}>
@@ -202,20 +224,24 @@ function ChatContent() {
                     <Button className="bg-transparent" style={{ border: "0" }}>
                         <Mic size={20} strokeWidth={1} />
                     </Button>
-
-                    <TextArea
+                    <Input ref={inputMessageRef}
                         placeholder="Type a message"
-                        autoSize={{ maxRows: 4 }}
+                        value={message}
+                        onChange={e => setMessage(e.target.value)}
+                        style={{ borderRadius: "1rem" }}
+                        onPressEnter={handleSendClick}
                         suffix={
-                            <Tooltip title="Extra information">
-                                <Icon
-                                    type="info-circle"
-                                    style={{ color: "rgba(0,0,0,.45)" }}
-                                />
-                            </Tooltip>
+                            <Smile
+                                style={{ cursor: "pointer" }}
+                                size={20}
+                                strokeWidth={1}
+                                onClick={() => setEmojiVisible(!emojiVisible)}
+                            />
                         }
                     />
-                    <Button type="link">
+                    {renderEmojiPicker()}
+
+                    <Button type="link" onClick={handleSendClick}>
                         <Send size={20} strokeWidth={1} />
                     </Button>
                 </div>

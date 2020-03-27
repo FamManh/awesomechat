@@ -11,9 +11,7 @@ const endpoint = process.env.REACT_APP_SOCKET_ENDPOINT;
 
 const store = configStore();
 function App() {
-  useEffect(() => {
-    configSocket();
-  }, [])
+
   return (
       <Suspense fallback={<div>Loading...</div>}>
           <Provider store={store}>

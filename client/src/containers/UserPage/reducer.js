@@ -10,7 +10,8 @@ const initialState = {
     error: null,
     redirectTo: "/contact",
     record: null,
-    users: []
+    users: [],
+    current: null
 };
 
 const contactReducer = (state = initialState, { type, payload }) =>
@@ -52,10 +53,10 @@ const contactReducer = (state = initialState, { type, payload }) =>
                 break;
             case constants.USER_UPDATE_CONTACT_SUCCESS:
                 state.users.forEach((item, index) => {
-                     if (item.id === payload.id) {
-                         draft.users[index] = payload;
-                     }
-                 });
+                    if (item.id === payload.id) {
+                        draft.users[index] = payload;
+                    }
+                });
                 draft.saveLoading = false;
                 draft.error = null;
                 break;
@@ -92,6 +93,9 @@ const contactReducer = (state = initialState, { type, payload }) =>
             case constants.USER_FIND_ERROR:
                 draft.findLoading = false;
                 draft.error = payload;
+                break;
+            case constants.USER_GET_CURRENT_SUCCESS:
+                draft.current = payload;
                 break;
             default:
                 break;

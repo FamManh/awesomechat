@@ -21,6 +21,9 @@ router.param('userId', controller.load);
 
 router.route("/avatar").post(authorize(LOGGED_USER), controller.updateAvatar)
 
+router
+  .route("/current")
+  .get(authorize(LOGGED_USER), controller.getCurrentUser);
 
 router
   .route("/")

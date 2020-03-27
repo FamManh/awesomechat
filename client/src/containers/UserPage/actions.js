@@ -67,27 +67,24 @@ const actions = {
             });
         }
     },
-    // doCreate: id => async dispatch => {
-    //     try {
-    //         dispatch({
-    //             type: constants.USER_CREATE_START
-    //         });
+    getCurrent: () => async dispatch => {
+        try {
+            dispatch({
+                type: constants.USER_GET_CURRENT_START
+            });
+            let response = await services.getCurrent();
+            dispatch({
+                type: constants.USER_GET_CURRENT_SUCCESS,
+                payload: response.data
+            });
+        } catch (error) {
+            Errors.handle(error);
 
-    //         await services.createFn(id);
-
-    //         dispatch({
-    //             type: constants.USER_CREATE_SUCCESS
-    //         });
-
-    //         Message.success(messageCreateSuccess);
-    //     } catch (error) {
-    //         Errors.handle(error);
-
-    //         dispatch({
-    //             type: constants.USER_CREATE_ERROR
-    //         });
-    //     }
-    // },
+            dispatch({
+                type: constants.USER_GET_CURRENT_ERROR
+            });
+        }
+    },
 
     doUpdate: (userInfo) => async dispatch => {
         try {

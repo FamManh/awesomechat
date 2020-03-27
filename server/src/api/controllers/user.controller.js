@@ -33,6 +33,12 @@ exports.load = async (req, res, next, id) => {
  */
 exports.get = (req, res) => res.json(req.locals.user.transform());
 
+
+exports.getCurrentUser = async (req, res) => {
+  const user = await User.findById(req.user.id)
+  return res.json(user.transform());
+};
+
 /**
  * Get logged in user info
  * @public

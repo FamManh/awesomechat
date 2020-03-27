@@ -38,8 +38,8 @@ export default class Errors {
             console.error(error);
         }
         if (selectErrorCode(error) === 401) {
-            getHistory().push("/401");
-            window.localStorage.removeItem("ssauth");
+            getHistory().push("/signin");
+            window.localStorage.removeItem("asauth");
             return;
         }
         if (selectErrorCode(error) === 403) {
