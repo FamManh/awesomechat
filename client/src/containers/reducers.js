@@ -4,6 +4,7 @@ import layout from "./AuthPage/reducer";
 import auth from './AuthPage/reducer';
 import contact from "./ContactPage/reducer";
 import user from "./UserPage/reducer";
+import message from "./ChatPage/reducer";
 
 export default history =>
     combineReducers({
@@ -11,5 +12,6 @@ export default history =>
         layout,
         auth,
         contact,
-        user
+        user,
+        message
     });

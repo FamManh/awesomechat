@@ -33,6 +33,7 @@ const selectUsers = createSelector([selectRaw], user => user.users);
 
 const selectRecord = createSelector([selectRaw], user => user.record)
 
+const selectCurrentUser = createSelector([selectRaw], user=>user.current)
 
 const selectors = {
     selectDataLoading,
@@ -43,6 +44,7 @@ const selectors = {
     selectDestroyLoading,
     selectRecord,
     selectFindLoading,
+    selectCurrentUser
 };
 
 export default selectors;

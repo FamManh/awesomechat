@@ -11,201 +11,94 @@ import {
     Dropdown,
     Divider
 } from "antd";
-const MockContacts = [
-    {
-        name: "Bobby Sullivan",
-        status: "Mollis Nullam",
-        avatar: (
-            <Badge dot status="success">
-                <Avatar
-                    size={48}
-                    style={{
-                        color: "#f56a00",
-                        backgroundColor: "#fde3cf"
-                    }}
-                >
-                    B
-                </Avatar>
-            </Badge>
-        )
-    },
-    {
-        name: "Bryan Morgan",
-        status: "Risus Justo",
-        avatar: <Avatar size={48} src="/static/images/face4.jpg" />
-    },
-    {
-        name: "Phillip Caroll",
-        status: "Mollis Nibh",
-        avatar: (
+import { useSelector } from "react-redux";
+import selectors from "./selectors";
+import { Link, useParams } from "react-router-dom";
+import userSelectors from '../UserPage/selectors';
+
+const getAvatar = (record, size = 40) => {
+    if (!record) return <Avatar size={size} icon="user" />;
+
+    if (record.picture) {
+        return (
             <Avatar
-                size={48}
-                style={{
-                    color: "rgb(34, 245, 0)",
-                    backgroundColor: "rgb(207, 253, 219)"
-                }}
-            >
-                P
-            </Avatar>
-        )
-    },
-    {
-        name: "Brandon Boyd",
-        status: "Dolor Mattis",
-        avatar: <Avatar size={48} src="/static/images/face1.jpg" />
-    },
-    {
-        name: "Laura Mason",
-        status: "Commodo Amet",
-        avatar: <Avatar size={48} src="/static/images/face3.jpg" />
-    },
-    {
-        name: "Barbara Chapman",
-        status: "Tellus Sollicitudin",
-        avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-    },
-    {
-        name: "Barbara Chapman",
-        status: "Tellus Sollicitudin",
-        avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-    },
-    {
-        name: "Barbara Chapman",
-        status: "Tellus Sollicitudin",
-        avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-    },
-    {
-        name: "Barbara Chapman",
-        status: "Tellus Sollicitudin",
-        avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-    },
-    {
-        name: "Barbara Chapman",
-        status: "Tellus Sollicitudin",
-        avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-    },
-    {
-        name: "Barbara Chapman",
-        status: "Tellus Sollicitudin",
-        avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-    },
-    {
-        name: "Barbara Chapman",
-        status: "Tellus Sollicitudin",
-        avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-    },
-    {
-        name: "Barbara Chapman",
-        status: "Tellus Sollicitudin",
-        avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-    },
-    {
-        name: "Barbara Chapman",
-        status: "Tellus Sollicitudin",
-        avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-    },
-    {
-        name: "Barbara Chapman",
-        status: "Tellus Sollicitudin",
-        avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-    },
-    {
-        name: "Barbara Chapman",
-        status: "Tellus Sollicitudin",
-        avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-    },
-    {
-        name: "Barbara Chapman",
-        status: "Tellus Sollicitudin",
-        avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-    },
-    {
-        name: "Barbara Chapman",
-        status: "Tellus Sollicitudin",
-        avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-    },
-    {
-        name: "Barbara Chapman",
-        status: "Tellus Sollicitudin",
-        avatar: <Avatar size={48} src="/static/images/face2.jpg" />
-    },
-    {
-        name: "Doris Baker",
-        status: "Nibh Adipiscing",
-        avatar: <Avatar size={48} src="/static/images/face1.jpg" />
-    },
-    {
-        name: "Doris Marshall",
-        status: "Tellus Sollicitudin",
-        avatar: (
-            <Avatar
-                size={48}
-                style={{
-                    color: "rgb(143, 0, 245)",
-                    backgroundColor: "rgb(214, 207, 253)"
-                }}
-            >
-                D
-            </Avatar>
-        )
-    },
-    {
-        name: "Andrew Weber",
-        status: "Nibh Adipiscing",
-        avatar: <Avatar size={48} src="/static/images/face4.jpg" />
-    },
-    {
-        name: "John Doe",
-        status: "Nibh Adipiscing",
-        avatar: <Avatar size={48} src="/static/images/face5.jpg" />
+                shape="circle"
+                size={size}
+                src={process.env.REACT_APP_STATIC_URI + "/" + record.picture}
+            />
+        );
     }
-];
+    return (
+        <Avatar
+            size={size}
+            style={{
+                color: "#f56a00",
+                backgroundColor: "#fde3cf"
+            }}
+        >
+            {record.firstname[0].toUpperCase() +
+                record.lastname[0].toUpperCase()}
+        </Avatar>
+    );
+};
 
 const MessageList = () => {
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const {userId} = useParams();
+    const messages = useSelector(selectors.selectMessages);
+    const currentUser = useSelector(userSelectors.selectCurrentUser);
+
 
     return (
         <List
+            style={{marginTop: "5px"}}
             className="scroll-y flex-1 bg-transparent"
             itemLayout="horizontal"
-            dataSource={MockContacts}
-            renderItem={(item, index) => (
-                <List.Item
-                    style={{}}
-                    onClick={() => setSelectedIndex(index)}
-                    style={{
-                        backgroundColor:
-                            selectedIndex === index ? "#e6f7ff" : "#fff",
-                        cursor: "pointer"
-                    }}
-                    className={`${
-                        selectedIndex === index ? "" : "border-0"
-                    } border-0 px-4 py-3`}
-                >
-                    <List.Item.Meta
-                        avatar={item.avatar}
-                        title={
-                            <small
-                                style={{
-                                    display: "flex",
-                                    width: "100%"
-                                }}
-                            >
-                                <span
-                                    className={`${
-                                        selectedIndex === index
-                                            ? "ant-menu-item-selected"
-                                            : ""
-                                    } `}
-                                >
-                                    {item.name}
-                                </span>
-                            </small>
-                        }
-                        description={<span>{item.status}</span>}
-                    />
-                </List.Item>
-            )}
+            dataSource={messages}
+            renderItem={(item, index) => {
+                let user = item.sender._id === currentUser.id ? item.receiver : item.sender;
+                return (
+                    <Link to={`/m/${user._id}`}>
+                        <List.Item
+                            style={{
+                                backgroundColor:
+                                    user._id === userId ? "#e6f7ff" : "#fff",
+                                cursor: "pointer",
+                                borderRadius: "0.8rem"
+                            }}
+                            className={`${
+                                selectedIndex === index ? "" : "border-0"
+                            } border-0 px-4 py-3`}
+                        >
+                            <List.Item.Meta
+                                avatar={getAvatar(user)}
+                                title={
+                                    <small
+                                        style={{
+                                            display: "flex",
+                                            width: "100%"
+                                        }}
+                                    >
+                                        <span
+                                            className={`${
+                                                selectedIndex === index
+                                                    ? "ant-menu-item-selected"
+                                                    : ""
+                                            } `}
+                                            style={{fontSize: "14px"}}
+                                        >
+                                            {user.firstname +
+                                                " " +
+                                                user.lastname}
+                                        </span>
+                                    </small>
+                                }
+                                description={<span>{item.lastMessage}</span>}
+                            />
+                        </List.Item>
+                    </Link>
+                );
+            }}
         />
     );
 };

@@ -25,6 +25,11 @@ const privateRoutes = [
         label: "Trang chủ",
         permissionRequired: null,
         icon: "home"
+    },
+    {
+        path: "/m/:userId/",
+        exact: true,
+        loader: () => import("./ChatPage/index"),
     }
 ];
 

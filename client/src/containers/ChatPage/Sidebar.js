@@ -32,14 +32,44 @@ import MessageList from "./MessageList";
 import ContactList from "../ContactPage/list/List";
 import UserList from "../UserPage/list/List";
 import { isAuthenticated } from "../shared/routes/permissionChecker";
+import { useSelector } from "react-redux";
+import userSelectors from '../UserPage/selectors'
+
 const { Sider, Header } = Layout;
 const { Search } = Input;
+
+const getAvatar = (record, size = 40) => {
+    if (!record) return <Avatar size={size} icon="user" />;
+
+    if (record.picture) {
+        return (
+            <Avatar
+                shape="circle"
+                size={size}
+                src={process.env.REACT_APP_STATIC_URI + "/" + record.picture}
+            />
+        );
+    }
+    return (
+        <Avatar
+            size={size}
+            style={{
+                color: "#f56a00",
+                backgroundColor: "#fde3cf"
+            }}
+        >
+            {record.firstname[0].toUpperCase() +
+                record.lastname[0].toUpperCase()}
+        </Avatar>
+    );
+};
+
 
 
 function ChatSidebar() {
 
-    const [currentTab, setCurrentTab] = useState("user");
-
+    const [currentTab, setCurrentTab] = useState("message");
+    const currentUser = useSelector(userSelectors.selectCurrentUser);
     const messageFooter = (
         <div className="py-3 px-3" style={{ backgroundColor: "#fff" }}>
             <Search placeholder="Search contact" />
@@ -146,17 +176,12 @@ function ChatSidebar() {
             }}
         >
             <Row type="flex" align="middle">
-                <Avatar
-                    shape="circle"
-                    size={40}
-                    src="/static/images/avatar.jpg"
-                />
+                {getAvatar(currentUser ? currentUser : null)}
                 <span className="ml-3" style={{ lineHeight: "1" }}>
                     <span style={{ display: "block" }}>
-                        {getUserInfo() &&
-                            getUserInfo().lastname +
-                                " " +
-                                getUserInfo().firstname}
+                        {currentUser
+                            ? `${currentUser.firstname} ${currentUser.lastname}`
+                            : ""}
                     </span>
                     <small className="text-muted">
                         <span>Online</span>

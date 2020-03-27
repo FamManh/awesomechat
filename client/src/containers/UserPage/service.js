@@ -15,6 +15,11 @@ const services = {
         return response;
     },
 
+    getCurrent: async ()=> {
+        const response = await asapi.get(`/user/current`);
+        return response;
+    },
+
     createFn: async id => {
         const response = await asapi.post(`/user/${id}`);
         return response;
@@ -26,7 +31,6 @@ const services = {
     },
 
     updateMediaFn: async data => {
-        
         const response = await asmediaapi.post(`/user/avatar`, data);
         console.log(response);
         return response;

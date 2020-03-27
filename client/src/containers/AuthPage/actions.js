@@ -2,7 +2,7 @@ import * as constants from "./constants";
 import { getHistory } from "../configureStore";
 import { fetchSignin, fetchSignup } from "./service";
 import Errors from "../shared/error/errors";
-import {socketRestart} from '../rootSocket';
+import getSocket, {socketDisconnect, configSocket} from '../rootSocket';
 const actions = {
     doClearErrorMessage: () => {
         return { type: constants.ERROR_MESSAGE_CLEAR };
@@ -10,6 +10,7 @@ const actions = {
 
     doSignout: () => {
         window.localStorage.removeItem("asauth");
+        socketDisconnect();
         getHistory().push("/signin");
     },
 
@@ -29,6 +30,7 @@ const actions = {
                 payload: response.data
             });
             getHistory().push("/");
+            configSocket();
         } catch (error) {
             dispatch({
                 type: constants.SIGNIN_ERROR,
