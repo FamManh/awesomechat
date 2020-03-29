@@ -76,7 +76,7 @@ messageSchema.statics = {
 
   /**
    * List messages in descending order of 'createdAt' timestamp.
-   *
+   * Lấy danh sách những người mình đã gửi tin nhắn 
    * @param {number} skip - Number of messages to be skipped.
    * @param {number} limit - Limit number of messages to be returned.
    * @returns {Promise<Message[]>}

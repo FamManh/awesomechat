@@ -28,6 +28,7 @@ export const configSocket = () => {
 }
 
 export const socketDisconnect = () => {
+    socket.disconnect();
     socket = null;
 }
 

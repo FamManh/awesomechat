@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import "emoji-mart/css/emoji-mart.css";
 import { Picker } from "emoji-mart";
-// import "antd/dist/antd.css";
+import "./picturewallStyle.css";
 import {
     Avatar,
     Button,
@@ -10,7 +10,9 @@ import {
     Row,
     Tooltip,
     Result,
-    Icon
+    Icon,
+    Popover,
+    Upload
 } from "antd";
 import ChatStyled from "./styles/chat";
 import format from "date-fns/format";
@@ -22,12 +24,14 @@ import {
     Phone,
     Video,
     Info,
-    Smile
+    Smile,
+    Paperclip
 } from "react-feather";
 import { useSelector, useDispatch } from "react-redux";
 import selectors from "./selectors";
 import actions from "./actions";
 import userSelectors from "../UserPage/selectors";
+import PicturesWall from "./PicturesWall";
 
 const { Header } = Layout;
 const { TextArea } = Input;
@@ -65,7 +69,9 @@ function ChatContent() {
     const record = useSelector(selectors.selectRecord);
     const currentUser = useSelector(userSelectors.selectCurrentUser);
     const [message, setMessage] = useState("");
-    const [emojiVisible, setEmojiVisible] = useState(false)
+    const [emojiVisible, setEmojiVisible] = useState(false);
+    const [toggleImagesUpload, setToggleImagesUpload] = useState(false);
+    const [openFileDialogOnClick, setOpenFileDialogOnClick] = useState(false);
     const scrollToBottom = () =>
         scrollRef.current.scrollIntoView({ behavior: "smooth" });
 
@@ -119,7 +125,7 @@ function ChatContent() {
         }
         setMessage("");
         dispatch(actions.doCreate({ message, receiver: record.receiver.id }));
-        setEmojiVisible(false)
+        setEmojiVisible(false);
     };
 
     if (!record) {
@@ -141,29 +147,9 @@ function ChatContent() {
     }
 
     const addEmoji = e => {
-        setMessage(message+e.native)
+        setMessage(message + e.native);
         inputMessageRef.current.focus();
-    }
-
-    const renderEmojiPicker = () => {
-        if(emojiVisible){
-            return (
-                <span>
-                    <Picker
-                        set="facebook"
-                        sheetSize={32}
-                        onSelect={addEmoji}
-                        style={{
-                            position: "absolute",
-                            bottom: "40px",
-                            right: "40px"
-                        }}
-                    />
-                </span>
-            );
-        }
-        return null
-    }
+    };
 
     return (
         <Layout style={{ position: "relative" }}>
@@ -215,36 +201,59 @@ function ChatContent() {
             </ChatStyled>
             <div className="px-3 py-2" style={{ background: "#f9f9f9" }}>
                 <div style={{ display: "flex", alignItems: "center" }}>
-                    <Button className="bg-transparent" style={{ border: "0" }}>
+                    <Button
+                        className="bg-transparent"
+                        style={{ border: "0" }}
+                        // onClick={() =>
+                        //     setToggleImagesUpload(!toggleImagesUpload)
+                        // }
+                    >
                         <Image size={20} strokeWidth={1} />
                     </Button>
                     <Button className="bg-transparent" style={{ border: "0" }}>
-                        <Anchor size={20} strokeWidth={1} />
+                        <Paperclip size={20} strokeWidth={1} />
                     </Button>
-                    <Button className="bg-transparent" style={{ border: "0" }}>
-                        <Mic size={20} strokeWidth={1} />
-                    </Button>
-                    <Input ref={inputMessageRef}
+                    <Input
+                        ref={inputMessageRef}
                         placeholder="Type a message"
                         value={message}
                         onChange={e => setMessage(e.target.value)}
                         style={{ borderRadius: "1rem" }}
                         onPressEnter={handleSendClick}
                         suffix={
-                            <Smile
-                                style={{ cursor: "pointer" }}
-                                size={20}
-                                strokeWidth={1}
-                                onClick={() => setEmojiVisible(!emojiVisible)}
-                            />
+                            <Popover
+                                content={
+                                    <Picker
+                                        set="facebook"
+                                        sheetSize={32}
+                                        onSelect={addEmoji}
+                                    />
+                                }
+                                title="Title"
+                                trigger="click"
+                                visible={emojiVisible}
+                                onVisibleChange={() =>
+                                    setEmojiVisible(!emojiVisible)
+                                }
+                            >
+                                <Smile
+                                    style={{ cursor: "pointer" }}
+                                    size={20}
+                                    strokeWidth={1}
+                                />
+                            </Popover>
                         }
                     />
-                    {renderEmojiPicker()}
 
                     <Button type="link" onClick={handleSendClick}>
                         <Send size={20} strokeWidth={1} />
                     </Button>
                 </div>
+                {toggleImagesUpload && (
+                    <div style={{ marginTop: "5px" }}>
+                        <PicturesWall />
+                    </div>
+                )}
             </div>
         </Layout>
     );

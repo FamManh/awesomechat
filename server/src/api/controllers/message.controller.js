@@ -20,6 +20,7 @@ exports.load = async (req, res, next, id) => {
 
 /**
  * Get message
+ * Lấy nhưng danh sách những tin nhắn cho receiver 
  * @public
  */
 exports.get = async (req, res) => {
@@ -40,6 +41,7 @@ exports.get = async (req, res) => {
 
 /**
  * Create new message
+ * Gửi tin nhắn cho bạn bè 
  * @public
  */
 exports.create = async (req, res, next) => {
@@ -56,26 +58,6 @@ exports.create = async (req, res, next) => {
     res.json({...savedMessage.transform()});
   } catch (error) {
     next(error);
-  }
-};
-
-/**
- * Replace existing message
- * @public
- */
-exports.replace = async (req, res, next) => {
-  try {
-    const { message } = req.locals;
-    const newMessage = new Message(req.body);
-    const ommitRole = message.role !== "admin" ? "role" : "";
-    const newMessageObject = omit(newMessage.toObject(), "_id", ommitRole);
-
-    await message.updateOne(newMessageObject, { override: true, upsert: true });
-    const savedMessage = await Message.findById(message._id);
-
-    res.json({ ...savedMessage.transform()});
-  } catch (error) {
-    next(Message.checkDuplicateEmail(error));
   }
 };
 
@@ -119,12 +101,13 @@ exports.update = async (req, res, next) => {
 
 /**
  * Get message list
+ * Lấy danh sách những tin nhắn gần nhất
  * @public
  */
 exports.list = async (req, res, next) => {
   try {
     let sender = req.user._id;
-
+    // L
     let messages = await Message.list({userId:sender})
     res.json(messages.reverse());
   } catch (error) {

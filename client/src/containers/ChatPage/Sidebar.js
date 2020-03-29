@@ -143,14 +143,20 @@ function ChatSidebar() {
 
     const menu = (
         <Menu style={{ width: "150px" }}>
-            <Menu.Item key="0">
-                <Link to={`/user/${getUserInfo().id}/update`}>Update info</Link>
-            </Menu.Item>
-            <Menu.Item key="1">
-                <Link to={`/user/${getUserInfo().id}/update-password`}>
-                    Change password
-                </Link>
-            </Menu.Item>
+            {currentUser && (
+                <>
+                    <Menu.Item key="0">
+                        <Link to={`/user/${currentUser.id}/update`}>
+                            Update info
+                        </Link>
+                    </Menu.Item>
+                    <Menu.Item key="1">
+                        <Link to={`/user/${currentUser.id}/update-password`}>
+                            Change password
+                        </Link>
+                    </Menu.Item>
+                </>
+            )}
             <Menu.Item key="2">
                 <a>Settings</a>
             </Menu.Item>
