@@ -43,7 +43,6 @@ const getAvatar = (record, size = 40) => {
 };
 
 const MessageList = () => {
-    const [selectedIndex, setSelectedIndex] = useState(0);
     const {userId} = useParams();
     const messages = useSelector(selectors.selectMessages);
     const currentUser = useSelector(userSelectors.selectCurrentUser);
@@ -67,7 +66,7 @@ const MessageList = () => {
                                 borderRadius: "0.8rem"
                             }}
                             className={`${
-                                selectedIndex === index ? "" : "border-0"
+                                user._id === userId ? "" : "border-0"
                             } border-0 px-4 py-3`}
                         >
                             <List.Item.Meta
@@ -80,12 +79,7 @@ const MessageList = () => {
                                         }}
                                     >
                                         <span
-                                            className={`${
-                                                selectedIndex === index
-                                                    ? "ant-menu-item-selected"
-                                                    : ""
-                                            } `}
-                                            style={{fontSize: "14px"}}
+                                            style={{ fontSize: "14px" }}
                                         >
                                             {user.firstname +
                                                 " " +
