@@ -9,10 +9,12 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
     const currentUser = useSelector(userSelectors.selectCurrentUser);
     const dispatch = useDispatch();
 
+    if (!currentUser) {
+        dispatch(userActions.getCurrent());
+    }
+    
     useEffect(() => {
-        if (!currentUser) {
-            dispatch(userActions.getCurrent());
-        }
+        
         configSocket();
     });
     return (

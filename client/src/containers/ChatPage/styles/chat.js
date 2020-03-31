@@ -28,7 +28,7 @@ const Chat = styled.div`
         padding: 0.625rem 1rem;
         //background-color: white;
         border-radius: 1rem;
-        min-width: 100px;
+        max-width: 80%;
     }
 
     .body-sent {
@@ -37,12 +37,29 @@ const Chat = styled.div`
         color: white;
         float: right;
         order: 1;
+        text-align: right;
     }
 
+    .body-sent-no-backdround {
+        position: relative;
+        color: white;
+        float: right;
+        order: 1;
+        text-align: right;
+    }
     .body-received {
         background-color: #f1f0f0;
     }
-
+    .photo {
+        width: 250px;
+        height: 250px;
+        display: inline-block;
+        margin: 0px 3px;
+        border-radius: 10px;
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
     .date {
         display: block;
         font-size: 11px;

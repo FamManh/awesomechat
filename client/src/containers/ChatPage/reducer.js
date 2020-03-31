@@ -8,7 +8,12 @@ const initialState = {
     findLoading: false,
     error: null,
     record: null,
-    messages: []
+    messages: [],
+    inputMesage: {
+        images: [],
+        text: "",
+        files: []
+    }
 };
 
 const getReceiverId = (currentUserId, message) => {
@@ -18,10 +23,20 @@ const getReceiverId = (currentUserId, message) => {
     return message.sender._id;
 };
 
+const getLastMessage = message => {
+    return message.type === "text" ? message.message : message.type === "images" ? "Image(s)" : "";
+};
+
 const messageReducer = (state = initialState, { type, payload }) =>
     produce(state, draft => {
         let currentUser, message;
         switch (type) {
+            case constants.INPUT_MESSAGE_CHANGE:
+                draft.inputMesage.text = payload;
+                break;
+            case constants.INPUT_IMAGE_LIST_CHANGE:
+                draft.inputMesage.images = payload;
+                break;
             case constants.CHAT_CREATE_START:
                 draft.saveLoading = true;
                 draft.error = null;
@@ -31,7 +46,7 @@ const messageReducer = (state = initialState, { type, payload }) =>
                 draft.error = null;
 
                 currentUser = payload.currentUser;
-                message = payload.message
+                message = payload.message;
                 // Nếu tin nhắn đang mở thì thêm vào tin nhắn
                 if (
                     state.record &&
@@ -49,13 +64,15 @@ const messageReducer = (state = initialState, { type, payload }) =>
 
                 if (sentMessageIndex === 0) {
                     // Nếu tin nhắn hiện tại đã nằm đầu danh sách thì thay đổi tin nhắn cuối cùng
-                    draft.messages[0].lastMessage = message.message;
+                    draft.messages[0].message = message.message;
+                    draft.messages[0].type = message.type;
                 } else if (sentMessageIndex === -1) {
                     // Nếu không có tin nhắn hiện tại trong danh sách thì thêm vào đầu
                     draft.messages.unshift({
                         sender: message.sender,
                         receiver: message.receiver,
-                        lastMessage: message.message
+                        message: message.message,
+                        type: message.type
                     });
                 } else {
                     // Nếu tin nhắn hiện tại trong danh sách thì đưa lên đầu
@@ -65,7 +82,8 @@ const messageReducer = (state = initialState, { type, payload }) =>
                     );
                     draft.messages.unshift({
                         ...removedMessge,
-                        lastMessage: message.message
+                        message: message.message,
+                        type: message.type
                     });
                 }
                 break;
@@ -121,23 +139,26 @@ const messageReducer = (state = initialState, { type, payload }) =>
 
                 if (receivedMessageIndex === 0) {
                     // Nếu tin nhắn hiện tại đã nằm đầu danh sách thì thay đổi tin nhắn cuối cùng
-                    draft.messages[0].lastMessage = message.message;
+                    draft.messages[0].message = message.message;
+                    draft.messages[0].type = message.type;
                 } else if (receivedMessageIndex === -1) {
                     // Nếu không có tin nhắn hiện tại trong danh sách thì thêm vào đầu
                     draft.messages.unshift({
                         sender: message.sender,
                         receiver: message.receiver,
-                        lastMessage: message.message
+                        message: message.message,
+                        type: message.type
                     });
                 } else {
-                    // Nếu tin nhắn hiện tại trong danh sách thì đưa lên đầu 
+                    // Nếu tin nhắn hiện tại trong danh sách thì đưa lên đầu
                     let [removedMessge] = draft.messages.splice(
                         receivedMessageIndex,
                         1
                     );
                     draft.messages.unshift({
                         ...removedMessge,
-                        lastMessage: message.message
+                        message: message.message,
+                        type: message.type
                     });
                 }
                 break;

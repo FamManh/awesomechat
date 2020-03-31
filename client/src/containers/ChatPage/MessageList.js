@@ -78,16 +78,25 @@ const MessageList = () => {
                                             width: "100%"
                                         }}
                                     >
-                                        <span
-                                            style={{ fontSize: "14px" }}
-                                        >
+                                        <span style={{ fontSize: "14px" }}>
                                             {user.firstname +
                                                 " " +
                                                 user.lastname}
                                         </span>
                                     </small>
                                 }
-                                description={<span>{item.lastMessage}</span>}
+                                description={
+                                    <p
+                                        style={{
+                                            whiteSpace: "nowrap",
+                                            overflow: "hidden",
+                                            width: "200px",
+                                            textOverflow: "ellipsis"
+                                        }}
+                                    >
+                                        {item.type === "text" ? item.message : item.type === "image" ? "Photo(s)" : null}
+                                    </p>
+                                }
                             />
                         </List.Item>
                     </Link>

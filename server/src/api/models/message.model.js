@@ -8,6 +8,9 @@ const APIError = require("../utils/APIError");
  * Message Schema
  * @private
  */
+
+const messageTypes = ["text", "image"]
+
 const messageSchema = new mongoose.Schema(
   {
     sender: {
@@ -18,11 +21,17 @@ const messageSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "User"
     },
+    type: {
+      type: String,
+      enum: messageTypes,
+      default: "text"
+    },
     message: {
       type: String,
       maxlength: 1000,
       min: 1
     },
+    images: [String],
     conversationId: String
   },
   {
@@ -36,7 +45,15 @@ const messageSchema = new mongoose.Schema(
 messageSchema.method({
   transform() {
     const transformed = {};
-    const fields = ["id", "sender", "receiver", "createdAt", "message"];
+    const fields = [
+      "id",
+      "sender",
+      "receiver",
+      "createdAt",
+      "message",
+      "images",
+      "type"
+    ];
 
     fields.forEach(field => {
       transformed[field] = this[field];
@@ -88,7 +105,9 @@ messageSchema.statics = {
       {
         $group: {
           _id: "$conversationId",
-          lastMessage: { $first: "$message" },
+          message: { $first: "$message" },
+          type: { $first: "$type" },
+          lastImages: { $first: "$message" },
           sender: { $first: "$sender" },
           receiver: { $first: "$receiver" },
           createdAt: { $first: "$createdAt" }
@@ -115,7 +134,8 @@ messageSchema.statics = {
       {
         $project: {
           _id: 0,
-          lastMessage: 1,
+          message: 1,
+          type: 1,
           "sender._id": 1,
           "sender.firstname": 1,
           "sender.lastname": 1,

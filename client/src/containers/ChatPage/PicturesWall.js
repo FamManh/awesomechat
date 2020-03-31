@@ -1,5 +1,6 @@
 import React from 'react'
 import { Upload, Modal, Icon, Avatar } from "antd";
+import ImageUploadList from './ImageUploadList';
 
 function getBase64(file) {
     return new Promise((resolve, reject) => {
@@ -30,7 +31,9 @@ class PicturesWall extends React.Component {
         });
     };
 
-    handleChange = ({ fileList }) => this.setState({ fileList });
+    handleChange = ({ fileList, file }) => {
+        this.setState({ fileList });
+    };
     
     render() {
         const { previewVisible, previewImage, fileList } = this.state;
@@ -42,11 +45,12 @@ class PicturesWall extends React.Component {
         );
         return (
             <div className="clearfix">
-                <Upload openFileDialogOnClick
+                <Upload
+                    // openFileDialogOnClick
                     action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                     listType="picture-card"
                     fileList={fileList}
-                    onPreview={this.handlePreview}
+                    // onPreview={this.handlePreview}
                     // previewFile={this.previewFile}
 
                     onChange={this.handleChange}
@@ -54,17 +58,7 @@ class PicturesWall extends React.Component {
                 >
                     {fileList.length >= 8 ? null : uploadButton}
                 </Upload>
-                {fileList.map(item => {
-                    if (item.response && item.response.url)
-                        return (
-                            <Avatar
-                                shape="square"
-                                size={64}
-                                src={item.thumbUrl}
-                            />
-                        );
-                    return null;
-                })}
+                <ImageUploadList fileList={fileList} />
                 <Modal
                     visible={previewVisible}
                     footer={null}

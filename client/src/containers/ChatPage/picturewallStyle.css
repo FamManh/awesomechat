@@ -1,10 +1,9 @@
 .ant-upload-select-picture-card i {
-  color: rgb(185, 4, 4);
+  color: #999;
   font-size: 32px;
 }
 
 .ant-upload-select-picture-card .ant-upload-text {
   margin-top: 8px;
-  color: rgb(204, 0, 0) !important;
-  background-color: red !important;
+  color: #666;
 }

@@ -3,6 +3,21 @@ const { omit } = require("lodash");
 const Message = require("../models/message.model");
 const User = require("../models/user.model");
 const APIError = require("../utils/APIError");
+const multer = require("multer");
+const uuidv4 = require("uuid/v4");
+const {staticUrl} = require('../../config/vars')
+const sharp = require('sharp')
+const path = require('path')
+const fs = require('fs')
+const storagePhoto = require('../utils/storagePhoto')
+
+
+const getPhotoPath = (images, basePath)=>{
+  if(!images || !images.length < 0) return null;
+  const tempImages = [];
+  images.forEach(item => tempImages.push(basePath + item));
+  return tempImages;
+}
 
 /**
  * Load message and append to req.
@@ -31,6 +46,8 @@ exports.get = async (req, res) => {
     const messages = await Message.get({ senderId, receiverId });
     messages.forEach(message=>{
         let tempMessage = {...message.transform()};
+        tempMessage.images = getPhotoPath(message.images, staticUrl);
+        
         responsceList.push(tempMessage);
     })
     res.json({
@@ -54,6 +71,7 @@ exports.create = async (req, res, next) => {
       .populate("receiver", "id picture lastname firstname")
       .populate("sender", "id picture lastname firstname")
       .execPopulate();
+    savedMessage.images = getPhotoPath(savedMessage.images, staticUrl);
     res.status(httpStatus.CREATED);
     res.json({...savedMessage.transform()});
   } catch (error) {
@@ -152,3 +170,39 @@ exports.remove = async (req, res, next) => {
     next(error);
   }
 };
+
+let photosUploadFile = multer(storagePhoto).single("photos");
+
+exports.addPhotos = (req, res, next) => {
+  photosUploadFile(req, res, async err=>{
+    try {
+      if (!req.file) {
+        throw new APIError({
+          message: "Please select a file.",
+          status: httpStatus.BAD_REQUEST
+        });
+      }
+      let outputFile = req.file.path + "_b.jpg";
+
+      await sharp(req.file.path)
+        .jpeg({ quality: 80 })
+        .toFile(outputFile);
+      
+      // delete old file
+      fs.unlinkSync(req.file.path);
+      
+      let temp = {
+        uid: uuidv4(),
+        name: req.file.filename,
+        path: `/images/message/${req.file.filename}_b.jpg`,
+        status: "done",
+        response: { status: "success" },
+        linkProps: { download: "image" },
+        thumbUrl: `${staticUrl}/images/message/${req.file.filename}_b.jpg`
+      };
+      return res.json(temp);
+    } catch (error) {
+      next(error);
+    }
+  })
+}
