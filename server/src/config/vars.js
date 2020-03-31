@@ -26,5 +26,9 @@ module.exports = {
   },
   avatarDirectory: process.env.AVATAR_DIRECTORY,
   avatarTypes: ["image/png", "image/jpg", "image/jpeg"],
-  avatarLimitSize: 2097152 // 1mb
+  avatarLimitSize: 2097152, // 1mb
+  photoDirectory: process.env.PHOTOS_DIRECTORY,
+  photoTypes: ["image/png", "image/jpg", "image/jpeg"],
+  
+  staticUrl: process.env.STATIC_URL
 };

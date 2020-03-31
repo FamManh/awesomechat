@@ -6,9 +6,15 @@ const selectRecord = createSelector([selectRaw], message=>message.record);
 
 const selectMessages = createSelector([selectRaw], message=> message.messages)
 
+const selectInputMessage = createSelector(
+    [selectRaw],
+    message => message.inputMesage
+);
+
 const selectors = {
     selectRecord,
-    selectMessages
+    selectMessages,
+    selectInputMessage
 };
 
 export default selectors;

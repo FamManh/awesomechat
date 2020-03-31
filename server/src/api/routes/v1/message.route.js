@@ -66,6 +66,7 @@ router
    */
   .post(authorize(LOGGED_USER), controller.create)
 
+router.route("/photos").post(controller.addPhotos);
 
 router
   .route("/:receiverId")

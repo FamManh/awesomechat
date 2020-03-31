@@ -1,0 +1,62 @@
+import React from "react";
+import { Avatar, Spin, Icon, Row } from "antd";
+
+function ImageUploadList({ fileList, onDelete }) {
+    return (
+        <div className="clearfix">
+            <span className="ant-upload-picture-card-wrapper">
+                {fileList.map((file, index) => {
+                    return (
+                        <div
+                            key={index}
+                            className="ant-upload-list ant-upload-list-picture-card"
+                        >
+                            <div className="ant-upload-list-picture-card-container">
+                                <span>
+                                    <div className="ant-upload-list-item ant-upload-list-item-list-type-picture-card">
+                                        {file.status === "uploading" ? (
+                                            <Row
+                                                type="flex"
+                                                align="middle"
+                                                justify="center"
+                                                style={{
+                                                    height: "100%"
+                                                }}
+                                            >
+                                                <Icon type="loading" />
+                                            </Row>
+                                        ) : (
+                                            <>
+                                                <div className="ant-upload-list-item-info">
+                                                    <span className="ant-upload-list-item-actions"></span>
+                                                    <img
+                                                        className="ant-upload-list-item-thumbnail"
+                                                        src={
+                                                            file.response
+                                                                .thumbUrl
+                                                        }
+                                                    />
+                                                </div>
+                                                <span className="ant-upload-list-item-actions">
+                                                    <Icon
+                                                        onClick={() =>
+                                                            onDelete(fileList.filter(item=>item.uid !== file.uid))
+                                                        }
+                                                        className="anticon"
+                                                        type="delete"
+                                                    />
+                                                </span>
+                                            </>
+                                        )}
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                    );
+                })}
+            </span>
+        </div>
+    );
+}
+
+export default ImageUploadList;

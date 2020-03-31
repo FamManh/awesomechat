@@ -32,7 +32,9 @@ import selectors from "./selectors";
 import actions from "./actions";
 import userSelectors from "../UserPage/selectors";
 import PicturesWall from "./PicturesWall";
-
+import ImageUploadList from "./ImageUploadList";
+import constants from "./constants";
+import Carousel from "react-images";
 const { Header } = Layout;
 const { TextArea } = Input;
 
@@ -68,10 +70,10 @@ function ChatContent() {
     const dispatch = useDispatch();
     const record = useSelector(selectors.selectRecord);
     const currentUser = useSelector(userSelectors.selectCurrentUser);
-    const [message, setMessage] = useState("");
+    const inputMessage = useSelector(selectors.selectInputMessage);
     const [emojiVisible, setEmojiVisible] = useState(false);
     const [toggleImagesUpload, setToggleImagesUpload] = useState(false);
-    const [openFileDialogOnClick, setOpenFileDialogOnClick] = useState(false);
+
     const scrollToBottom = () =>
         scrollRef.current.scrollIntoView({ behavior: "smooth" });
 
@@ -82,50 +84,86 @@ function ChatContent() {
                 lastReceiverId = messages[index - 1];
             }
             return (
-                <div
-                    key={index}
-                    style={{ display: "flex", justifyContent: "flex-start" }}
-                >
-                    {lastReceiverId !== chat.receiver._id ? (
-                        <div style={{ margin: "10px 0 0 0" }}></div>
-                    ) : null}
-                    <div style={{ width: 30 }}>
-                        {chat.sender._id !== currentUser.id &&
-                            getAvatar(record.receiver, 30)}
-                    </div>
+                <>
                     <div
                         key={index}
-                        className={`conversation
+                        style={{
+                            display: "flex",
+                            justifyContent: "flex-start"
+                        }}
+                    >
+                        {lastReceiverId !== chat.receiver._id ? (
+                            <div style={{ margin: "10px 0 0 0" }}></div>
+                        ) : null}
+                        <div style={{ width: 30 }}>
+                            {chat.sender._id !== currentUser.id &&
+                                getAvatar(record.receiver, 30)}
+                        </div>
+                        <div
+                            key={index}
+                            className={`conversation
                        						 ${
                                                  chat.sender._id ===
                                                  currentUser.id
                                                      ? "conversation-sent"
                                                      : "conversation-received"
                                              }`}
-                    >
-                        {chat.sender._id === currentUser.id ? (
-                            <div className={`body body-sent`}>
-                                <p color="inherit">{chat.message}</p>
-                            </div>
-                        ) : (
-                            <div className={`body body-received text-body`}>
-                                <p color="inherit">{chat.message}</p>
-                            </div>
-                        )}
+                        >
+                            {chat.sender._id === currentUser.id ? (
+                                <>
+                                    {chat.type === "text" ? (
+                                        <div className={`body body-sent`}>
+                                            <p color="inherit">
+                                                {chat.message}
+                                            </p>
+                                        </div>
+                                    ) : chat.type === "image" &&
+                                      chat.images.length > 0 ? (
+                                        <div
+                                            className={`body-sent-no-backdround`}
+                                            style={{ maxWidth: "80%" }}
+                                        >
+                                            {chat.images.map(image => (
+                                                <div
+                                                    style={{
+                                                        backgroundImage: `url(${image})`
+                                                    }}
+                                                    className="photo"
+                                                ></div>
+                                            ))}
+                                        </div>
+                                    ) : null}
+                                </>
+                            ) : (
+                                <>
+                                    {chat.type === "text" ? (
+                                        <div
+                                            className={`body body-received text-body`}
+                                        >
+                                            <p color="inherit">
+                                                {chat.message}
+                                            </p>
+                                        </div>
+                                    ) : chat.type === "image" &&
+                                      chat.images.length > 0 ? (
+                                        <div style={{ maxWidth: "80%" }}>
+                                            {chat.images.map(image => (
+                                                <div
+                                                    style={{
+                                                        backgroundImage: `url(${image})`
+                                                    }}
+                                                    className="photo"
+                                                ></div>
+                                            ))}
+                                        </div>
+                                    ) : null}
+                                </>
+                            )}
+                        </div>
                     </div>
-                </div>
+                </>
             );
         });
-    };
-
-    const handleSendClick = () => {
-        if (message.trim() === "") {
-            setMessage("");
-            return;
-        }
-        setMessage("");
-        dispatch(actions.doCreate({ message, receiver: record.receiver.id }));
-        setEmojiVisible(false);
     };
 
     if (!record) {
@@ -146,9 +184,53 @@ function ChatContent() {
         );
     }
 
+    const onInputMessageChange = message => {
+        dispatch({
+            type: constants.INPUT_MESSAGE_CHANGE,
+            payload: message
+        });
+    };
+
+    const onInputImageListChange = ({ fileList }) => {
+        dispatch({
+            type: constants.INPUT_IMAGE_LIST_CHANGE,
+            payload: [...fileList]
+        });
+    };
+
     const addEmoji = e => {
-        setMessage(message + e.native);
+        onInputMessageChange(inputMessage.text + e.native);
         inputMessageRef.current.focus();
+    };
+
+    const handleSendClick = () => {
+        if (
+            inputMessage.text.trim() !== "" &&
+            inputMessage.images.length === 0
+        ) {
+            dispatch(
+                actions.doCreate({
+                    message: inputMessage.text,
+                    receiver: record.receiver.id
+                })
+            );
+            onInputMessageChange("");
+        }
+        if (inputMessage.images.length > 0) {
+            let images = [];
+            inputMessage.images.forEach(item => {
+                images.push(item.response.path);
+            });
+
+            dispatch(
+                actions.doCreate({
+                    images,
+                    type: "image",
+                    receiver: record.receiver.id
+                })
+            );
+            onInputImageListChange({ fileList: [] });
+        }
     };
 
     return (
@@ -200,24 +282,48 @@ function ChatContent() {
                 <>{record && renderMessage(record.messages)}</>
             </ChatStyled>
             <div className="px-3 py-2" style={{ background: "#f9f9f9" }}>
+                <ImageUploadList
+                    fileList={inputMessage.images}
+                    onDelete={fileList => onInputImageListChange({ fileList })}
+                />
                 <div style={{ display: "flex", alignItems: "center" }}>
+                    <Upload
+                        name="photos"
+                        multiple={true}
+                        fileList={inputMessage.images}
+                        action={`${process.env.REACT_APP_API_URI}/message/photos`}
+                        // listType="picture-card"
+                        showUploadList={false}
+                        onChange={files => {
+                            onInputImageListChange(files);
+                        }}
+                    >
+                        <Button
+                            className="bg-transparent"
+                            style={{ border: "0" }}
+                            // onClick={() =>
+                            //     setToggleImagesUpload(!toggleImagesUpload)
+                            // }
+                        >
+                            <Image size={20} strokeWidth={1} />
+                        </Button>
+                    </Upload>
                     <Button
                         className="bg-transparent"
                         style={{ border: "0" }}
-                        // onClick={() =>
-                        //     setToggleImagesUpload(!toggleImagesUpload)
-                        // }
+                        onClick={() =>
+                            setToggleImagesUpload(!toggleImagesUpload)
+                        }
                     >
-                        <Image size={20} strokeWidth={1} />
-                    </Button>
-                    <Button className="bg-transparent" style={{ border: "0" }}>
                         <Paperclip size={20} strokeWidth={1} />
                     </Button>
                     <Input
                         ref={inputMessageRef}
                         placeholder="Type a message"
-                        value={message}
-                        onChange={e => setMessage(e.target.value)}
+                        value={inputMessage.text}
+                        onChange={e => {
+                            onInputMessageChange(e.target.value);
+                        }}
                         style={{ borderRadius: "1rem" }}
                         onPressEnter={handleSendClick}
                         suffix={
