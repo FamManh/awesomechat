@@ -1,19 +1,4 @@
-const express = require('express');
-const validate = require('express-validation');
-const controller = require('../../controllers/contact.controller');
-const { authorize, ADMIN, LOGGED_USER } = require('../../middlewares/auth');
-const {
-  createContact,
-  deleteContact,
-  updateContact
-} = require('../../validations/contact.validation');
-
-const router = express.Router();
-
-/**
- * Load contact when API with contactId route parameter is hit
- */
-router.param('contactId', controller.load);
+const express = require('express'); const validate = require('express-validation'); const controller = require('../../controllers/contact.controller'); const { authorize, ADMIN, LOGGED_USER } = require('../../middlewares/auth'); const { createContact, deleteContact, updateContact } = require('../../validations/contact.validation'); const router = express.Router(); /** * Load contact when API with contactId route parameter is hit */ router.param('contactId', controller.load);
 
 
 router

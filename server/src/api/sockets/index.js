@@ -2,6 +2,7 @@ const socketioJwt = require("socketio-jwt");
 const { jwtSecret } = require("../../config/vars");
 const addNewContact = require("./contact/addNewContact");
 const sentMessage = require("./chat/sentMessage");
+const createGroup = require("./chat/createGroup");
 const getUserInfo = require("./getUserInfo");
 const {
   pushSocketIdToArray,
@@ -30,6 +31,7 @@ let initSockets = io => {
     });
 
     socket.on("sent-message", data => sentMessage(io, data, clients, user));
+    socket.on("create-group", (data) => createGroup(io, data, clients, user));
     socket.on("add-new-contact", data => addNewContact(io, data, clients, user));
   });
 };

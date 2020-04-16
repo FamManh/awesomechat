@@ -9,7 +9,8 @@ import {
     Row,
     Button,
     Dropdown,
-    Divider
+    Divider,
+    Tooltip
 } from "antd";
 import {
     CheckCircle,
@@ -34,6 +35,7 @@ import UserList from "../UserPage/list/List";
 import { isAuthenticated } from "../shared/routes/permissionChecker";
 import { useSelector } from "react-redux";
 import userSelectors from '../UserPage/selectors'
+import ModalCreateGroupchat from "./ModalCreateGroupchat";
 
 const { Sider, Header } = Layout;
 const { Search } = Input;
@@ -69,7 +71,9 @@ const getAvatar = (record, size = 40) => {
 function ChatSidebar() {
 
     const [currentTab, setCurrentTab] = useState("message");
+    const [modalCreateGroupChatVisible, setModalCreateGroupChatVisible] = useState(false)
     const currentUser = useSelector(userSelectors.selectCurrentUser);
+
     const messageFooter = (
         <div className="py-3 px-3" style={{ backgroundColor: "#fff" }}>
             <Search placeholder="Search contact" />
@@ -144,18 +148,21 @@ function ChatSidebar() {
     const menu = (
         <Menu style={{ width: "150px" }}>
             {currentUser && (
-                <>
+            
                     <Menu.Item key="0">
                         <Link to={`/user/${currentUser.id}/update`}>
                             Update info
                         </Link>
                     </Menu.Item>
+                
+            )}
+            {currentUser && (
                     <Menu.Item key="1">
                         <Link to={`/user/${currentUser.id}/update-password`}>
                             Change password
                         </Link>
                     </Menu.Item>
-                </>
+                
             )}
             <Menu.Item key="2">
                 <a>Settings</a>
@@ -178,7 +185,7 @@ function ChatSidebar() {
                     "0 2px 2px rgba(0, 0, 0, 0.02), 0 1px 0 rgba(0, 0, 0, 0.02)",
                 height: "auto",
                 lineHeight: "auto",
-                backgroundColor: "#fff"
+                backgroundColor: "#fff",
             }}
         >
             <Row type="flex" align="middle">
@@ -196,20 +203,40 @@ function ChatSidebar() {
             </Row>
             <span className="mr-auto" />
             <div>
-                <Dropdown overlay={menu} trigger={["click"]}>
+                <Tooltip title="Settings">
+                    <Dropdown overlay={menu} trigger={["click"]}>
+                        <Button
+                            className="ant-dropdown-link"
+                            style={{ border: "0" }}
+                            shape="circle"
+                            icon="setting"
+                        ></Button>
+                    </Dropdown>
+                </Tooltip>
+                <Tooltip title="Create new group chat">
                     <Button
-                        className="ant-dropdown-link"
+                        icon="edit"
+                        shape="circle"
                         style={{ border: "0" }}
-                    >
-                        <MoreHorizontal size={20} strokeWidth={1} />
-                    </Button>
-                </Dropdown>
+                        onClick={() =>
+                            setModalCreateGroupChatVisible(
+                                !modalCreateGroupChatVisible
+                            )
+                        }
+                    ></Button>
+                </Tooltip>
             </div>
         </Header>
     );
 
     return (
-        <Sider width={300}>
+        <Sider width={350}>
+            <ModalCreateGroupchat
+                visible={modalCreateGroupChatVisible}
+                doToggle={() =>
+                    setModalCreateGroupChatVisible(!modalCreateGroupChatVisible)
+                }
+            />
             <div
                 style={{
                     display: "flex",
@@ -217,7 +244,7 @@ function ChatSidebar() {
                     flexDirection: "column",
                     backgroundColor: "#fff",
                     height: "100%",
-                    borderRight: "1px solid rgba(0, 0, 0, 0.05)"
+                    borderRight: "1px solid rgba(0, 0, 0, 0.05)",
                 }}
             >
                 {userInfo}

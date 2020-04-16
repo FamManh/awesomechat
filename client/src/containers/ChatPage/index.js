@@ -5,9 +5,12 @@ import Sidebar from "./Sidebar";
 import Content from "./Content";
 import actions from './actions'
 import userActions from '../UserPage/actions'
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import RightSideBar from "./RightSidebar";
+import selectors from "./selectors";
 export default function ChatPage() {
+    const rightSidebarVisible = useSelector(selectors.selectRightSidebarVisible)
     const dispatch = useDispatch();
     let {userId} = useParams();
     useEffect(() => {
@@ -23,6 +26,7 @@ export default function ChatPage() {
             <Layout className="fill-workspace rounded shadow-sm overflow-hidden">
                 <Sidebar />
                 <Content />
+                {rightSidebarVisible && <RightSideBar />}
             </Layout>
         </Layout>
     );

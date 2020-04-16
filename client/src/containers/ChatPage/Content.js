@@ -12,7 +12,7 @@ import {
     Result,
     Icon,
     Popover,
-    Upload
+    Upload,
 } from "antd";
 import ChatStyled from "./styles/chat";
 import format from "date-fns/format";
@@ -25,7 +25,7 @@ import {
     Video,
     Info,
     Smile,
-    Paperclip
+    Paperclip,
 } from "react-feather";
 import { useSelector, useDispatch } from "react-redux";
 import selectors from "./selectors";
@@ -50,22 +50,27 @@ const getAvatar = (record, size = 40) => {
             />
         );
     }
-    return (
-        <Avatar
-            size={size}
-            style={{
-                color: "#f56a00",
-                backgroundColor: "#fde3cf"
-            }}
-        >
-            {record.firstname[0].toUpperCase() +
-                record.lastname[0].toUpperCase()}
-        </Avatar>
-    );
+
+    if (record.firstname && record.lastname) {
+        return (
+            <Avatar
+                size={size}
+                style={{
+                    color: "#f56a00",
+                    backgroundColor: "#fde3cf",
+                }}
+            >
+                {record.firstname[0].toUpperCase() +
+                    record.lastname[0].toUpperCase()}
+            </Avatar>
+        );
+    }
+
+    return <Avatar size={size} icon="team" />;
 };
 
 function ChatContent() {
-    const scrollRef = useRef(null);
+    const scrollRef = useRef();
     const inputMessageRef = useRef();
     const dispatch = useDispatch();
     const record = useSelector(selectors.selectRecord);
@@ -74,94 +79,166 @@ function ChatContent() {
     const [emojiVisible, setEmojiVisible] = useState(false);
     const [toggleImagesUpload, setToggleImagesUpload] = useState(false);
 
-    const scrollToBottom = () =>
-        scrollRef.current.scrollIntoView({ behavior: "smooth" });
+    const scrollToBottom = () =>{
+        if(scrollRef.current) 
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+        ;
+    useEffect(() => {
+        scrollToBottom();
+        return () => {
+            // scrollToBottom();
+        };
+    }, [record]);
 
-    const renderMessage = messages => {
+    const onInputMessageChange = (message) => {
+        dispatch({
+            type: constants.INPUT_MESSAGE_CHANGE,
+            payload: message,
+        });
+    };
+
+    const onInputImageListChange = ({ fileList }) => {
+        dispatch({
+            type: constants.INPUT_IMAGE_LIST_CHANGE,
+            payload: [...fileList],
+        });
+    };
+
+    const addEmoji = (e) => {
+        onInputMessageChange(inputMessage.text + e.native);
+        inputMessageRef.current.focus();
+    };
+
+    const handleSendClick = () => {
+        if (
+            inputMessage.text.trim() !== "" &&
+            inputMessage.images.length === 0
+        ) {
+            dispatch(
+                actions.doCreate({
+                    message: inputMessage.text,
+                    receiver: record.receiver.id,
+                    conversationType: record.conversationType,
+                })
+            );
+            onInputMessageChange("");
+        }
+        if (inputMessage.images.length > 0) {
+            let images = [];
+            inputMessage.images.forEach((item) => {
+                images.push(item.response.path);
+            });
+
+            dispatch(
+                actions.doCreate({
+                    images,
+                    type: "image",
+                    receiver: record.receiver.id,
+                    conversationType: record.conversationType,
+                })
+            );
+            onInputImageListChange({ fileList: [] });
+        }
+    };
+
+
+    const renderMessage = (messages) => {
         let lastReceiverId = "";
         return messages.map((chat, index) => {
             if (index > 0) {
                 lastReceiverId = messages[index - 1];
             }
             return (
-                <>
+                <div
+                    key={index}
+                    style={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                    }}
+                >
+                    {lastReceiverId !== chat.receiver._id ? (
+                        <div style={{ margin: "10px 0 0 0" }}></div>
+                    ) : null}
+                    <div style={{ width: 30 }}>
+                        {chat.sender._id !== currentUser.id &&
+                            getAvatar(
+                                record.conversationType === "ChatGroup"
+                                    ? chat.sender
+                                    : record.receiver,
+                                30
+                            )}
+                    </div>
                     <div
                         key={index}
-                        style={{
-                            display: "flex",
-                            justifyContent: "flex-start"
-                        }}
-                    >
-                        {lastReceiverId !== chat.receiver._id ? (
-                            <div style={{ margin: "10px 0 0 0" }}></div>
-                        ) : null}
-                        <div style={{ width: 30 }}>
-                            {chat.sender._id !== currentUser.id &&
-                                getAvatar(record.receiver, 30)}
-                        </div>
-                        <div
-                            key={index}
-                            className={`conversation
+                        className={`conversation
                        						 ${
                                                  chat.sender._id ===
                                                  currentUser.id
                                                      ? "conversation-sent"
                                                      : "conversation-received"
                                              }`}
-                        >
-                            {chat.sender._id === currentUser.id ? (
-                                <>
-                                    {chat.type === "text" ? (
-                                        <div className={`body body-sent`}>
-                                            <p color="inherit">
-                                                {chat.message}
-                                            </p>
-                                        </div>
-                                    ) : chat.type === "image" &&
-                                      chat.images.length > 0 ? (
-                                        <div
-                                            className={`body-sent-no-backdround`}
-                                            style={{ maxWidth: "80%" }}
+                    >
+                        {chat.sender._id === currentUser.id ? (
+                            // Nếu người gửi là user hiện tại
+                            <>
+                                {chat.type === "text" ? (
+                                    <div className={`body body-sent`}>
+                                        <p color="inherit">{chat.message}</p>
+                                    </div>
+                                ) : chat.type === "image" &&
+                                  chat.images.length > 0 ? (
+                                    <div
+                                        className={`body-sent-no-backdround`}
+                                        style={{ maxWidth: "80%" }}
+                                    >
+                                        {chat.images.map((image, key) => (
+                                            <div
+                                                key={key}
+                                                style={{
+                                                    backgroundImage: `url(${image})`,
+                                                }}
+                                                className="photo"
+                                            ></div>
+                                        ))}
+                                    </div>
+                                ) : null}
+                            </>
+                        ) : (
+                            // Nếu người gửi không phải là user hiện tại
+                            <>
+                                {chat.type === "text" ? (
+                                    <div
+                                        className={`body body-received text-body`}
+                                    >
+                                        <p
+                                            style={{
+                                                color: "#868686",
+                                                fontSize: "12px",
+                                            }}
                                         >
-                                            {chat.images.map(image => (
-                                                <div
-                                                    style={{
-                                                        backgroundImage: `url(${image})`
-                                                    }}
-                                                    className="photo"
-                                                ></div>
-                                            ))}
-                                        </div>
-                                    ) : null}
-                                </>
-                            ) : (
-                                <>
-                                    {chat.type === "text" ? (
-                                        <div
-                                            className={`body body-received text-body`}
-                                        >
-                                            <p color="inherit">
-                                                {chat.message}
-                                            </p>
-                                        </div>
-                                    ) : chat.type === "image" &&
-                                      chat.images.length > 0 ? (
-                                        <div style={{ maxWidth: "80%" }}>
-                                            {chat.images.map(image => (
-                                                <div
-                                                    style={{
-                                                        backgroundImage: `url(${image})`
-                                                    }}
-                                                    className="photo"
-                                                ></div>
-                                            ))}
-                                        </div>
-                                    ) : null}
-                                </>
-                            )}
-                        </div>
+                                            {chat.sender.firstname + " " + chat.sender.lastname}
+                                        </p>
+                                        <p color="inherit">{chat.message}</p>
+                                    </div>
+                                ) : chat.type === "image" &&
+                                  chat.images.length > 0 ? (
+                                    <div style={{ maxWidth: "80%" }}>
+                                        {chat.images.map((image, key) => (
+                                            <div
+                                                key={key}
+                                                style={{
+                                                    backgroundImage: `url(${image})`,
+                                                }}
+                                                className="photo"
+                                            ></div>
+                                        ))}
+                                    </div>
+                                ) : null}
+                            </>
+                        )}
                     </div>
-                </>
+                </div>
             );
         });
     };
@@ -184,55 +261,6 @@ function ChatContent() {
         );
     }
 
-    const onInputMessageChange = message => {
-        dispatch({
-            type: constants.INPUT_MESSAGE_CHANGE,
-            payload: message
-        });
-    };
-
-    const onInputImageListChange = ({ fileList }) => {
-        dispatch({
-            type: constants.INPUT_IMAGE_LIST_CHANGE,
-            payload: [...fileList]
-        });
-    };
-
-    const addEmoji = e => {
-        onInputMessageChange(inputMessage.text + e.native);
-        inputMessageRef.current.focus();
-    };
-
-    const handleSendClick = () => {
-        if (
-            inputMessage.text.trim() !== "" &&
-            inputMessage.images.length === 0
-        ) {
-            dispatch(
-                actions.doCreate({
-                    message: inputMessage.text,
-                    receiver: record.receiver.id
-                })
-            );
-            onInputMessageChange("");
-        }
-        if (inputMessage.images.length > 0) {
-            let images = [];
-            inputMessage.images.forEach(item => {
-                images.push(item.response.path);
-            });
-
-            dispatch(
-                actions.doCreate({
-                    images,
-                    type: "image",
-                    receiver: record.receiver.id
-                })
-            );
-            onInputImageListChange({ fileList: [] });
-        }
-    };
-
     return (
         <Layout style={{ position: "relative" }}>
             <Header
@@ -245,7 +273,7 @@ function ChatContent() {
                         "0 2px 2px rgba(0, 0, 0, 0.02), 0 1px 0 rgba(0, 0, 0, 0.02)",
                     height: "auto",
                     lineHeight: "auto",
-                    backgroundColor: "#fff"
+                    backgroundColor: "#fff",
                 }}
             >
                 <Row type="flex" align="middle">
@@ -254,7 +282,9 @@ function ChatContent() {
                     <span className="ml-3" style={{ lineHeight: "1" }}>
                         <span style={{ display: "block" }}>
                             {record
-                                ? `${record.receiver.firstname} ${record.receiver.lastname}`
+                                ? record.conversationType === "ChatGroup"
+                                    ? record.receiver.name
+                                    : `${record.receiver.firstname} ${record.receiver.lastname}`
                                 : ""}
                         </span>
                         <small className="text-muted">
@@ -264,16 +294,25 @@ function ChatContent() {
                 </Row>
                 <span className="mr-auto" />
                 <div>
+                    {record && record.conversationType === "User" && (
+                        <>
+                            <Button
+                                shape="circle"
+                                style={{ border: "0" }}
+                                onClick={() => alert("Ban da nhan vao link")}
+                            >
+                                <Phone size={20} strokeWidth={1} />
+                            </Button>
+                            <Button style={{ border: "0" }} shape="circle">
+                                <Video size={20} strokeWidth={1} />
+                            </Button>
+                        </>
+                    )}
                     <Button
                         style={{ border: "0" }}
-                        onClick={() => alert("Ban da nhan vao link")}
+                        shape="circle"
+                        onClick={() => dispatch(actions.doToggleRightSidebar())}
                     >
-                        <Phone size={20} strokeWidth={1} />
-                    </Button>
-                    <Button style={{ border: "0" }}>
-                        <Video size={20} strokeWidth={1} />
-                    </Button>
-                    <Button style={{ border: "0" }}>
                         <Info size={20} strokeWidth={1} />
                     </Button>
                 </div>
@@ -284,21 +323,24 @@ function ChatContent() {
             <div className="px-3 py-2" style={{ background: "#f9f9f9" }}>
                 <ImageUploadList
                     fileList={inputMessage.images}
-                    onDelete={fileList => onInputImageListChange({ fileList })}
+                    onDelete={(fileList) =>
+                        onInputImageListChange({ fileList })
+                    }
                 />
                 <div style={{ display: "flex", alignItems: "center" }}>
                     <Upload
+                        accept=".jpg , .png , .jpeg"
                         name="photos"
                         multiple={true}
                         fileList={inputMessage.images}
                         action={`${process.env.REACT_APP_API_URI}/message/photos`}
-                        // listType="picture-card"
                         showUploadList={false}
-                        onChange={files => {
+                        onChange={(files) => {
                             onInputImageListChange(files);
                         }}
                     >
                         <Button
+                            shape="circle"
                             className="bg-transparent"
                             style={{ border: "0" }}
                             // onClick={() =>
@@ -308,7 +350,9 @@ function ChatContent() {
                             <Image size={20} strokeWidth={1} />
                         </Button>
                     </Upload>
+                    
                     <Button
+                        shape="circle"
                         className="bg-transparent"
                         style={{ border: "0" }}
                         onClick={() =>
@@ -321,7 +365,7 @@ function ChatContent() {
                         ref={inputMessageRef}
                         placeholder="Type a message"
                         value={inputMessage.text}
-                        onChange={e => {
+                        onChange={(e) => {
                             onInputMessageChange(e.target.value);
                         }}
                         style={{ borderRadius: "1rem" }}
@@ -351,7 +395,11 @@ function ChatContent() {
                         }
                     />
 
-                    <Button type="link" onClick={handleSendClick}>
+                    <Button
+                        shape="circle"
+                        type="link"
+                        onClick={handleSendClick}
+                    >
                         <Send size={20} strokeWidth={1} />
                     </Button>
                 </div>

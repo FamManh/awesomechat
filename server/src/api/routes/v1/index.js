@@ -3,6 +3,7 @@ const userRoutes = require('./user.route');
 const authRoutes = require('./auth.route');
 const contactRoutes = require("./contact.route");
 const messageRoutes = require("./message.route");
+const chatGroupRoutes = require("./chatGroup.route");
 
 const router = express.Router();
 
@@ -20,5 +21,6 @@ router.use('/user', userRoutes);
 router.use('/auth', authRoutes);
 router.use("/contact", contactRoutes);
 router.use("/message", messageRoutes);
+router.use("/chat-group", chatGroupRoutes);
 
 module.exports = router;

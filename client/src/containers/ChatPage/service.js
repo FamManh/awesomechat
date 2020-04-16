@@ -12,12 +12,12 @@ const services = {
         return response;
     },
 
-    findFn: async id => {
+    findFn: async (id) => {
         const response = await asapi.get(`/message/${id}`);
         return response;
     },
 
-    createFn: async info => {
+    createFn: async (info) => {
         const response = await asapi.post(`/message`, info);
         return response;
     },
@@ -27,10 +27,15 @@ const services = {
         return response;
     },
 
-    destroyFn: async id => {
+    destroyFn: async (id) => {
         const response = await asapi.delete(`/message?user=${id}`);
         return response;
-    }
+    },
+
+    createGroupFn: async (info) => {
+        const response = await asapi.post(`/chat-group`, info);
+        return response;
+    },
 };
 
 export default services;

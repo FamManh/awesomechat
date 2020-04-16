@@ -18,6 +18,7 @@ import userSelectors from '../UserPage/selectors';
 
 const getAvatar = (record, size = 40) => {
     if (!record) return <Avatar size={size} icon="user" />;
+   
 
     if (record.picture) {
         return (
@@ -28,18 +29,22 @@ const getAvatar = (record, size = 40) => {
             />
         );
     }
-    return (
-        <Avatar
-            size={size}
-            style={{
-                color: "#f56a00",
-                backgroundColor: "#fde3cf"
-            }}
-        >
-            {record.firstname[0].toUpperCase() +
-                record.lastname[0].toUpperCase()}
-        </Avatar>
-    );
+
+    if(record.firstname && record.lastname){
+        return (
+            <Avatar
+                size={size}
+                style={{
+                    color: "#f56a00",
+                    backgroundColor: "#fde3cf",
+                }}
+            >
+                {record.firstname[0].toUpperCase() + record.lastname[0].toUpperCase()}
+            </Avatar>
+        );
+    }
+    
+    return <Avatar size={size} icon="team" />;
 };
 
 const MessageList = () => {
@@ -55,7 +60,15 @@ const MessageList = () => {
             itemLayout="horizontal"
             dataSource={messages}
             renderItem={(item, index) => {
-                let user = item.sender._id === currentUser.id ? item.receiver : item.sender;
+                if(!currentUser) return;
+                let user = "";
+                if(item.conversationType === "ChatGroup"){
+                    user = item.receiver
+                }else{
+                    user = item.sender._id === currentUser.id
+                        ? item.receiver
+                        : item.sender;
+                }
                 return (
                     <Link to={`/m/${user._id}`}>
                         <List.Item
@@ -63,7 +76,7 @@ const MessageList = () => {
                                 backgroundColor:
                                     user._id === userId ? "#e6f7ff" : "#fff",
                                 cursor: "pointer",
-                                borderRadius: "0.8rem"
+                                borderRadius: "0.8rem",
                             }}
                             className={`${
                                 user._id === userId ? "" : "border-0"
@@ -75,13 +88,16 @@ const MessageList = () => {
                                     <small
                                         style={{
                                             display: "flex",
-                                            width: "100%"
+                                            width: "100%",
                                         }}
                                     >
                                         <span style={{ fontSize: "14px" }}>
-                                            {user.firstname +
-                                                " " +
-                                                user.lastname}
+                                            {item.conversationType ===
+                                            "ChatGroup"
+                                                ? item.receiver.name
+                                                : user.firstname +
+                                                  " " +
+                                                  user.lastname}
                                         </span>
                                     </small>
                                 }
@@ -91,10 +107,14 @@ const MessageList = () => {
                                             whiteSpace: "nowrap",
                                             overflow: "hidden",
                                             width: "200px",
-                                            textOverflow: "ellipsis"
+                                            textOverflow: "ellipsis",
                                         }}
                                     >
-                                        {item.type === "text" ? item.message : item.type === "image" ? "Photo(s)" : null}
+                                        {item.type === "text"
+                                            ? item.message
+                                            : item.type === "image"
+                                            ? "Photo(s)"
+                                            : null}
                                     </p>
                                 }
                             />

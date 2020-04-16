@@ -11,10 +11,16 @@ const selectInputMessage = createSelector(
     message => message.inputMesage
 );
 
+const selectRightSidebarVisible = createSelector(
+    [selectRaw],
+    (message) => message.rightSidebarVisible
+);
+
 const selectors = {
     selectRecord,
     selectMessages,
-    selectInputMessage
+    selectInputMessage,
+    selectRightSidebarVisible,
 };
 
 export default selectors;

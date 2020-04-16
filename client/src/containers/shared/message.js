@@ -29,7 +29,6 @@ export default class Message {
             />
             ) : (
                 <Avatar
-                    size={48}
                     style={{
                         color: "#f56a00",
                         backgroundColor: "#fde3cf"

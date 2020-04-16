@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import actions from "../actions";
 import selectors from "../selectors";
 import Text from "antd/lib/typography/Text";
+import { Link } from "react-router-dom";
 
 const { Panel } = Collapse;
 
@@ -87,7 +88,7 @@ const ContactList = () => {
                                                 size={48}
                                                 style={{
                                                     color: "#f56a00",
-                                                    backgroundColor: "#fde3cf"
+                                                    backgroundColor: "#fde3cf",
                                                 }}
                                             >
                                                 {item.firstname[0].toUpperCase() +
@@ -101,7 +102,7 @@ const ContactList = () => {
                                         <span
                                             style={{
                                                 display: "flex",
-                                                width: "100%"
+                                                width: "100%",
                                             }}
                                         >
                                             {item.firstname +
@@ -112,8 +113,17 @@ const ContactList = () => {
                                 }
                                 description={
                                     <>
+                                        <Link to={`/m/${item.id}`}>
+                                            <Button
+                                                shape="circle"
+                                                icon="message"
+                                                style={{ border: 0 }}
+                                            ></Button>
+                                        </Link>
                                         <Button
-                                            shape="round"
+                                            shape="circle"
+                                            icon="delete"
+                                            style={{ border: 0 }}
                                             onClick={() =>
                                                 dispatch(
                                                     actions.doDestroyContact(
@@ -121,9 +131,7 @@ const ContactList = () => {
                                                     )
                                                 )
                                             }
-                                        >
-                                            Delete
-                                        </Button>
+                                        ></Button>
                                     </>
                                 }
                             />
