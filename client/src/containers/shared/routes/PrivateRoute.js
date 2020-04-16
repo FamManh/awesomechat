@@ -8,14 +8,12 @@ import { configSocket } from "../../rootSocket";
 const PrivateRoute = ({ component: Component, ...rest }) => {
     const currentUser = useSelector(userSelectors.selectCurrentUser);
     const dispatch = useDispatch();
-
-    if (!currentUser) {
-        dispatch(userActions.getCurrent());
-    }
     
     useEffect(() => {
-        
         configSocket();
+        if (!currentUser && isAuthenticated()) {
+            dispatch(userActions.getCurrent());
+        }
     });
     return (
         <Route

@@ -15,3 +15,14 @@ export const onSentMessage = payload => {
         payload: { message: payload, currentUser: currentUser }
     });
 };
+
+export const emitCreateGroup = (payload) => {
+    getSocket().emit("create-group", payload);
+};
+
+export const onCreateGroup = (payload) => {
+           getStore().dispatch({
+               type: constants.SOCKET_CREATE_GROUP,
+               payload: payload,
+           });
+       };

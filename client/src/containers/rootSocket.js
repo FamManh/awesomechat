@@ -1,37 +1,42 @@
 import io from "socket.io-client";
 import { isAuthenticated } from "./shared/routes/permissionChecker";
-import {onAddContact} from './ContactPage/socket'
-import {onSentMessage} from './ChatPage/socket'
+import { onAddContact } from "./ContactPage/socket";
+import { onSentMessage, onCreateGroup } from "./ChatPage/socket";
 
 const endpoint = process.env.REACT_APP_SOCKET_ENDPOINT;
 let socket = null;
+let socketConnected = false;
 
 const onConnected = () => {
-    console.log("socket: connected.");
+    console.log('socket: connected')
+    socketConnected = true;
+    socket.on("disconnect", onDisconnect);
+    socket.on("res-add-new-contact", onAddContact);
+    socket.on("res-sent-message", onSentMessage);
+    socket.on("res-create-group", onCreateGroup);
 };
 
 const onDisconnect = () => {
     console.log("socket: disconnect");
 };
 
-export const configSocket = () => {
-    if(socket) return;
-    socket = io.connect(endpoint, {
+export const configSocket = async () => {
+    if (!!socket && socketConnected) return;
+    socket = await io.connect(endpoint, {
         query: `token=${isAuthenticated()}`
     });
+
     socket.on("connect", onConnected);
-    socket.on("disconnect", onDisconnect);
-    socket.on("res-add-new-contact", onAddContact);
-    socket.on("res-sent-message", onSentMessage)
-    
     return socket;
-}
+};
 
 export const socketDisconnect = () => {
     socket.disconnect();
-    socket = null;
-}
+    socketConnected = false;
 
-export default function getSocket(){
+    socket = null;
+};
+
+export default function getSocket() {
     return socket;
 }

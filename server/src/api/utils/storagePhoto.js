@@ -10,7 +10,7 @@ module.exports = {
     filename: (req, file, callback) => {
       let math = photoTypes;
       if (math.indexOf(file.mimetype) === -1) {
-        return callback(transErrors.avatar_type, null);
+        return callback("Error", null);
       }
       let imageName = `${Date.now()}-${uuidv4()}`;
     //   .${file.originalname.split(".").pop()}

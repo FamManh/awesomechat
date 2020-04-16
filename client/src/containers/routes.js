@@ -29,7 +29,12 @@ const privateRoutes = [
     {
         path: "/m/:userId/",
         exact: true,
-        loader: () => import("./ChatPage/index"),
+        loader: () => import("./ChatPage/index")
+    },
+    {
+        path: "/call",
+        exact: true,
+        loader: () => import("./CallPage/index")
     }
 ];
 
