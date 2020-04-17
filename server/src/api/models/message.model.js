@@ -9,7 +9,7 @@ const APIError = require("../utils/APIError");
  * @private
  */
 
-const messageTypes = ["text", "image"];
+const messageTypes = ["text", "image", 'file'];
 const conversationTypes = ["User", "ChatGroup"];
 
 const messageSchema = new mongoose.Schema(
@@ -40,6 +40,10 @@ const messageSchema = new mongoose.Schema(
       min: 1,
     },
     images: [String],
+    files:[{
+      name: String,
+      path: String
+    }],
     conversationId: String,
   },
   {
@@ -62,6 +66,7 @@ messageSchema.method({
       "images",
       "type",
       "conversationType",
+      "files"
     ];
 
     fields.forEach((field) => {

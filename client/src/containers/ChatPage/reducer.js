@@ -14,22 +14,8 @@ const initialState = {
         text: "",
         files: [],
     },
-    rightSidebarVisible: false
-};
-
-const getReceiverId = (currentUserId, message) => {
-    if (message.sender._id === currentUserId) {
-        return message.receiver._id;
-    }
-    return message.sender._id;
-};
-
-const getLastMessage = (message) => {
-    return message.type === "text"
-        ? message.message
-        : message.type === "images"
-        ? "Image(s)"
-        : "";
+    typing: {},
+    rightSidebarVisible: false,
 };
 
 const messageReducer = (state = initialState, { type, payload }) =>
@@ -45,6 +31,9 @@ const messageReducer = (state = initialState, { type, payload }) =>
             case constants.INPUT_IMAGE_LIST_CHANGE:
                 draft.inputMesage.images = payload;
                 break;
+            case constants.INPUT_FILE_LIST_CHANGE:
+                draft.inputMesage.files = payload;
+                break;
             case constants.CHAT_CREATE_START:
                 draft.saveLoading = true;
                 draft.error = null;
@@ -52,53 +41,6 @@ const messageReducer = (state = initialState, { type, payload }) =>
             case constants.CHAT_CREATE_SUCCESS:
                 draft.saveLoading = false;
                 draft.error = null;
-
-                // currentUser = payload.currentUser;
-                // message = payload.message;
-                // // Nếu tin nhắn đang mở thì thêm vào tin nhắn
-                // if (
-                //     state.record &&
-                //     state.record.receiver.id === message.receiver._id
-                // ) {
-                //     draft.record.messages.push(message);
-                // }
-
-                // // Tìm index của item hiện tại trong danh sách  mesages
-                // let sentMessageIndex = "";
-                // if (message.conversationType === "ChatGroup") {
-                //     sentMessageIndex = message.receiver._id;
-                // } else {
-                //     sentMessageIndex = state.messages.findIndex(
-                //         (item) =>
-                //             getReceiverId(currentUser.id, item) ===
-                //             message.receiver._id
-                //     );
-                // }
-
-                // if (sentMessageIndex === 0) {
-                //     // Nếu tin nhắn từ người dùng hiện tại đã nằm đầu danh sách thì thay đổi tin nhắn cuối cùng
-                //     draft.messages[0].message = message.message;
-                //     draft.messages[0].type = message.type;
-                // } else if (sentMessageIndex === -1) {
-                //     // Nếu không có tin nhắn hiện tại trong danh sách thì thêm vào đầu
-                //     draft.messages.unshift({
-                //         sender: message.sender,
-                //         receiver: message.receiver,
-                //         message: message.message,
-                //         type: message.type,
-                //     });
-                // } else {
-                //     // Nếu tin nhắn hiện tại trong danh sách thì đưa lên đầu
-                //     let [removedMessge] = draft.messages.splice(
-                //         sentMessageIndex,
-                //         1
-                //     );
-                //     draft.messages.unshift({
-                //         ...removedMessge,
-                //         message: message.message,
-                //         type: message.type,
-                //     });
-                // }
                 break;
             case constants.CHAT_CREATE_ERROR:
                 draft.saveLoading = false;
@@ -107,6 +49,7 @@ const messageReducer = (state = initialState, { type, payload }) =>
             case constants.CHAT_FIND_START:
                 draft.findLoading = true;
                 draft.error = null;
+                draft.typing = {};
                 break;
             case constants.CHAT_FIND_SUCCESS:
                 draft.findLoading = false;
@@ -121,6 +64,7 @@ const messageReducer = (state = initialState, { type, payload }) =>
             case constants.CHAT_GET_START:
                 draft.messageLoading = true;
                 draft.error = null;
+                draft.typing = {};
                 break;
             case constants.CHAT_GET_SUCCESS:
                 draft.messageLoading = false;
@@ -196,6 +140,7 @@ const messageReducer = (state = initialState, { type, payload }) =>
                 }
                 break;
             case constants.SOCKET_CREATE_GROUP:
+                draft.typing = {};
                 draft.messages.unshift({
                     sender: {},
                     receiver: {
@@ -207,6 +152,34 @@ const messageReducer = (state = initialState, { type, payload }) =>
                     updatedAt: payload.updatedAt,
                 });
                 draft.error = null;
+                break;
+            case constants.SOCKET_TYPING_ON:
+                if (
+                    payload.conversationType === "ChatGroup" &&
+                    payload.receiver.id === state.record.receiver.id
+                ) {
+                    draft.typing.status = true;
+                    draft.typing.info = payload.info;
+                } else if (
+                    payload.conversationType === "User" &&
+                    payload.info.id === state.record.receiver.id
+                ) {
+                    draft.typing.status = true;
+                    draft.typing.info = payload.info;
+                }
+                break;
+            case constants.SOCKET_TYPING_OFF:
+                if (
+                    payload.conversationType === "ChatGroup" &&
+                    payload.receiver.id === state.record.receiver.id
+                ) {
+                    draft.typing = {};
+                } else if (
+                    payload.conversationType === "User" &&
+                    payload.info.id === state.record.receiver.id
+                ) {
+                    draft.typing = {};
+                }
                 break;
             case constants.CHAT_CREATE_START:
                 draft.error = null;

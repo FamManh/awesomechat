@@ -15,20 +15,23 @@ module.exports = {
     uri:
       process.env.NODE_ENV === "test"
         ? process.env.MONGO_URI_TESTS
-        : process.env.MONGO_URI
+        : process.env.MONGO_URI,
   },
   logs: process.env.NODE_ENV === "production" ? "combined" : "dev",
   emailConfig: {
     host: process.env.EMAIL_HOST,
     port: process.env.EMAIL_PORT,
     username: process.env.EMAIL_USERNAME,
-    password: process.env.EMAIL_PASSWORD
+    password: process.env.EMAIL_PASSWORD,
   },
   avatarDirectory: process.env.AVATAR_DIRECTORY,
   avatarTypes: ["image/png", "image/jpg", "image/jpeg"],
   avatarLimitSize: 2097152, // 1mb
   photoDirectory: process.env.PHOTOS_DIRECTORY,
   photoTypes: ["image/png", "image/jpg", "image/jpeg"],
-  
-  staticUrl: process.env.STATIC_URL
+
+  fileDirectory: process.env.FILES_DIRECTORY,
+  fileTypes: ["image/png", "image/jpg", "image/jpeg"],
+
+  staticUrl: process.env.STATIC_URL,
 };

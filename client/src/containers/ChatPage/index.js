@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Layout } from "antd";
 
 import Sidebar from "./Sidebar";
-import Content from "./Content";
+import ChatContent from "./ChatContent";
 import actions from './actions'
 import userActions from '../UserPage/actions'
 import { useDispatch, useSelector } from "react-redux";
@@ -25,7 +25,7 @@ export default function ChatPage() {
         <Layout style={{ height: "100vh", backgroundColor: "#fff" }}>
             <Layout className="fill-workspace rounded shadow-sm overflow-hidden">
                 <Sidebar />
-                <Content />
+                <ChatContent />
                 {rightSidebarVisible && <RightSideBar />}
             </Layout>
         </Layout>

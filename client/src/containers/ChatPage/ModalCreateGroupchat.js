@@ -4,6 +4,7 @@ import Search from 'antd/lib/input/Search';
 import userActions from '../UserPage/actions'
 import userSelectors from '../UserPage/selectors'
 import { useSelector, useDispatch } from 'react-redux';
+import AvatarCus from '../../components/AvatarCus'
 import actions from './actions';
 const { Option } = AutoComplete;
 
@@ -66,26 +67,7 @@ function ModalCreateGroupchat({visible, doToggle}) {
                     <List.Item className={`border-0 border-0 px-0 py-3`}>
                         <List.Item.Meta
                             avatar={
-                                item.picture ? (
-                                    <Avatar
-                                        src={
-                                            process.env.REACT_APP_STATIC_URI +
-                                            "/" +
-                                            item.picture
-                                        }
-                                    />
-                                ) : (
-                                    <Avatar
-                                        size={48}
-                                        style={{
-                                            color: "#f56a00",
-                                            backgroundColor: "#fde3cf",
-                                        }}
-                                    >
-                                        {item.firstname[0].toUpperCase() +
-                                            item.lastname[0].toUpperCase()}
-                                    </Avatar>
-                                )
+                                <AvatarCus record={item}/>
                             }
                             title={
                                 <>
