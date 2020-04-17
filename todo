@@ -1,16 +1,23 @@
 # Load message InfiniteScroll antd List component
 
-# login bắt đầu kết nối với socket.
+# handle lỗi upload file ở frontend
 
-# những tin nhắn liền kề của 1 người thì sử dụng 1 avatar để hiển thị
+# filter image filter server
 
-# xử lý realtime mở nhiều tab
+# filter file type in server
 
-# xử lý chat group
+# xử lý delete file
 
-# xử lý hiện thị tin nhắn nhóm và chat nhóm. 
+# xử lý delete hình ảnh
 
-&& realtime
+# xử lý loading 
 
+# Load 20 tin nhắn
 
+# Load 20 danh sach tin nhắn 
 
+# ngừng server, thì lỗi tạo 2 socker ở client
+
+# bắn socket khi chap nhận lời mời kết bạn 
+
+# làm chức năng loading ...

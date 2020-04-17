@@ -9,43 +9,14 @@ import {
     Row,
     Button,
     Dropdown,
-    Divider
+    Divider,
+    Icon
 } from "antd";
 import { useSelector } from "react-redux";
 import selectors from "./selectors";
 import { Link, useParams } from "react-router-dom";
 import userSelectors from '../UserPage/selectors';
-
-const getAvatar = (record, size = 40) => {
-    if (!record) return <Avatar size={size} icon="user" />;
-   
-
-    if (record.picture) {
-        return (
-            <Avatar
-                shape="circle"
-                size={size}
-                src={process.env.REACT_APP_STATIC_URI + "/" + record.picture}
-            />
-        );
-    }
-
-    if(record.firstname && record.lastname){
-        return (
-            <Avatar
-                size={size}
-                style={{
-                    color: "#f56a00",
-                    backgroundColor: "#fde3cf",
-                }}
-            >
-                {record.firstname[0].toUpperCase() + record.lastname[0].toUpperCase()}
-            </Avatar>
-        );
-    }
-    
-    return <Avatar size={size} icon="team" />;
-};
+import AvatarCus from "../../components/AvatarCus";
 
 const MessageList = () => {
     const {userId} = useParams();
@@ -83,7 +54,7 @@ const MessageList = () => {
                             } border-0 px-4 py-3`}
                         >
                             <List.Item.Meta
-                                avatar={getAvatar(user)}
+                                avatar={<AvatarCus record={user} />}
                                 title={
                                     <small
                                         style={{
@@ -110,11 +81,19 @@ const MessageList = () => {
                                             textOverflow: "ellipsis",
                                         }}
                                     >
-                                        {item.type === "text"
-                                            ? item.message
-                                            : item.type === "image"
-                                            ? "Photo(s)"
-                                            : null}
+                                        {item.type === "text" ? (
+                                            item.message
+                                        ) : item.type === "image" ? (
+                                            <>
+                                                <Icon type="file-image" />
+                                                Photo(s)
+                                            </>
+                                        ) : item.type === "file" ? (
+                                            <>
+                                                <Icon type="paper-clip" />
+                                                File(s)
+                                            </>
+                                        ) : null}
                                     </p>
                                 }
                             />

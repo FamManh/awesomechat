@@ -3,7 +3,13 @@ import { Avatar, Spin, Icon, Row } from "antd";
 
 function ImageUploadList({ fileList, onDelete }) {
     return (
-        <div className="clearfix">
+        <div
+            className="clearfix"
+            style={{
+                maxHeight: "130px",
+                overflowY: "auto",
+            }}
+        >
             <span className="ant-upload-picture-card-wrapper">
                 {fileList.map((file, index) => {
                     return (
@@ -20,7 +26,7 @@ function ImageUploadList({ fileList, onDelete }) {
                                                 align="middle"
                                                 justify="center"
                                                 style={{
-                                                    height: "100%"
+                                                    height: "100%",
                                                 }}
                                             >
                                                 <Icon type="loading" />
@@ -40,7 +46,13 @@ function ImageUploadList({ fileList, onDelete }) {
                                                 <span className="ant-upload-list-item-actions">
                                                     <Icon
                                                         onClick={() =>
-                                                            onDelete(fileList.filter(item=>item.uid !== file.uid))
+                                                            onDelete(
+                                                                fileList.filter(
+                                                                    (item) =>
+                                                                        item.uid !==
+                                                                        file.uid
+                                                                )
+                                                            )
                                                         }
                                                         className="anticon"
                                                         type="delete"

@@ -11,6 +11,7 @@ const sharp = require("sharp");
 const path = require("path");
 const fs = require("fs");
 const storagePhoto = require("../utils/storagePhoto");
+const storageFile = require("../utils/storageFile");
 const _ = require('lodash')
 
 const getPhotoPath = (images, basePath) => {
@@ -47,34 +48,31 @@ exports.get = async (req, res) => {
   let responeData = {}
 
   if(!receiverInfo){
-    // Group chat
+    // Tìm id hiện tại có phải là group chat hay không 
     receiverInfo = await ChatGroup.findById(receiverId);
+
+    // Nếu không phải group chat thì trả về lỗi không tìm thấý 
     if (!receiverInfo) {
       return res.status(httpStatus.NOT_FOUND).json({erro: "Not found"})
     }
+
+    // Lấy danh sách cuộc trò chuyện 
     const groupMessages = await Message.getGroup({ groupId: receiverInfo.id });
     
-    groupMessages.forEach((message) => {
-      let tempMessage = { ...message.transform() };
-      tempMessage.images = getPhotoPath(message.images, staticUrl);
-      
-      responsceList.push(tempMessage);
-    });
+    // Transform kết quả trả về
+    responsceList = await groupMessages.map((message) => message.transform());
     responeData.conversationType = "ChatGroup";
     responeData.receiver = {
       id: receiverInfo.id,
       picture: receiverInfo.picture,
       name: receiverInfo.name,
+      members: receiverInfo.members,
     };
 
   }else{
+    // personal chat
     const personalMessages = await Message.getPersonal({ senderId, receiverId });
-    personalMessages.forEach((message) => {
-      let tempMessage = { ...message.transform() };
-      tempMessage.images = getPhotoPath(message.images, staticUrl);
-
-      responsceList.push(tempMessage);
-    });
+    responsceList = await personalMessages.map((message) => message.transform());
     responeData.conversationType = "User";
     responeData.receiver = {
       picture: receiverInfo.picture,
@@ -111,7 +109,6 @@ exports.create = async (req, res, next) => {
       .populate("receiver", "id picture lastname firstname name members")
       .populate("sender", "id picture lastname firstname")
       .execPopulate();
-    savedMessage.images = getPhotoPath(savedMessage.images, staticUrl);
     res.status(httpStatus.CREATED);
     res.json({ ...savedMessage.transform() });
   } catch (error) {
@@ -259,7 +256,7 @@ exports.addPhotos = (req, res, next) => {
           status: httpStatus.BAD_REQUEST,
         });
       }
-      let outputFile = req.file.path + "_b.jpg";
+      let outputFile = req.file.path + ".jpg";
 
       await sharp(req.file.path).jpeg({ quality: 80 }).toFile(outputFile);
 
@@ -268,12 +265,12 @@ exports.addPhotos = (req, res, next) => {
 
       let temp = {
         uid: uuidv4(),
-        name: req.file.filename,
-        path: `/images/message/${req.file.filename}_b.jpg`,
+        name: `${req.file.filename}.jpg`,
+        path: `/images/message/${req.file.filename}.jpg`,
         status: "done",
         response: { status: "success" },
         linkProps: { download: "image" },
-        thumbUrl: `${staticUrl}/images/message/${req.file.filename}_b.jpg`,
+        thumbUrl: `${staticUrl}/images/message/${req.file.filename}.jpg`,
       };
       return res.json(temp);
     } catch (error) {
@@ -281,3 +278,37 @@ exports.addPhotos = (req, res, next) => {
     }
   });
 };
+
+let filesUpload = multer(storageFile).single('files');
+
+exports.addFiles = (req, res, next) => {
+  filesUpload(req, res, async (err) => {
+    try {
+      if (!req.file) {
+        throw new APIError({
+          message: "Please select a file.",
+          status: httpStatus.BAD_REQUEST,
+        });
+      }
+      // let outputFile = req.file.path + "_b.jpg";
+
+      // await sharp(req.file.path).jpeg({ quality: 80 }).toFile(outputFile);
+
+      // delete old file
+      // fs.unlinkSync(req.file.path);
+
+      let temp = {
+        uid: uuidv4(),
+        name: req.file.filename,
+        path: `/files/${req.file.filename}`,
+        status: "done",
+        response: { status: "success" },
+        linkProps: { download: "file" },
+      };
+      return res.json(temp);
+    } catch (error) {
+      next(error);
+    }
+  });
+};
+

@@ -36,6 +36,7 @@ import { isAuthenticated } from "../shared/routes/permissionChecker";
 import { useSelector } from "react-redux";
 import userSelectors from '../UserPage/selectors'
 import ModalCreateGroupchat from "./ModalCreateGroupchat";
+import AvatarCus from "../../components/AvatarCus";
 
 const { Sider, Header } = Layout;
 const { Search } = Input;
@@ -189,7 +190,7 @@ function ChatSidebar() {
             }}
         >
             <Row type="flex" align="middle">
-                {getAvatar(currentUser ? currentUser : null)}
+                <AvatarCus record={currentUser ? currentUser : null} />
                 <span className="ml-3" style={{ lineHeight: "1" }}>
                     <span style={{ display: "block" }}>
                         {currentUser

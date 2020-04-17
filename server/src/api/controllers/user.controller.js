@@ -223,7 +223,7 @@ exports.updateAvatar = (req, res, next) => {
       }
     
       let updateUserItem = {
-        picture: 'images/users/' + req.file.filename,
+        picture: req.file.filename,
         updatedAt: Date.now()
       };
 

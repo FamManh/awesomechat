@@ -25,7 +25,7 @@ const Chat = styled.div`
     }
     .body {
         position: relative;
-        padding: 0.625rem 1rem;
+        padding: 0.425rem 1rem;
         //background-color: white;
         border-radius: 1rem;
         max-width: 80%;

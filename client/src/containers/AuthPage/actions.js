@@ -30,7 +30,6 @@ const actions = {
                 payload: response.data
             });
             getHistory().push("/");
-            configSocket();
         } catch (error) {
             dispatch({
                 type: constants.SIGNIN_ERROR,

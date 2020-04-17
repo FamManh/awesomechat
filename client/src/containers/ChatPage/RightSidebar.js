@@ -39,42 +39,11 @@ import { useSelector } from "react-redux";
 import userSelectors from "../UserPage/selectors";
 import ModalCreateGroupchat from "./ModalCreateGroupchat";
 import selectors from "./selectors";
+import AvatarCus from "../../components/AvatarCus";
 
 const { Sider, Header } = Layout;
-const { Search } = Input;
 
-const getAvatar = (record, size = 40) => {
-    if (!record) return <Avatar size={size} icon="user" />;
-
-    if (record.picture) {
-        return (
-            <Avatar
-                shape="circle"
-                size={size}
-                src={process.env.REACT_APP_STATIC_URI + "/" + record.picture}
-            />
-        );
-    }
-
-    if (record.firstname && record.lastname) {
-        return (
-            <Avatar
-                size={size}
-                style={{
-                    color: "#f56a00",
-                    backgroundColor: "#fde3cf",
-                }}
-            >
-                {record.firstname[0].toUpperCase() +
-                    record.lastname[0].toUpperCase()}
-            </Avatar>
-        );
-    }
-
-    return <Avatar size={size} icon="team" />;
-};
-
-const ButtonCus = ({text, icon, onClick}) => {
+const ButtonCus = ({ text, icon, onClick }) => {
     return (
         <div
             style={{
@@ -98,7 +67,7 @@ const ButtonCus = ({text, icon, onClick}) => {
             </span>
         </div>
     );
-}
+};
 
 function RightSideBar() {
     const currentUser = useSelector(userSelectors.selectCurrentUser);
@@ -120,16 +89,23 @@ function RightSideBar() {
             }}
         >
             <Row>
-                <div>{getAvatar(record ? record.receiver : null, 100)}</div>
+                <div>
+                    <AvatarCus
+                        record={record ? record.receiver : null}
+                        size={100}
+                    />
+                </div>
                 <div style={{ fontWeight: "bold", fontSize: "18px" }}>
-                    {record ? (record.conversationType === "ChatGroup"
-                        ? `${record.receiver.name}`
-                        : `${record.receiver.firstname} ${record.receiver.lastname}`):null}
+                    {record
+                        ? record.conversationType === "ChatGroup"
+                            ? `${record.receiver.name}`
+                            : `${record.receiver.firstname} ${record.receiver.lastname}`
+                        : null}
                 </div>
             </Row>
         </Header>
     );
-    console.log(record)
+    console.log(record);
 
     const text = (
         <p style={{ paddingLeft: 24 }}>
@@ -156,8 +132,11 @@ function RightSideBar() {
                     }
                     key="1"
                 >
-                    <ButtonCus text="Blocks Message" icon="stop" onClick={()=>alert("Clicked")}/>
-                   
+                    <ButtonCus
+                        text="Blocks Message"
+                        icon="stop"
+                        onClick={() => alert("Clicked")}
+                    />
                 </Collapse.Panel>
                 <Collapse.Panel
                     header={
