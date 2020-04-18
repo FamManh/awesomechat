@@ -5,13 +5,17 @@ import auth from './AuthPage/reducer';
 import contact from "./ContactPage/reducer";
 import user from "./UserPage/reducer";
 import message from "./ChatPage/reducer";
+import call from './CallPage/reducer'
+import socket from './socket/reducer'
 
-export default history =>
+export default (history) =>
     combineReducers({
         router: connectRouter(history),
         layout,
         auth,
         contact,
         user,
-        message
+        message,
+        call,
+        socket,
     });

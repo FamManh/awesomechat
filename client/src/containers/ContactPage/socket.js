@@ -6,5 +6,6 @@ export const emitAddNewContact = payload => {
 };
 
 export const onAddContact = payload => {
+    console.log(payload)
     message.info(payload);
 };

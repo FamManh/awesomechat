@@ -9,11 +9,6 @@ import {
     Icon,
 } from "antd";
 import ChatStyled from "./styles/chat";
-import {
-    Phone,
-    Video,
-    Info
-} from "react-feather";
 import { useSelector, useDispatch } from "react-redux";
 import selectors from "./selectors";
 import actions from "./actions";
@@ -24,7 +19,8 @@ import FileUploadList from "./FileUploadList";
 import Conversation from "./Conversation";
 import AvatarCus from "../../components/AvatarCus";
 import ChatContentFooter from "./ChatContentFooter";
-const { Header } = Layout;
+import ChatContentHeader from "./ChatContentHeader";
+
 
 
 function ChatContent() {
@@ -76,60 +72,7 @@ function ChatContent() {
 
     return (
         <Layout style={{ position: "relative" }}>
-            <Header
-                style={{
-                    display: "flex",
-                    alignItems: "center",
-                    padding: "0.3rem 2rem",
-                    zIndex: "1",
-                    boxShadow:
-                        "0 2px 2px rgba(0, 0, 0, 0.02), 0 1px 0 rgba(0, 0, 0, 0.02)",
-                    height: "auto",
-                    lineHeight: "auto",
-                    backgroundColor: "#fff",
-                }}
-            >
-                <Row type="flex" align="middle">
-                    <AvatarCus record={record ? record.receiver : null} />
-
-                    <span className="ml-3" style={{ lineHeight: "1" }}>
-                        <span style={{ display: "block" }}>
-                            {record
-                                ? record.conversationType === "ChatGroup"
-                                    ? record.receiver.name
-                                    : `${record.receiver.firstname} ${record.receiver.lastname}`
-                                : ""}
-                        </span>
-                        <small className="text-muted">
-                            <span>Online</span>
-                        </small>
-                    </span>
-                </Row>
-                <span className="mr-auto" />
-                <div>
-                    {record && record.conversationType === "User" && (
-                        <>
-                            <Button
-                                shape="circle"
-                                style={{ border: "0" }}
-                                onClick={() => alert("Ban da nhan vao link")}
-                            >
-                                <Phone size={20} strokeWidth={1} />
-                            </Button>
-                            <Button style={{ border: "0" }} shape="circle">
-                                <Video size={20} strokeWidth={1} />
-                            </Button>
-                        </>
-                    )}
-                    <Button
-                        style={{ border: "0" }}
-                        shape="circle"
-                        onClick={() => dispatch(actions.doToggleRightSidebar())}
-                    >
-                        <Info size={20} strokeWidth={1} />
-                    </Button>
-                </div>
-            </Header>
+            <ChatContentHeader/>
             <ChatStyled ref={scrollRef}>
                 {record && <Conversation messages={record.messages} />}
             </ChatStyled>

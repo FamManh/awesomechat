@@ -5,12 +5,14 @@ import { useDispatch, useSelector } from "react-redux";
 import userActions from "../../UserPage/actions";
 import userSelectors from "../../UserPage/selectors";
 import { configSocket } from "../../rootSocket";
+import socketActions from '../../socket/actions'
 const PrivateRoute = ({ component: Component, ...rest }) => {
     const currentUser = useSelector(userSelectors.selectCurrentUser);
     const dispatch = useDispatch();
     
     useEffect(() => {
         configSocket();
+        // dispatch(socketActions.doConnect());
         if (!currentUser && isAuthenticated()) {
             dispatch(userActions.getCurrent());
         }

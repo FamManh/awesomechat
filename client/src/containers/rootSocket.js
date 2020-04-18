@@ -1,46 +1,70 @@
 import io from "socket.io-client";
 import { isAuthenticated } from "./shared/routes/permissionChecker";
 import { onAddContact } from "./ContactPage/socket";
-import { onSentMessage, onCreateGroup, onTypingOn, onTypingOff } from "./ChatPage/socket";
+import {
+    onSentMessage,
+    onCreateGroup,
+    onTypingOn,
+    onTypingOff,
+} from "./ChatPage/socket";
+import {
+    onListenerOffline,
+    onRequestPeerId,
+    onResponeListenerPeerId,
+    onRequestCall,
+    onCancelRequestCall,
+    onRejectCall,
+    onAnwserCall,
+} from "./CallPage/socket";
 
 const endpoint = process.env.REACT_APP_SOCKET_ENDPOINT;
 let socket = null;
-let socketConnected = false;
 
 const onConnected = () => {
     console.log("socket: connected");
-    socketConnected = true;
+};
+
+const onDisconnect = () => {
+    console.log("socket: disconnect");
+    // socket = null;
+};
+
+export const configSocket = () => {
+    if (socket && socket.disconnected) {
+        socket.connect();
+    }
+    if (socket) return;
+    socket = io.connect(endpoint, {
+        query: `token=${isAuthenticated()}`,
+    });
+
+    socket.on("connect", onConnected);
     socket.on("disconnect", onDisconnect);
     socket.on("res-add-new-contact", onAddContact);
     socket.on("res-sent-message", onSentMessage);
     socket.on("res-create-group", onCreateGroup);
     socket.on("res-typing-on", onTypingOn);
     socket.on("res-typing-off", onTypingOff);
-};
-;
 
-const onDisconnect = () => {
-    console.log("socket: disconnect");
-    socketConnected = false;
-    socket = null;
-};
-
-export const configSocket = async () => {
-    if (!!socket || socketConnected) return;
-    
-    socket = await io.connect(endpoint, {
-        query: `token=${isAuthenticated()}`
-    });
-
-    socket.on("connect", onConnected);
+    // Trả về trạng thái on/off của listener
+    socket.on("server-caller-listener-status", onListenerOffline);
+    // lắng nghe yêu cầu peerid
+    socket.on("server-listener-request-peer-id", onRequestPeerId);
+    // lắng nghe peerid mà server trả về
+    socket.on("server-caller-listener-peer-id", onResponeListenerPeerId);
+    // lắng nghe sự kiện yêu cầu call
+    socket.on("server-listener-request-call", onRequestCall);
+    // lắng nghe sự kiện hủy cuộc gọi từ caller
+    socket.on("server-listener-cancel-request-call", onCancelRequestCall);
+    //  lắng nghe sự kiện hủy cuộc gọi từ listener
+    socket.on("server-caller-reject-call", onRejectCall);
+    //  lắng nghe sự kiện cuộc gọi đã được chấp nhận 
+    socket.on("server-caller-answer-call", onAnwserCall);
     return socket;
 };
 
 export const socketDisconnect = () => {
     socket.disconnect();
-    socketConnected = false;
-
-    socket = null;
 };
 
 export default function getSocket() {
