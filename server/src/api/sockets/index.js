@@ -5,24 +5,31 @@ const sentMessage = require("./chat/sentMessage");
 const createGroup = require("./chat/createGroup");
 const typingOn = require("./chat/typingOn");
 const typingOff = require("./chat/typingOff");
+const checkListenerStatus = require("./call/checkListenerStatus");
+const listenerEmitPeerId = require("./call/listenerEmitPeerId");
+const callerRequestCall = require("./call/callerRequestCall");
+const callerCancelRequestCall = require("./call/callerCancelRequestCall");
+const listenerAnwserCall = require("./call/listenerAnwserCall");
+const listenerRejectCall = require("./call/listenerRejectCall");
+
 const getUserInfo = require("./getUserInfo");
 const {
   pushSocketIdToArray,
   emitNotifyToArray,
-  removeSocketIdToArray
+  removeSocketIdToArray,
 } = require("./helper");
 /**
  * @param {*} io from scoket.io library
  */
-let initSockets = io => {
+let initSockets = (io) => {
   io.use(
     socketioJwt.authorize({
       secret: jwtSecret,
-      handshake: true
+      handshake: true,
     })
   );
   let clients = {};
-  io.on("connection", async socket => {
+  io.on("connection", async (socket) => {
     console.log(clients);
     const user = await getUserInfo(socket.decoded_token.sub);
     clients = pushSocketIdToArray(clients, user.id, socket.id);
@@ -32,11 +39,37 @@ let initSockets = io => {
       clients = removeSocketIdToArray(clients, user.id, socket);
     });
 
-    socket.on("sent-message", data => sentMessage(io, data, clients, user));
+    socket.on("sent-message", (data) => sentMessage(io, data, clients, user));
     socket.on("create-group", (data) => createGroup(io, data, clients, user));
-    socket.on("add-new-contact", data => addNewContact(io, data, clients, user));
+    socket.on("add-new-contact", (data) =>
+      addNewContact(io, data, clients, user)
+    );
     socket.on("typing-on", (data) => typingOn(io, data, clients, user));
     socket.on("typing-off", (data) => typingOff(io, data, clients, user));
+    // check trang thái của người nghe online / offline
+    socket.on("caller-server-check-listener-status", (data) =>
+      checkListenerStatus(io, data, clients, user)
+    );
+    // người nghe trả về peerid
+    socket.on("listener-server-listener-peer-id", (data) =>
+      listenerEmitPeerId(io, data, clients, user)
+    );
+    // Người gọi yêu cầu gọi
+    socket.on("caller-server-request-call", (data) =>
+      callerRequestCall(io, data, clients, user)
+    );
+    // người gọi hủy yêu cầu gọi
+    socket.on("caller-server-cancel-request-call", (data) =>
+      callerCancelRequestCall(io, data, clients, user)
+    );
+    // listener huỷ cuộc gọi
+    socket.on("listener-server-reject-call", (data) =>
+      listenerRejectCall(io, data, clients, user)
+    );
+    // listener chấp nhận cuộc goi 
+    socket.on("listener-server-answer-call", (data) =>
+      listenerAnwserCall(io, data, clients, user)
+    );
   });
 };
 

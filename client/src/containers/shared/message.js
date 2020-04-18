@@ -1,5 +1,6 @@
 import React from 'react';
-import { notification, Avatar } from 'antd';
+import { notification, Avatar, message } from 'antd';
+import AvatarCus from '../../components/AvatarCus';
 
 export default class Message {
   static success(arg) {
@@ -17,27 +18,13 @@ export default class Message {
   }
 
   static info(arg){
-    notification.open({
-        message: arg.message,
-        description: "",
-        icon: arg.picture ? (
-            <Avatar
-                src={
-                    process.env
-                        .REACT_APP_STATIC_URI + "/" + arg.picture
-                }
-            />
-            ) : (
-                <Avatar
-                    style={{
-                        color: "#f56a00",
-                        backgroundColor: "#fde3cf"
-                    }}
-                >
-                    {arg.firstname[0].toUpperCase() +
-                        arg.lastname[0].toUpperCase()}
-                </Avatar>
-            )
-    });
-  }
+    message.open({
+        content: arg.message,
+        icon: (
+            <span style={{marginRight: "5px"}}>
+                {" "}
+                <AvatarCus record={arg} />
+            </span>
+        ),
+    });}
 }

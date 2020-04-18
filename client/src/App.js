@@ -6,6 +6,7 @@ import RoutesComponent from './containers/shared/routes/RoutesComponent';
 import {GlobalStyles} from './components/styles/GlobalStyles';
 import { isAuthenticated } from './containers/shared/routes/permissionChecker';
 import {configSocket} from "./containers/rootSocket";
+import CallPage from './containers/CallPage';
 const endpoint = process.env.REACT_APP_SOCKET_ENDPOINT;
 
 
@@ -16,6 +17,7 @@ function App() {
       <Suspense fallback={<div>Loading...</div>}>
           <Provider store={store}>
             <ConnectedRouter history={getHistory()}>
+              <CallPage/>
               <RoutesComponent/>
             </ConnectedRouter>
           </Provider>

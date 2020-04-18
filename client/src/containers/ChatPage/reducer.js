@@ -154,32 +154,36 @@ const messageReducer = (state = initialState, { type, payload }) =>
                 draft.error = null;
                 break;
             case constants.SOCKET_TYPING_ON:
-                if (
-                    payload.conversationType === "ChatGroup" &&
-                    payload.receiver.id === state.record.receiver.id
-                ) {
-                    draft.typing.status = true;
-                    draft.typing.info = payload.info;
-                } else if (
-                    payload.conversationType === "User" &&
-                    payload.info.id === state.record.receiver.id
-                ) {
-                    draft.typing.status = true;
-                    draft.typing.info = payload.info;
+                if(state.record){
+                    if (
+                        payload.conversationType === "ChatGroup" &&
+                        payload.receiver.id === state.record.receiver.id
+                    ) {
+                        draft.typing.status = true;
+                        draft.typing.info = payload.info;
+                    } else if (
+                        payload.conversationType === "User" &&
+                        payload.info.id === state.record.receiver.id
+                    ) {
+                        draft.typing.status = true;
+                        draft.typing.info = payload.info;
+                    }
                 }
                 break;
             case constants.SOCKET_TYPING_OFF:
-                if (
-                    payload.conversationType === "ChatGroup" &&
-                    payload.receiver.id === state.record.receiver.id
-                ) {
-                    draft.typing = {};
-                } else if (
-                    payload.conversationType === "User" &&
-                    payload.info.id === state.record.receiver.id
-                ) {
-                    draft.typing = {};
-                }
+               if(state.record){
+                    if (
+                        payload.conversationType === "ChatGroup" &&
+                        payload.receiver.id === state.record.receiver.id
+                    ) {
+                        draft.typing = {};
+                    } else if (
+                        payload.conversationType === "User" &&
+                        payload.info.id === state.record.receiver.id
+                    ) {
+                        draft.typing = {};
+                    }
+               }
                 break;
             case constants.CHAT_CREATE_START:
                 draft.error = null;
