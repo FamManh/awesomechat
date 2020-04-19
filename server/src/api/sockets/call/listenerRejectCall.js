@@ -2,7 +2,6 @@ const { emitNotifyToArray } = require("../helper");
 
 let listenerRejectCall = (io, data, clients, user) => {
     // listener hủy cuộc gọi 
-    console.log('huy cuoc gọi ')
   if (clients[data.caller.id]) {
     // b12. gửi về cho caller cuộc gọi đã bị hủy  
 

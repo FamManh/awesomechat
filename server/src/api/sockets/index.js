@@ -11,6 +11,7 @@ const callerRequestCall = require("./call/callerRequestCall");
 const callerCancelRequestCall = require("./call/callerCancelRequestCall");
 const listenerAnwserCall = require("./call/listenerAnwserCall");
 const listenerRejectCall = require("./call/listenerRejectCall");
+const callEnded = require("./call/callEnded");
 
 const getUserInfo = require("./getUserInfo");
 const {
@@ -70,6 +71,11 @@ let initSockets = (io) => {
     socket.on("listener-server-answer-call", (data) =>
       listenerAnwserCall(io, data, clients, user)
     );
+    // lắng nghe sự kiện 1 trong 2 user kết thúc cuộc gọi 
+    socket.on("--server-call-ended", (data) =>
+      callEnded(io, data, clients, user)
+    );
+    
   });
 };
 

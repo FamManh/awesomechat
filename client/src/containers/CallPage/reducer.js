@@ -1,16 +1,21 @@
-import constants from './constants'
-import produce from 'immer'
+import constants from "./constants";
+import produce from "immer";
 
 const initialState = {
     caller: {},
     listener: {},
     status: null,
-    peerId: ""
-}
+    peerId: "",
+    localStream: null,
+    remoteStream: null,
+};
 
 const callReducer = (state = initialState, { type, payload }) =>
     produce(state, (draft) => {
         switch (type) {
+            case constants.CALL_GET_PEER_ID:
+                draft.peerId = payload;
+                break;
             case constants.CALL_RESPONSE_CONTACTING:
                 draft.status = "contacting";
                 draft.caller = payload.caller;
@@ -32,16 +37,37 @@ const callReducer = (state = initialState, { type, payload }) =>
                 draft.caller = payload.caller;
                 draft.listener = payload.listener;
                 break;
-            case constants.CALL_ANSWER_CALL:
-                draft.status = "answer";
+            case constants.CALL_CALLER_ANSWER:
+                draft.status = "streaming";
                 draft.caller = payload.caller;
                 draft.listener = payload.listener;
+                break;
+            case constants.CALL_LISTENER_ANSWER:
+                draft.status = "streaming";
+                draft.caller = payload.caller;
+                draft.listener = payload.listener;
+                break;
+            case constants.CALL_LOCAL_STREAM:
+                draft.localStream = payload;
+                break;
+            case constants.CALL_REMOTE_STREAM:
+                draft.remoteStream = payload;
+                break;
+            case constants.CALL_CALL_ENDED:
+                if (state.localStream){
+                    // đã tắt stream 
+                    state.localStream
+                        .getTracks()
+                        .forEach((track) => track.stop());
+                }
+                draft.caller= {}
+                draft.listener= {}
+                draft.status= null
                 break;
             case constants.CALL_CLEAR:
                 draft.status = null;
                 draft.caller = {};
                 draft.listener = {};
-                draft.peerId = "";
                 break;
             default:
                 return state;
