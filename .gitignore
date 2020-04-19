@@ -55,6 +55,9 @@ client/node_modules
 client//.pnp
 client/.pnp.js
 
+# Environment variables
+client/.env
+
 # testing
 client//coverage
 
