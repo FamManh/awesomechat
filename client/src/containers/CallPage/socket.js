@@ -4,46 +4,38 @@ import getStore from "../configureStore";
 import Message from "../shared/message";
 import { Modal, Row } from "antd";
 import AvatarCus from "../../components/AvatarCus";
-import peerjs from "peerjs";
 import constants from "./constants";
-import CallPage from ".";
+import peerjs from "peerjs";
+import callActions from "../CallPage/actions";
 
-const showModalCallRequest = (caller) => {
-    Modal.confirm({
-        icon: null,
-        content: (
-            <Row
-                type="flex"
-                align="middle"
-                justify="center"
-                className="px-3 bg-white mh-page"
-            >
-                <div style={{ textAlign: "center" }}>
-                    <AvatarCus record={caller} size={100} />
-                    <p style={{ marginTop: "15px" }}>
-                        <strong>{caller.firstname}</strong> calling you...
-                    </p>
-                </div>
-            </Row>
-        ),
-        okText: "Anwser",
-        cancelText: "Cancel",
-        cancelButtonProps: { type: "danger" },
-        onOk() {
-            onAnwser(caller);
-        },
-        onCancel() {},
-        maskClosable: false,
-    });
+let peer = null;
+
+// tạo peerid 
+export const getPeerId = () => {
+    let state = getStore().getState();
+    if (!state.call.peerId && !peer) {
+        // Nếu peerid chưa tồn tại thì tạo peerid
+        peer = new peerjs({
+            key: "peerjs",
+            host: "peerjs-server-trungquandev.herokuapp.com",
+            secure: "true",
+            port: 443,
+            debug: 3,
+        });
+        peer.on("open", (peerId) => {
+            // get peerid
+            getStore().dispatch(callActions.getPeerId(peerId));
+        });
+    }
 };
 
+// emit sự kiện kiểm tra status của listener 
 export const emitCheckListenerStatus = (payload) => {
     getSocket().emit("caller-server-check-listener-status", payload);
 };
-const onAnwser = (payload) => {};
 
+// lắng nghe sự kiện status listener 
 export const onListenerOffline = (payload) => {
-    console.log(payload);
     if (payload.status === "offline") {
         // Nếu listener offline thì trả thông báo về cho caller
         Message.info({
@@ -59,40 +51,30 @@ export const onListenerOffline = (payload) => {
     }
 };
 
+// lắng nghe sự kiện yêu cầu peerid 
 export const onRequestPeerId = (payload) => {
     // showModalCallRequest(payload.caller)
     // lắng nghe yêu cầu peerid
-    // tạo peerid và trả về cho server
-    // const peer = new peerjs();
-    // peer.on("open", (peerId) => {
-    //     // b04. Trả lại thông tin và peerid cho server
-    //     console.log(peerId);
-    //     getSocket().emit("listener-server-listener-peer-id", {
-    //         ...payload,
-    //         listenerPeerId: peerId,
-    //     });
-    // });
+    let state = getStore().getState();
     getSocket().emit("listener-server-listener-peer-id", {
         ...payload,
+        peerId: state.call.peerId,
     });
 };
 
+// lắng nghe sự kiện nhận peerid của listener từ server 
 export const onResponeListenerPeerId = (payload) => {
-    console.log("====================================");
-    console.log(payload);
-
     // b06. Yêu cầu call
-    getSocket().emit("caller-server-request-call", {
-        listener: payload.listener,
-        caller: payload.caller,
-    });
+    getSocket().emit("caller-server-request-call", payload);
 };
 
+// emit sự kiện caller hủy cuộc gọi 
 export const emitCallerCancelRequestCall = (payload) => {
     // 07. Người gọi hủy cuộc gọi
     getSocket().emit("caller-server-cancel-request-call", payload);
 };
 
+// lắng nghe sự kiện yêu cầu cuộc gọi tới 
 export const onRequestCall = (payload) => {
     // Nếu listener online thì open popup
     getStore().dispatch({
@@ -101,36 +83,119 @@ export const onRequestCall = (payload) => {
     });
 };
 
+// lắng nghe sự kiện caller hủy cuộc gọi 
 export const onCancelRequestCall = (payload) => {
-    // Nếu listener online thì open popup
     getStore().dispatch({
         type: constants.CALL_CLEAR,
         payload: payload,
     });
 };
 
+// emmit sự kiện listener từ chối cuộc gọi 
 export const emitRejectCall = (payload) => {
     //  10. Listener hủy cuộc gọi
     getSocket().emit("listener-server-reject-call", payload);
 };
 
+// emit sự kiện trả lời cuộc gọi 
 export const emitAnswerCall = (payload) => {
     //  11. Listener nghe cuộc gọi
     getSocket().emit("listener-server-answer-call", payload);
 };
 
-export const onAnwserCall = (payload) => {
-    // Nếu listener online thì open popup
+// lắng nghe sự kiện nhận cuộc gọi 
+export const onCallerAnwserCall = (payload) => {
     getStore().dispatch({
-        type: constants.CALL_ANSWER_CALL,
+        type: constants.CALL_CALLER_ANSWER,
         payload: payload,
+    });
+    let getUserMedia = (
+        navigator.getUserMedia ||
+        navigator.webkitGetUserMedia ||
+        navigator.mozGetUserMedia
+    ).bind(navigator);
+    getUserMedia(
+        { video: true, audio: true },
+        function (stream) {
+            let call = peer.call(payload.peerId, stream);
+            getStore().dispatch({
+                type: constants.CALL_LOCAL_STREAM,
+                payload: stream,
+            });
+            call.on("stream", function (remoteStream) {
+                getStore().dispatch({
+                    type: constants.CALL_REMOTE_STREAM,
+                    payload: remoteStream,
+                });
+
+                // Show stream in some video/canvas element.
+            });
+        },
+        function (err) {
+            console.log("Failed to get local stream", err);
+            Modal.error({ title: "Error", content: err.toString() });
+        }
+    );
+};
+
+// lắng nghe sự kiện listener nhận cuộc gọi 
+export const onListenerAnwserCall = (payload) => {
+    getStore().dispatch({
+        type: constants.CALL_LISTENER_ANSWER,
+        payload: payload,
+    });
+
+    let getUserMedia = (
+        navigator.getUserMedia ||
+        navigator.webkitGetUserMedia ||
+        navigator.mozGetUserMedia
+    ).bind(navigator);
+    peer.on("call", function (call) {
+        getUserMedia(
+            { video: true, audio: true },
+            function (stream) {
+                getStore().dispatch({
+                    type: constants.CALL_LOCAL_STREAM,
+                    payload: stream,
+                });
+                call.answer(stream); // Answer the call with an A/V stream.
+                call.on("stream", function (remoteStream) {
+                    // Show stream in some video/canvas element.
+                    getStore().dispatch({
+                        type: constants.CALL_REMOTE_STREAM,
+                        payload: remoteStream,
+                    });
+                });
+            },
+            function (err) {
+                console.log("Failed to get local stream", err);
+                Modal.error({
+                    title: "Error",
+                    content: err.toString(),
+                });
+            }
+        );
     });
 };
 
+// lắng nghe sự kiện listener từ chối cuộc gọi 
 export const onRejectCall = (payload) => {
-    // Nếu listener online thì open popup
     getStore().dispatch({
         type: constants.CALL_REJECT_CALL,
         payload: payload,
     });
 };
+
+// emit sự kiện kết thúc cuộc gọi 
+export const emitCallEnded = (payload) => {
+    getSocket().emit("--server-call-ended", payload);
+};
+
+// lắng nghe sự kiện 1 trong 2 user kết thúc cuộc gọi .
+export const onCallEnded = () => {
+    Modal.info({content: 'Call ended'})
+    getStore().dispatch({
+        type: constants.CALL_CALL_ENDED
+    });
+};
+

@@ -14,8 +14,11 @@ import {
     onRequestCall,
     onCancelRequestCall,
     onRejectCall,
-    onAnwserCall,
+    onCallerAnwserCall,
+    onListenerAnwserCall,
+    onCallEnded
 } from "./CallPage/socket";
+
 
 const endpoint = process.env.REACT_APP_SOCKET_ENDPOINT;
 let socket = null;
@@ -37,6 +40,7 @@ export const configSocket = () => {
     socket = io.connect(endpoint, {
         query: `token=${isAuthenticated()}`,
     });
+    
 
     socket.on("connect", onConnected);
     socket.on("disconnect", onDisconnect);
@@ -58,8 +62,13 @@ export const configSocket = () => {
     socket.on("server-listener-cancel-request-call", onCancelRequestCall);
     //  lắng nghe sự kiện hủy cuộc gọi từ listener
     socket.on("server-caller-reject-call", onRejectCall);
-    //  lắng nghe sự kiện cuộc gọi đã được chấp nhận 
-    socket.on("server-caller-answer-call", onAnwserCall);
+    //  lắng nghe sự kiện caller chấp nhận  cuộc gọi
+    socket.on("server-caller-answer-call", onCallerAnwserCall);
+    //  lắng nghe sự kiện listener chấp nhận cuộc gọi
+    socket.on("server-listener-answer-call", onListenerAnwserCall);
+    //  lắng nghe sự kiện listener chấp nhận cuộc gọi
+    socket.on("server--call-ended", onCallEnded);
+    
     return socket;
 };
 

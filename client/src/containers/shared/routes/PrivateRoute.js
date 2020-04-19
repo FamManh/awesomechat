@@ -6,12 +6,14 @@ import userActions from "../../UserPage/actions";
 import userSelectors from "../../UserPage/selectors";
 import { configSocket } from "../../rootSocket";
 import socketActions from '../../socket/actions'
+import { getPeerId } from "../../CallPage/socket";
 const PrivateRoute = ({ component: Component, ...rest }) => {
     const currentUser = useSelector(userSelectors.selectCurrentUser);
     const dispatch = useDispatch();
     
     useEffect(() => {
         configSocket();
+        getPeerId();
         // dispatch(socketActions.doConnect());
         if (!currentUser && isAuthenticated()) {
             dispatch(userActions.getCurrent());

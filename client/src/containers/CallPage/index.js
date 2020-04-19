@@ -7,7 +7,12 @@ import userSelectors from "../UserPage/selectors";
 import { CallWrapper } from "./style/CallWrapper";
 import AvatarCus from "../../components/AvatarCus";
 import actions from "./actions";
-import { emitCallerCancelRequestCall, emitAnswerCall, emitRejectCall } from "./socket";
+import {
+    emitCallerCancelRequestCall,
+    emitAnswerCall,
+    emitRejectCall,
+    emitCallEnded,
+} from "./socket";
 
 const Contacting = () => {
     const dispatch = useDispatch();
@@ -18,8 +23,8 @@ const Contacting = () => {
 
     const onCancelRequestCall = () => {
         emitCallerCancelRequestCall({ caller, listener });
-        dispatch(actions.doClear())
-    }
+        dispatch(actions.doClear());
+    };
 
     return (
         <Modal
@@ -68,9 +73,10 @@ const Calling = () => {
     const callStatus = useSelector(selectors.selectStatus);
     const caller = useSelector(selectors.selectCaller);
     const listener = useSelector(selectors.selectListener);
+    const peerId = useSelector(selectors.selectPeerId);
 
     const onAnswerCall = () => {
-        emitAnswerCall({ caller, listener });
+        emitAnswerCall({ caller, listener, peerId });
         // dispatch(actions.doClear());
     };
 
@@ -166,12 +172,11 @@ const Reject = () => {
                             icon="close"
                             shape="round"
                             size="large"
-                            onClick={()=>dispatch(actions.doClear())}
+                            onClick={() => dispatch(actions.doClear())}
                             style={{ marginRight: "7px" }}
                         >
                             Close
                         </Button>
-                        
                     </div>
                 </div>
             </Row>
@@ -187,11 +192,7 @@ const Answer = () => {
     const listener = useSelector(selectors.selectListener);
 
     return (
-        <Modal
-            visible={callStatus === "answer"}
-            footer={null}
-            closable={false}
-        >
+        <Modal visible={callStatus === "answer"} footer={null} closable={false}>
             <Row
                 type="flex"
                 align="middle"
@@ -206,9 +207,7 @@ const Answer = () => {
                         textAlign: "center",
                     }}
                 >
-                    <p style={{ marginTop: "30px" }}>
-                        Answer HAHAHAHHAHHA
-                    </p>
+                    <p style={{ marginTop: "30px" }}>Answer HAHAHAHHAHHA</p>
                     <div>
                         <Button
                             icon="close"
@@ -226,6 +225,97 @@ const Answer = () => {
     );
 };
 
+const VideoStream = () => {
+    let callerVideoRef = useRef();
+    let listenerVideoRef = useRef();
+    const dispatch = useDispatch();
+    const currentUser = useSelector(userSelectors.selectCurrentUser);
+    const callStatus = useSelector(selectors.selectStatus);
+    const caller = useSelector(selectors.selectCaller);
+    const listener = useSelector(selectors.selectListener);
+    const [hasMedia, setHasMedia] = useState(false);
+    const [otherUserId, setOtherUserId] = useState(null);
+    const localStream = useSelector(selectors.selectLocalStream);
+    const remoteStream = useSelector(selectors.selectRemoteStream);
+
+    useEffect(() => {
+        if (
+            callerVideoRef.current ||
+            (callerVideoRef.current &&
+                callerVideoRef.current.srcObject !== localStream)
+        ) {
+            callerVideoRef.current.srcObject = localStream;
+        }
+    }, [localStream]);
+    useEffect(() => {
+        if (
+            listenerVideoRef.current ||
+            (listenerVideoRef.current &&
+                listenerVideoRef.current.srcObject !== remoteStream)
+        ) {
+            listenerVideoRef.current.srcObject = remoteStream;
+        }
+    }, [remoteStream]);
+
+    const handleCallEnded = () => {
+        const remoteId = listener.id === currentUser.id ? caller.id : listener.id
+        emitCallEnded({ id: remoteId });
+        dispatch(actions.doCallEnded());
+    };
+
+    return (
+        <Modal
+            visible={callStatus === "streaming"}
+            footer={null}
+            closable={false}
+            width={"100%"}
+            height={"100%"}
+            centered={true}
+            bodyStyle={{
+                padding: 0,
+                width: "100vw",
+                height: "100vh",
+                overflowY: "hidden",
+            }}
+        >
+            <CallWrapper>
+                <div className="action-buttons">
+                    <Button
+                        icon="camera"
+                        type="primary"
+                        shape="circle"
+                        size="large"
+                    ></Button>
+                    <Button
+                        icon="audio"
+                        type="primary"
+                        shape="circle"
+                        size="large"
+                    ></Button>
+                    <Button
+                        icon="phone"
+                        type="danger"
+                        shape="circle"
+                        size="large"
+                        onClick={handleCallEnded}
+                    ></Button>
+                </div>
+                <video
+                    className="caller-video"
+                    ref={callerVideoRef}
+                    autoPlay={true}
+                ></video>
+
+                <video
+                    className="listener-video"
+                    ref={listenerVideoRef}
+                    autoPlay={true}
+                ></video>
+            </CallWrapper>
+        </Modal>
+    );
+};
+
 function CallPage() {
     const caller = useSelector(selectors.selectCaller);
     const listener = useSelector(selectors.selectListener);
@@ -233,71 +323,12 @@ function CallPage() {
     return (
         <>
             <Contacting />
-            <Calling/>
-            <Reject/>
-            <Answer/>
+            <Calling />
+            <Reject />
+            <Answer />
+            <VideoStream />
         </>
     );
-    // let callerVideo = useRef();
-    // let listenerVideo = useRef();
-
-    // const currentUser = useSelector(userSelectors.selectCurrentUser)
-    // console.log(currentUser);
-    // const [hasMedia, setHasMedia] = useState(false);
-    // const [otherUserId, setOtherUserId] = useState(null);
-
-    // const mediaHandler = new MediaHandler();
-
-    // useEffect(()=>{
-    //     console.log(window.location);
-    //     const p = new Peer({
-    //         initiator: window.location.hash === "#1",
-    //         trickle: false
-    //     });
-    //     p.on("signal", token => console.log(token));
-    // }, [])
-
-    // useEffect(() => {
-    //     mediaHandler.getPermissions().then(stream => {
-    //         setHasMedia(true);
-    //         try {
-    //             callerVideo.current.srcObject = stream;
-    //         } catch (error) {
-    //             console.log(error);
-    //             callerVideo.current.src = URL.createObjectURL(stream);
-    //         }
-    //     });
-    // });
-
-    // return (
-    //     <CallWrapper>
-    //         <div className="action-buttons">
-    //             <Button
-    //                 icon="camera"
-    //                 type="primary"
-    //                 shape="circle"
-    //                 size="large"
-    //             ></Button>
-    //             <Button
-    //                 icon="audio"
-    //                 type="primary"
-    //                 shape="circle"
-    //                 size="large"
-    //             ></Button>
-    //             <Button
-    //                 icon="phone"
-    //                 type="danger"
-    //                 shape="circle"
-    //                 size="large"
-    //             ></Button>
-    //         </div>
-    //         <img
-    //             className="listener-video"
-    //             src="https://i.ytimg.com/vi/22MDXte1nYs/maxresdefault.jpg"
-    //         />
-    //         <video className="caller-video" ref={callerVideo} autoPlay={true}></video>
-    //     </CallWrapper>
-    // );
 }
 
 export default CallPage;

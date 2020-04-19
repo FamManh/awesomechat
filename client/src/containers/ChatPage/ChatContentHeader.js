@@ -2,11 +2,11 @@ import React from 'react'
 import { Phone, Video, Info } from "react-feather";
 import actions from "./actions";
 import selectors from "./selectors";
+import callSelectors from '../CallPage/selectors'
 import userSelectors from '../UserPage/selectors'
 import { Button, Row, Layout } from "antd";
 import AvatarCus from "../../components/AvatarCus";
 import { useSelector, useDispatch } from 'react-redux';
-import getSocket from '../rootSocket';
 import { emitCheckListenerStatus } from '../CallPage/socket';
 
 const { Header } = Layout;
@@ -16,6 +16,7 @@ function ChatContentHeader() {
     const dispatch = useDispatch();
     const record = useSelector(selectors.selectRecord);
     const currentUser = useSelector(userSelectors.selectCurrentUser)
+    const peerId = useSelector(callSelectors.selectPeerId);
     const handleCallVideoClick = () => {
 
         // b01. kiểm trả listener có online hay không 
@@ -65,7 +66,7 @@ function ChatContentHeader() {
             </Row>
             <span className="mr-auto" />
             <div>
-                {record && record.conversationType === "User" && (
+                {record && record.conversationType === "User" && peerId && (
                     <>
                         <Button
                             shape="circle"
