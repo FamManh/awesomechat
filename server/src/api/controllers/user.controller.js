@@ -216,6 +216,7 @@ exports.updateAvatar = (req, res, next) => {
   avatarUploadFile(req, res, async err => {
     try {
       if (!req.file) {
+        console.log(err);
         throw new APIError({
           message: "Please select a file.",
           status: httpStatus.BAD_REQUEST

@@ -13,6 +13,7 @@ const fs = require("fs");
 const storagePhoto = require("../utils/storagePhoto");
 const storageFile = require("../utils/storageFile");
 const _ = require('lodash')
+const logger = require('../../config/logger')
 
 const getPhotoPath = (images, basePath) => {
   if (!images || !images.length < 0) return null;
@@ -250,7 +251,9 @@ let photosUploadFile = multer(storagePhoto).single("photos");
 exports.addPhotos = (req, res, next) => {
   photosUploadFile(req, res, async (err) => {
     try {
+      
       if (!req.file) {
+        console.log(err);
         throw new APIError({
           message: "Please select a file.",
           status: httpStatus.BAD_REQUEST,
@@ -284,7 +287,9 @@ let filesUpload = multer(storageFile).single('files');
 exports.addFiles = (req, res, next) => {
   filesUpload(req, res, async (err) => {
     try {
+      
       if (!req.file) {
+        console.log(err);
         throw new APIError({
           message: "Please select a file.",
           status: httpStatus.BAD_REQUEST,
