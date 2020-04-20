@@ -13,6 +13,7 @@ const error = require('../api/middlewares/error');
 const http = require('http');
 const socketio = require("socket.io");
 const initSockets = require('../api/sockets');
+const path = require('path')
 /**
 * Express instance
 * @public
@@ -20,7 +21,7 @@ const initSockets = require('../api/sockets');
 const app = express();
 
 //static file
-app.use(express.static('public'));
+app.use("/public", express.static(path.join(__dirname, "../../public")));
 
 // Init server with socket.io and express app
 let server = http.createServer(app);
