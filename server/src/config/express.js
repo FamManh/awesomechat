@@ -11,7 +11,7 @@ const { logs } = require('./vars');
 const strategies = require('./passport');
 const error = require('../api/middlewares/error');
 const http = require('http');
-const socketio = require('socket.io');
+const socketio = require("socket.io");
 const initSockets = require('../api/sockets');
 /**
 * Express instance
@@ -24,7 +24,7 @@ app.use(express.static('public'));
 
 // Init server with socket.io and express app
 let server = http.createServer(app);
-let io = socketio(server);
+let io = socketio(server, { path: "/chat/socket.io" });
 
 
 // request logging. dev: console | production: file

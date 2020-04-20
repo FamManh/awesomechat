@@ -23,3 +23,5 @@
 # làm chức năng loading ...
 
 # login vẫn chưa run socket
+
+# khi connect tới socket cần phải kiểm tra jwt

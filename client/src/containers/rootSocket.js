@@ -38,8 +38,12 @@ export const configSocket = () => {
     }
     if (socket) return;
     socket = io.connect(endpoint, {
+        
+        path: '/chat/socket.io',
         query: `token=${isAuthenticated()}`,
+        
     });
+    console.log(socket)
     
 
     socket.on("connect", onConnected);
