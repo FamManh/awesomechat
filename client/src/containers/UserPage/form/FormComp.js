@@ -11,6 +11,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import { User, Mail, Eye } from "react-feather";
 import UpdateAvatar from "./UpdateAvatar";
+import {Link} from 'react-router-dom'
 const FormComp = ({ match, form }) => {
     const dispatch = useDispatch();
     const saveLoading = useSelector(selectors.selectSaveLoading);
@@ -40,7 +41,7 @@ const FormComp = ({ match, form }) => {
                             <UpdateAvatar
                                 picture={
                                     record
-                                        ? `${process.env.REACT_APP_STATIC_URI}/${record.picture}`
+                                        ? `${process.env.REACT_APP_STATIC_URI}/images/users/${record.picture}`
                                         : null
                                 }
                             />
@@ -49,7 +50,7 @@ const FormComp = ({ match, form }) => {
                     <Form
                         style={{ maxWidth: "500px" }}
                         layout="vertical"
-                        onSubmit={e => {
+                        onSubmit={(e) => {
                             e.preventDefault();
                             form.validateFields((err, values) => {
                                 if (!err) {
@@ -62,7 +63,7 @@ const FormComp = ({ match, form }) => {
                             <Form.Item
                                 style={{
                                     display: "inline-block",
-                                    width: "calc(50% - 12px)"
+                                    width: "calc(50% - 12px)",
                                 }}
                                 label="First Name"
                             >
@@ -75,18 +76,18 @@ const FormComp = ({ match, form }) => {
                                         {
                                             required: true,
                                             message:
-                                                "Please input your Firstname!"
+                                                "Please input your Firstname!",
                                         },
                                         {
                                             min: 2,
-                                            message: "At less 2 characters!"
+                                            message: "At less 2 characters!",
                                         },
                                         {
                                             max: 20,
                                             message:
-                                                "Must be 20 characters or less!"
-                                        }
-                                    ]
+                                                "Must be 20 characters or less!",
+                                        },
+                                    ],
                                 })(
                                     <Input
                                         id="firstname"
@@ -95,7 +96,7 @@ const FormComp = ({ match, form }) => {
                                                 size={16}
                                                 strokeWidth={1}
                                                 style={{
-                                                    color: "rgba(0,0,0,.25)"
+                                                    color: "rgba(0,0,0,.25)",
                                                 }}
                                             />
                                         }
@@ -107,13 +108,13 @@ const FormComp = ({ match, form }) => {
                                 style={{
                                     display: "inline-block",
                                     width: "24px",
-                                    textAlign: "center"
+                                    textAlign: "center",
                                 }}
                             ></span>
                             <Form.Item
                                 style={{
                                     display: "inline-block",
-                                    width: "calc(50% - 12px)"
+                                    width: "calc(50% - 12px)",
                                 }}
                                 label="Last Name"
                             >
@@ -126,18 +127,18 @@ const FormComp = ({ match, form }) => {
                                         {
                                             required: true,
                                             message:
-                                                "Please input your Lastname!"
+                                                "Please input your Lastname!",
                                         },
                                         {
                                             min: 2,
-                                            message: "At less 2 characters!"
+                                            message: "At less 2 characters!",
                                         },
                                         {
                                             max: 20,
                                             message:
-                                                "Must be 20 characters or less!"
-                                        }
-                                    ]
+                                                "Must be 20 characters or less!",
+                                        },
+                                    ],
                                 })(
                                     <Input
                                         id="lastname"
@@ -146,7 +147,7 @@ const FormComp = ({ match, form }) => {
                                                 size={16}
                                                 strokeWidth={1}
                                                 style={{
-                                                    color: "rgba(0,0,0,.25)"
+                                                    color: "rgba(0,0,0,.25)",
                                                 }}
                                             />
                                         }
@@ -163,13 +164,13 @@ const FormComp = ({ match, form }) => {
                                     {
                                         type: "email",
                                         message:
-                                            "The input is not valid E-mail!"
+                                            "The input is not valid E-mail!",
                                     },
                                     {
                                         required: true,
-                                        message: "Please input your E-mail!"
-                                    }
-                                ]
+                                        message: "Please input your E-mail!",
+                                    },
+                                ],
                             })(
                                 <Input
                                     prefix={
@@ -194,6 +195,9 @@ const FormComp = ({ match, form }) => {
                             >
                                 Save
                             </Button>
+                            <Link to="/">
+                                <Button icon="rollback">Back</Button>
+                            </Link>
                         </Form.Item>
                     </Form>
                 </FormWrapper>
