@@ -21,7 +21,7 @@ const path = require('path')
 const app = express();
 
 //static file
-app.use("/public", express.static(path.join(__dirname, "../../public")));
+app.use("/asapi", express.static(path.join(__dirname, "../../public")));
 
 // Init server with socket.io and express app
 let server = http.createServer(app);
