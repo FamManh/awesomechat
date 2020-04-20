@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Form, Input, Typography, Row } from "antd";
-import { Eye, Mail, Triangle, User } from "react-feather";
+import { Eye, Mail, User } from "react-feather";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,6 +18,8 @@ const Content = styled.div`
 const Signup = ({ form }) => {
     const dispatch = useDispatch();
 
+    const signupLoading = useSelector(selectors.selectSignupLoading)
+
     const doSubmit = (userInfo) => {
         dispatch(actions.doSignup(userInfo));
     };
@@ -33,13 +35,14 @@ const Signup = ({ form }) => {
             <Content>
                 <div className="text-center mb-5">
                     <Link to="/signup">
-                        <a className="brand mr-0">
-                            <Triangle size={32} strokeWidth={1} />
-                        </a>
+                        <span className="brand mr-0">
+                            {/* <Triangle size={32} strokeWidth={1} /> */}
+                            <img width="150" src="/logo-chat.png" />
+                        </span>
                     </Link>
                     <h5 className="mb-0 mt-3">Sign up</h5>
 
-                    <p className="text-muted">Create an accoun</p>
+                    <p className="text-muted">Create an account</p>
                 </div>
 
                 {/* Display errors  */}
@@ -51,7 +54,7 @@ const Signup = ({ form }) => {
 
                 <Form
                     layout="vertical"
-                    onSubmit={e => {
+                    onSubmit={(e) => {
                         e.preventDefault();
                         form.validateFields((err, values) => {
                             if (!err) {
@@ -64,7 +67,7 @@ const Signup = ({ form }) => {
                         <FormItem
                             style={{
                                 display: "inline-block",
-                                width: "calc(50% - 12px)"
+                                width: "calc(50% - 12px)",
                             }}
                             label="First Name"
                         >
@@ -72,18 +75,18 @@ const Signup = ({ form }) => {
                                 rules: [
                                     {
                                         required: true,
-                                        message: "Please input your Firstname!"
+                                        message: "Please input your Firstname!",
                                     },
                                     {
                                         min: 2,
-                                        message: "At less 2 characters!"
+                                        message: "At less 2 characters!",
                                     },
                                     {
                                         max: 20,
                                         message:
-                                            "Must be 20 characters or less!"
-                                    }
-                                ]
+                                            "Must be 20 characters or less!",
+                                    },
+                                ],
                             })(
                                 <Input
                                     id="firstname"
@@ -102,13 +105,13 @@ const Signup = ({ form }) => {
                             style={{
                                 display: "inline-block",
                                 width: "24px",
-                                textAlign: "center"
+                                textAlign: "center",
                             }}
                         ></span>
                         <FormItem
                             style={{
                                 display: "inline-block",
-                                width: "calc(50% - 12px)"
+                                width: "calc(50% - 12px)",
                             }}
                             label="Last Name"
                         >
@@ -116,18 +119,18 @@ const Signup = ({ form }) => {
                                 rules: [
                                     {
                                         required: true,
-                                        message: "Please input your Lastname!"
+                                        message: "Please input your Lastname!",
                                     },
                                     {
                                         min: 2,
-                                        message: "At less 2 characters!"
+                                        message: "At less 2 characters!",
                                     },
                                     {
                                         max: 20,
                                         message:
-                                            "Must be 20 characters or less!"
-                                    }
-                                ]
+                                            "Must be 20 characters or less!",
+                                    },
+                                ],
                             })(
                                 <Input
                                     id="lastname"
@@ -148,13 +151,13 @@ const Signup = ({ form }) => {
                             rules: [
                                 {
                                     type: "email",
-                                    message: "The input is not valid E-mail!"
+                                    message: "The input is not valid E-mail!",
                                 },
                                 {
                                     required: true,
-                                    message: "Please input your E-mail!"
-                                }
-                            ]
+                                    message: "Please input your E-mail!",
+                                },
+                            ],
                         })(
                             <Input
                                 prefix={
@@ -175,17 +178,17 @@ const Signup = ({ form }) => {
                             rules: [
                                 {
                                     required: true,
-                                    message: "Please input your Password!"
+                                    message: "Please input your Password!",
                                 },
                                 {
                                     min: 6,
-                                    message: "At less 6 characters!"
+                                    message: "At less 6 characters!",
                                 },
                                 {
                                     max: 128,
-                                    message: "Must be 128 characters or less!"
-                                }
-                            ]
+                                    message: "Must be 128 characters or less!",
+                                },
+                            ],
                         })(
                             <Input
                                 prefix={
@@ -206,7 +209,7 @@ const Signup = ({ form }) => {
                             rules: [
                                 {
                                     required: true,
-                                    message: "Please confirm your password!"
+                                    message: "Please confirm your password!",
                                 },
                                 {
                                     validator: (rule, value, callback) => {
@@ -219,9 +222,9 @@ const Signup = ({ form }) => {
                                         } else {
                                             callback();
                                         }
-                                    }
-                                }
-                            ]
+                                    },
+                                },
+                            ],
                         })(
                             <Input
                                 prefix={
@@ -238,7 +241,12 @@ const Signup = ({ form }) => {
                     </FormItem>
 
                     <FormItem>
-                        <Button type="primary" htmlType="submit" block>
+                        <Button
+                            loading={signupLoading}
+                            type="primary"
+                            htmlType="submit"
+                            block
+                        >
                             Sign up
                         </Button>
                     </FormItem>
@@ -247,7 +255,7 @@ const Signup = ({ form }) => {
                         <small className="text-muted">
                             <span>Already have an account?</span>{" "}
                             <Link to="/signin">
-                                <a>&nbsp;Login Now</a>
+                                <span>&nbsp;Login Now</span>
                             </Link>
                         </small>
                     </div>

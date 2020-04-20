@@ -23,6 +23,7 @@ const actions = {
             dispatch({
                 type: constants.CHAT_GET_ERROR,
             });
+            getHistory().push('/')
         }
     },
     doFind: (id) => async (dispatch) => {

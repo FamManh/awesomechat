@@ -1,23 +1,17 @@
-import { Button, Form, Input, Row, Icon, Upload, message, Col } from "antd";
+import { Button, Form, Input, Row } from "antd";
 import actions from "../actions";
 import selectors from "../selectors";
-import React, { useEffect, useState } from "react";
-import Spinner from "../../shared/Spinner";
+import React from "react";
 import FormWrapper, {
-    tailFormItemLayout,
-    formItemLayout
 } from "../../shared/styles/FormWrapper";
 import { useSelector, useDispatch } from "react-redux";
-import { useParams } from "react-router-dom";
-import { User, Mail, Eye } from "react-feather";
-import UpdateAvatar from "./UpdateAvatar";
-const FormComp = ({ match, form }) => {
+import {  Eye } from "react-feather";
+import { Link } from "react-router-dom";
+const FormComp = ({ form }) => {
     const dispatch = useDispatch();
     const saveLoading = useSelector(selectors.selectSaveLoading);
-    const dataLoading = useSelector(selectors.selectDataLoading);
-    let { userId } = useParams();
     let doSubmit = values => {
-        dispatch(actions.doUpdate(values));
+        dispatch(actions.doUpdatePassword(values));
     };
 
     let renderForm = () => {
@@ -33,7 +27,7 @@ const FormComp = ({ match, form }) => {
                     <Form
                         style={{ maxWidth: "500px" }}
                         layout="vertical"
-                        onSubmit={e => {
+                        onSubmit={(e) => {
                             e.preventDefault();
                             form.validateFields((err, values) => {
                                 if (!err) {
@@ -42,23 +36,24 @@ const FormComp = ({ match, form }) => {
                             });
                         }}
                     >
-                        <Form.Item label="Password">
-                            {form.getFieldDecorator("password", {
+                        <Form.Item label="Old Password">
+                            {form.getFieldDecorator("oldPassword", {
                                 rules: [
                                     {
                                         required: true,
-                                        message: "Please input your Password!"
+                                        message:
+                                            "Please input your old Password!",
                                     },
                                     {
                                         min: 6,
-                                        message: "At less 6 characters!"
+                                        message: "At less 6 characters!",
                                     },
                                     {
                                         max: 128,
                                         message:
-                                            "Must be 128 characters or less!"
-                                    }
-                                ]
+                                            "Must be 128 characters or less!",
+                                    },
+                                ],
                             })(
                                 <Input
                                     prefix={
@@ -69,7 +64,39 @@ const FormComp = ({ match, form }) => {
                                         />
                                     }
                                     type="password"
-                                    placeholder="Password"
+                                    placeholder="Old password"
+                                />
+                            )}
+                        </Form.Item>
+                        <Form.Item label="New Password">
+                            {form.getFieldDecorator("newPassword", {
+                                rules: [
+                                    {
+                                        required: true,
+                                        message:
+                                            "Please input your new Password!",
+                                    },
+                                    {
+                                        min: 6,
+                                        message: "At less 6 characters!",
+                                    },
+                                    {
+                                        max: 128,
+                                        message:
+                                            "Must be 128 characters or less!",
+                                    },
+                                ],
+                            })(
+                                <Input
+                                    prefix={
+                                        <Eye
+                                            size={16}
+                                            strokeWidth={1}
+                                            style={{ color: "rgba(0,0,0,.25)" }}
+                                        />
+                                    }
+                                    type="password"
+                                    placeholder="New password"
                                 />
                             )}
                         </Form.Item>
@@ -79,7 +106,8 @@ const FormComp = ({ match, form }) => {
                                 rules: [
                                     {
                                         required: true,
-                                        message: "Please confirm your password!"
+                                        message:
+                                            "Please confirm your password!",
                                     },
                                     {
                                         validator: (rule, value, callback) => {
@@ -87,7 +115,7 @@ const FormComp = ({ match, form }) => {
                                                 value &&
                                                 value !==
                                                     form.getFieldValue(
-                                                        "password"
+                                                        "newPassword"
                                                     )
                                             ) {
                                                 callback(
@@ -96,9 +124,9 @@ const FormComp = ({ match, form }) => {
                                             } else {
                                                 callback();
                                             }
-                                        }
-                                    }
-                                ]
+                                        },
+                                    },
+                                ],
                             })(
                                 <Input
                                     prefix={
@@ -115,13 +143,16 @@ const FormComp = ({ match, form }) => {
                         </Form.Item>
                         <Form.Item className="form-buttons">
                             <Button
-                                // loading={saveLoading}
+                                loading={saveLoading}
                                 type="primary"
                                 htmlType="submit"
                                 icon="save"
                             >
                                 Save
                             </Button>
+                            <Link to="/">
+                                <Button icon="rollback">Back</Button>
+                            </Link>
                         </Form.Item>
                     </Form>
                 </FormWrapper>

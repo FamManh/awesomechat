@@ -33,7 +33,7 @@ import MessageList from "./MessageList";
 import ContactList from "../ContactPage/list/List";
 import UserList from "../UserPage/list/List";
 import { isAuthenticated } from "../shared/routes/permissionChecker";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import userSelectors from '../UserPage/selectors'
 import ModalCreateGroupchat from "./ModalCreateGroupchat";
 import AvatarCus from "../../components/AvatarCus";
@@ -70,7 +70,7 @@ const getAvatar = (record, size = 40) => {
 
 
 function ChatSidebar() {
-
+    const dispatch = useDispatch()
     const [currentTab, setCurrentTab] = useState("message");
     const [modalCreateGroupChatVisible, setModalCreateGroupChatVisible] = useState(false)
     const currentUser = useSelector(userSelectors.selectCurrentUser);
@@ -149,27 +149,24 @@ function ChatSidebar() {
     const menu = (
         <Menu style={{ width: "150px" }}>
             {currentUser && (
-            
-                    <Menu.Item key="0">
-                        <Link to={`/user/${currentUser.id}/update`}>
-                            Update info
-                        </Link>
-                    </Menu.Item>
-                
+                <Menu.Item key="0">
+                    <Link to={`/user/${currentUser.id}/update`}>
+                        Update info
+                    </Link>
+                </Menu.Item>
             )}
             {currentUser && (
-                    <Menu.Item key="1">
-                        <Link to={`/user/${currentUser.id}/update-password`}>
-                            Change password
-                        </Link>
-                    </Menu.Item>
-                
+                <Menu.Item key="1">
+                    <Link to={`/user/${currentUser.id}/update-password`}>
+                        Change password
+                    </Link>
+                </Menu.Item>
             )}
             <Menu.Item key="2">
                 <a>Settings</a>
             </Menu.Item>
             <Menu.Divider />
-            <Menu.Item key="3" onClick={authActions.doSignout}>
+            <Menu.Item key="3" onClick={()=>dispatch(authActions.doSignout())}>
                 <a>Sign out</a>
             </Menu.Item>
         </Menu>

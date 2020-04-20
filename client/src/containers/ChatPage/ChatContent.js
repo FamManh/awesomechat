@@ -7,6 +7,7 @@ import {
     Row,
     Result,
     Icon,
+    Spin,
 } from "antd";
 import ChatStyled from "./styles/chat";
 import { useSelector, useDispatch } from "react-redux";
@@ -62,9 +63,9 @@ function ChatContent() {
                 style={{ minHeight: "100vh", width: "100%" }}
             >
                 <Result
-                    icon={<Icon type="smile" theme="twoTone" />}
+                    icon={<img width="300" src="/logo-chat.png" />}
                     title="Welcome to Awesome Chat"
-                    subTitle="Slogan of Awesome Chat"
+                    subTitle="On Being Awesome"
                 />
             </Row>
         );
@@ -72,7 +73,7 @@ function ChatContent() {
 
     return (
         <Layout style={{ position: "relative" }}>
-            <ChatContentHeader/>
+            <ChatContentHeader />
             <ChatStyled ref={scrollRef}>
                 {record && <Conversation messages={record.messages} />}
             </ChatStyled>

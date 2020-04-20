@@ -42,50 +42,52 @@ exports.load = async (req, res, next, id) => {
  * @public
  */
 exports.get = async (req, res) => {
-  let senderId = req.user.id;
-  let receiverId = req.params.receiverId;
-  let receiverInfo = await User.findById(receiverId);
-  let responsceList = [];
-  let responeData = {}
+  try{
+let senderId = req.user.id;
+let receiverId = req.params.receiverId;
+let receiverInfo = await User.findById(receiverId);
+let responsceList = [];
+let responeData = {};
 
-  if(!receiverInfo){
-    // Tìm id hiện tại có phải là group chat hay không 
-    receiverInfo = await ChatGroup.findById(receiverId);
+if (!receiverInfo) {
+  // Tìm id hiện tại có phải là group chat hay không
+  receiverInfo = await ChatGroup.findById(receiverId);
 
-    // Nếu không phải group chat thì trả về lỗi không tìm thấý 
-    if (!receiverInfo) {
-      return res.status(httpStatus.NOT_FOUND).json({erro: "Not found"})
-    }
-
-    // Lấy danh sách cuộc trò chuyện 
-    const groupMessages = await Message.getGroup({ groupId: receiverInfo.id });
-    
-    // Transform kết quả trả về
-    responsceList = await groupMessages.map((message) => message.transform());
-    responeData.conversationType = "ChatGroup";
-    responeData.receiver = {
-      id: receiverInfo.id,
-      picture: receiverInfo.picture,
-      name: receiverInfo.name,
-      members: receiverInfo.members,
-    };
-
-  }else{
-    // personal chat
-    const personalMessages = await Message.getPersonal({ senderId, receiverId });
-    responsceList = await personalMessages.map((message) => message.transform());
-    responeData.conversationType = "User";
-    responeData.receiver = {
-      picture: receiverInfo.picture,
-      firstname: receiverInfo.firstname,
-      lastname: receiverInfo.lastname,
-      id: receiverInfo.id,
-      
-    };
+  // Nếu không phải group chat thì trả về lỗi không tìm thấý
+  if (!receiverInfo) {
+    throw new APIError({message: 'Not found', status: httpStatus.BAD_REQUEST})
   }
-  
-  responeData.messages = responsceList.reverse();
-  res.json(responeData);
+
+  // Lấy danh sách cuộc trò chuyện
+  const groupMessages = await Message.getGroup({ groupId: receiverInfo.id });
+
+  // Transform kết quả trả về
+  responsceList = await groupMessages.map((message) => message.transform());
+  responeData.conversationType = "ChatGroup";
+  responeData.receiver = {
+    id: receiverInfo.id,
+    picture: receiverInfo.picture,
+    name: receiverInfo.name,
+    members: receiverInfo.members,
+  };
+} else {
+  // personal chat
+  const personalMessages = await Message.getPersonal({ senderId, receiverId });
+  responsceList = await personalMessages.map((message) => message.transform());
+  responeData.conversationType = "User";
+  responeData.receiver = {
+    picture: receiverInfo.picture,
+    firstname: receiverInfo.firstname,
+    lastname: receiverInfo.lastname,
+    id: receiverInfo.id,
+  };
+}
+
+responeData.messages = responsceList.reverse();
+res.json(responeData);
+  }catch(error){
+    next(error)
+  }
 };
 
 /**
