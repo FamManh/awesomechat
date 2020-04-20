@@ -11,6 +11,9 @@ const initialState = {
 const authReducer = (state = initialState, {type, payload})=>
     produce(state, draft=> {
     switch (type) {
+        case constants.SIGNIN_INIT_LOADING_DONE:
+            draft.initLoading = false;
+            break;
         case constants.SIGNIN_START:
             draft.signinLoading = true;
             draft.signinError = null;

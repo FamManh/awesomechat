@@ -17,6 +17,26 @@ const initialState = {
 const contactReducer = (state = initialState, { type, payload }) =>
     produce(state, draft => {
         switch (type) {
+            case constants.USER_CHANGE_AVATAR:
+                if (state.current) {
+                    draft.current.picture = payload;
+                }
+                break;
+            case constants.USER_UPDATE_START:
+                draft.saveLoading = true;
+                draft.error = null;
+                break;
+            case constants.USER_UPDATE_SUCCESS:
+                draft.saveLoading = false;
+                if(payload){
+                    draft.current = payload;  
+                }
+                
+                break;
+            case constants.USER_UPDATE_ERROR:
+                draft.saveLoading = false;
+                draft.error = payload;
+                break;
             case constants.USER_ADD_CONTACT_START:
                 draft.saveLoading = true;
                 draft.error = null;

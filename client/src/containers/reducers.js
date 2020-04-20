@@ -8,6 +8,7 @@ import message from "./ChatPage/reducer";
 import call from './CallPage/reducer'
 import socket from './socket/reducer'
 
+
 export default (history) =>
     combineReducers({
         router: connectRouter(history),
@@ -19,3 +20,4 @@ export default (history) =>
         call,
         socket,
     });
+    

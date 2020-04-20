@@ -7,13 +7,20 @@ import { routerMiddleware } from "connected-react-router";
 
 const history = createBrowserHistory();
 
+const resetEnhanser = rootReducer => (state, action)=>{
+    if(action.type !== "RESET") return rootReducer(state, action)
+    const newState = rootReducer(undefined, {});
+    newState.router = state.router;
+    return newState
+}
+
 let store;
 export function configStore(preloadState) {
     const middlewares = [thunkMiddleware, routerMiddleware(history)].filter(
         Boolean
     );
     store = createStore(
-        createRootReducer(history),
+        resetEnhanser(createRootReducer(history)),
         preloadState,
         composeWithDevTools(applyMiddleware(...middlewares))
     );

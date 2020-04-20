@@ -14,6 +14,7 @@ import { isAuthenticated } from "../../shared/routes/permissionChecker";
 const UpdateAvatar = ({picture}) => {
     const [loading, setLoading] = useState(false);
     const [imageUrl, setImageUrl] = useState(picture ? picture : "");
+    const dispatch = useDispatch()
     useEffect(() => {
         setImageUrl(picture);
         return () => {
@@ -44,10 +45,14 @@ const UpdateAvatar = ({picture}) => {
         }
         if (info.file.status === "done") {
             // Get this url from response in real world.
-            getBase64(info.file.originFileObj, imageUrl => {
-                setImageUrl(imageUrl);
-                setLoading(false);
-            });
+            if (info.file.response.message === "success"){
+                dispatch(actions.doChangeAvatar(info.file.response.picture))
+            }
+                getBase64(info.file.originFileObj, (imageUrl) => {
+                    setImageUrl(imageUrl);
+                    setLoading(false);
+                });
+            
         }
     };
 

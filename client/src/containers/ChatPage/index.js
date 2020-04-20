@@ -11,6 +11,8 @@ import RightSideBar from "./RightSidebar";
 import selectors from "./selectors";
 export default function ChatPage() {
     const rightSidebarVisible = useSelector(selectors.selectRightSidebarVisible)
+    const record = useSelector(selectors.selectRecord);
+
     const dispatch = useDispatch();
     let {userId} = useParams();
     useEffect(() => {

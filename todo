@@ -25,3 +25,7 @@
 # login vẫn chưa run socket
 
 # khi connect tới socket cần phải kiểm tra jwt
+
+# đăng xuất thì phải clear thông tin curent user 
+
+# bắt sự kiện members trùng id 

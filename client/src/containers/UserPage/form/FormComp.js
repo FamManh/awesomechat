@@ -188,7 +188,7 @@ const FormComp = ({ match, form }) => {
 
                         <Form.Item className="form-buttons">
                             <Button
-                                // loading={saveLoading}
+                                loading={saveLoading}
                                 type="primary"
                                 htmlType="submit"
                                 icon="save"

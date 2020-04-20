@@ -11,7 +11,7 @@ const APIError = require("../utils/APIError");
 const {
   avatarDirectory,
   avatarTypes,
-  avatarLimitSize
+  avatarLimitSize,
 } = require("../../config/vars");
 /**
  * Load user and append to req.
@@ -33,9 +33,8 @@ exports.load = async (req, res, next, id) => {
  */
 exports.get = (req, res) => res.json(req.locals.user.transform());
 
-
 exports.getCurrentUser = async (req, res) => {
-  const user = await User.findById(req.user.id)
+  const user = await User.findById(req.user.id);
   return res.json(user.transform());
 };
 
@@ -46,72 +45,46 @@ exports.getCurrentUser = async (req, res) => {
 exports.loggedIn = (req, res) => res.json(req.user.transform());
 
 /**
- * Create new user
+ * Update existing user
  * @public
  */
-exports.create = async (req, res, next) => {
-  try {
-    const user = new User(req.body);
-    const savedUser = await user.save();
-    res.status(httpStatus.CREATED);
-    res.json(savedUser.transform());
-  } catch (error) {
-    next(User.checkDuplicateEmail(error));
-  }
-};
+exports.update = async (req, res, next) => {
+  let user = await User.get(req.user.id);
+  // const ommitRole = user.role !== "admin" ? "role" : "";
+  // const ommitPassword = req.body.password !== "admin" ? "role" : "";
 
-/**
- * Replace existing user
- * @public
- */
-exports.replace = async (req, res, next) => {
-  try {
-    const { user } = req.locals;
-    const newUser = new User(req.body);
-    const ommitRole = user.role !== "admin" ? "role" : "";
-    const newUserObject = omit(newUser.toObject(), "_id", ommitRole);
-
-    await user.updateOne(newUserObject, { override: true, upsert: true });
-    const savedUser = await User.findById(user._id);
-
-    res.json(savedUser.transform());
-  } catch (error) {
-    next(User.checkDuplicateEmail(error));
-  }
+  const updatedUser = omit(req.body, ["role", "password"]);
+  user = Object.assign(user, updatedUser);
+  user
+    .save()
+    .then((savedUser) => res.json(savedUser.transform()))
+    .catch((e) => next(User.checkDuplicateUsername(e)));
 };
 
 /**
  * Update existing user
  * @public
  */
-exports.update = async (req, res, next) => {
-  let user = await User.get(req.user.id);
-  const ommitRole = user.role !== "admin" ? "role" : "";
-  
-  const updatedUser = omit(req.body, ommitRole);
-  user = Object.assign(user, updatedUser);
-  user
-    .save()
-    .then(savedUser => res.json(savedUser.transform()))
-    .catch(e => next(User.checkDuplicateUsername(e)));
-    
+exports.updatePassword = async (req, res, next) => {
+  try {
+    let user = await User.get(req.user.id);
+    const { oldPassword, newPassword } = req.body;
+    const passwordMatch = await user.passwordMatches(oldPassword);
+    if (passwordMatch) {
+      user = Object.assign(user, { password: newPassword });
+      return user
+        .save()
+        .then(() => res.json({message: "update succesfully"}))
+        .catch((e) => next(e));
+    }
+    throw new APIError({
+      message: "Passwords don't match",
+      status: httpStatus.NOT_FOUND,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
-
-/**
- * Update user's password
- * @public
- */
-// exports.updatePassword = (req, res, next) => {
-//   let user = await User.get(req.user.id);
-//   const ommitRole = user.role !== "admin" ? "role" : "";
-//   const updatedUser = omit(req.body, ommitRole);
-//   user = Object.assign(user, updatedUser);
-//   user
-//     .save()
-//     .then(savedUser => res.json(savedUser.transform()))
-//     .catch(e => next(User.checkDuplicateUsername(e)));
-    
-// };
 
 /**
  * Get user list
@@ -124,29 +97,29 @@ exports.list = async (req, res, next) => {
     let users = await User.list({ ...req.query });
     // get userids list
     let usersId = [];
-    users.forEach(item => {
+    users.forEach((item) => {
       usersId.push(item.id);
     });
     let contacts = await Contact.find({
       $or: [
         {
-          $and: [{ userId: { $in: usersId } }, { contactId: currentUserId }]
+          $and: [{ userId: { $in: usersId } }, { contactId: currentUserId }],
         },
         {
-          $and: [{ userId: currentUserId }, { contactId: { $in: usersId } }]
-        }
-      ]
+          $and: [{ userId: currentUserId }, { contactId: { $in: usersId } }],
+        },
+      ],
     });
 
     let responseUsers = [];
-    users = users.map(user => user.transform());
+    users = users.map((user) => user.transform());
 
-    users.forEach(userItem => {
+    users.forEach((userItem) => {
       let tempItem = { ...userItem, type: "notContact" };
       if (userItem.id == currentUserId) {
         tempItem.type = "you";
       } else {
-        contacts.forEach(contactItem => {
+        contacts.forEach((contactItem) => {
           if (userItem.id == contactItem.userId) {
             // request sent
             if (contactItem.status) {
@@ -190,7 +163,7 @@ exports.remove = (req, res, next) => {
   user
     .remove()
     .then(() => res.status(httpStatus.NO_CONTENT).end())
-    .catch(e => next(e));
+    .catch((e) => next(e));
 };
 
 let storageAvatar = multer.diskStorage({
@@ -204,28 +177,28 @@ let storageAvatar = multer.diskStorage({
     }
     let avatarName = `${Date.now()}-${uuidv4()}-${file.originalname}`;
     callback(null, avatarName);
-  }
+  },
 });
 
 let avatarUploadFile = multer({
   storage: storageAvatar,
-  limits: { fileSize: avatarLimitSize }
+  limits: { fileSize: avatarLimitSize },
 }).single("avatar");
 
 exports.updateAvatar = (req, res, next) => {
-  avatarUploadFile(req, res, async err => {
+  avatarUploadFile(req, res, async (err) => {
     try {
       if (!req.file) {
         console.log(err);
         throw new APIError({
           message: "Please select a file.",
-          status: httpStatus.BAD_REQUEST
+          status: httpStatus.BAD_REQUEST,
         });
       }
-    
+
       let updateUserItem = {
         picture: req.file.filename,
-        updatedAt: Date.now()
+        updatedAt: Date.now(),
       };
 
       // update user
@@ -241,7 +214,7 @@ exports.updateAvatar = (req, res, next) => {
 
       let result = {
         message: "success",
-        picture: `${avatarDirectory}/${updateUserItem.picture}`
+        picture: `${updateUserItem.picture}`,
       };
       return res.send(result);
     } catch (error) {

@@ -20,6 +20,7 @@ import actions from "../actions";
 import selectors from "../selectors";
 import Text from "antd/lib/typography/Text";
 import { Link } from "react-router-dom";
+import AvatarCus from "../../../components/AvatarCus";
 
 const { Panel } = Collapse;
 
@@ -74,27 +75,7 @@ const ContactList = () => {
                             <List.Item.Meta
                                 avatar={
                                     <Badge dot status="success">
-                                        {item.picture ? (
-                                            <Avatar
-                                                src={
-                                                    process.env
-                                                        .REACT_APP_STATIC_URI +
-                                                    "/" +
-                                                    item.picture
-                                                }
-                                            />
-                                        ) : (
-                                            <Avatar
-                                                size={48}
-                                                style={{
-                                                    color: "#f56a00",
-                                                    backgroundColor: "#fde3cf",
-                                                }}
-                                            >
-                                                {item.firstname[0].toUpperCase() +
-                                                    item.lastname[0].toUpperCase()}
-                                            </Avatar>
-                                        )}
+                                        <AvatarCus record={item} />
                                     </Badge>
                                 }
                                 title={
@@ -156,23 +137,14 @@ const ContactList = () => {
                             <List.Item.Meta
                                 avatar={
                                     <Badge dot status="success">
-                                        <Avatar
-                                            size={48}
-                                            style={{
-                                                color: "#f56a00",
-                                                backgroundColor: "#fde3cf"
-                                            }}
-                                        >
-                                            {item.firstname[0].toUpperCase() +
-                                                item.lastname[0].toUpperCase()}
-                                        </Avatar>
+                                        <AvatarCus record={item} />
                                     </Badge>
                                 }
                                 title={
                                     <span
                                         style={{
                                             display: "flex",
-                                            width: "100%"
+                                            width: "100%",
                                         }}
                                     >
                                         {item.firstname + " " + item.lastname}
@@ -192,7 +164,11 @@ const ContactList = () => {
                                         <Button
                                             shape="round"
                                             onClick={() =>
-                                                dispatch(actions.doDestroyRequest(item))
+                                                dispatch(
+                                                    actions.doDestroyRequest(
+                                                        item
+                                                    )
+                                                )
                                             }
                                         >
                                             Delete
@@ -219,25 +195,12 @@ const ContactList = () => {
                             className={`"border-0" border-0 px-0 py-3`}
                         >
                             <List.Item.Meta
-                                avatar={
-                                    <Badge dot status="success">
-                                        <Avatar
-                                            size={48}
-                                            style={{
-                                                color: "#f56a00",
-                                                backgroundColor: "#fde3cf"
-                                            }}
-                                        >
-                                            {item.firstname[0].toUpperCase() +
-                                                item.lastname[0].toUpperCase()}
-                                        </Avatar>
-                                    </Badge>
-                                }
+                                avatar={<AvatarCus record={item} />}
                                 title={
                                     <span
                                         style={{
                                             display: "flex",
-                                            width: "100%"
+                                            width: "100%",
                                         }}
                                     >
                                         {item.firstname + " " + item.lastname}

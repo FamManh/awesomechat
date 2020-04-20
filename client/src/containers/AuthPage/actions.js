@@ -4,14 +4,20 @@ import { fetchSignin, fetchSignup } from "./service";
 import Errors from "../shared/error/errors";
 import getSocket, {socketDisconnect, configSocket} from '../rootSocket';
 const actions = {
+    doInitLoadingDone: ()=>{
+        return { type: constants.SIGNIN_INIT_LOADING_DONE };
+
+    },
     doClearErrorMessage: () => {
         return { type: constants.ERROR_MESSAGE_CLEAR };
     },
 
-    doSignout: () => {
+    doSignout: () => dispatch => {
         window.localStorage.removeItem("asauth");
         socketDisconnect();
+        
         getHistory().push("/signin");
+        dispatch({ type: "RESET" });
     },
 
     doSignin: userInfo => async dispatch => {
