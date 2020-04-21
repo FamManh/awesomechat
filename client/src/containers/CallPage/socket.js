@@ -1,9 +1,7 @@
-import React from "react";
-import getSocket, { configSocket } from "../rootSocket";
+import getSocket from "../rootSocket";
 import getStore from "../configureStore";
 import Message from "../shared/message";
-import { Modal, Row } from "antd";
-import AvatarCus from "../../components/AvatarCus";
+import { Modal} from "antd";
 import constants from "./constants";
 import peerjs from "peerjs";
 import callActions from "../CallPage/actions";

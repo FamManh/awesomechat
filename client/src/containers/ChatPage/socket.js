@@ -1,5 +1,4 @@
-import getSocket, { configSocket } from "../rootSocket";
-import message from "../shared/message";
+import getSocket from "../rootSocket";
 import getStore from "../configureStore";
 import constants from "./constants";
 

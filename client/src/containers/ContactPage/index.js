@@ -1,8 +1,3 @@
-import React from "react";
-import Layout from "../Layout";
-import ListPage from "./list/ListPage";
+const ContactPage  = () => null;
 
-
-const BranchPage  = () => <ListPage/>;
-
-export default BranchPage;
+export default ContactPage;

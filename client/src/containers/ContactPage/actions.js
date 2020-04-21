@@ -1,15 +1,13 @@
 import * as constants from "./constants";
 import * as userConstants from "../UserPage/constants";
-import { getHistory } from "../configureStore";
 import Message from "../shared/message";
 import Errors from "../shared/error/errors";
 import services from "./service";
 import {emitAddNewContact} from './socket';
-// import Socket from '../socket/Socket';
 
-const messageUpdateSuccess = "Cập nhật chi nhánh thành công.";
-const messageCreateSuccess = "Tạo chi nhánh thành công.";
-const messageDeleteSuccess = "Xóa chi nhánh thành công.";
+const messageUpdateSuccess = "Update succesfully";
+// const messageCreateSuccess = "Tạo chi nhánh thành công.";
+const messageDeleteSuccess = "Delete succesfully";
 
 const actions = {
     listContacts: () => async dispatch => {

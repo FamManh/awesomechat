@@ -82,7 +82,6 @@ const authRoutes = [
         exact: true,
         loader: () => import("./AuthPage/ForgotPasswordPage")
     },
-    ,
     {
         path: "/verify-email",
         exact: true,

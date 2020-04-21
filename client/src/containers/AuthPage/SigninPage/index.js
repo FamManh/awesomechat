@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Button, Form, Input, Typography, Row, Spin } from "antd";
-import { Eye, Mail, Triangle } from "react-feather";
+import { Eye, Mail } from "react-feather";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";

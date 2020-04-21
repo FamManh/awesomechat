@@ -1,6 +1,5 @@
 import asapi from "../../api/asapi";
 import asmediaapi from "../../api/asmediaapi";
-import axios from 'axios';
 
 const services = {
     listFn: async ({ term }) => {

@@ -1,12 +1,11 @@
 import * as constants from "./constants";
-import { getHistory } from "../configureStore";
 import Message from "../shared/message";
 import Errors from "../shared/error/errors";
 import services from "./service";
 
 const messageUpdateSuccess = "Update successfully";
-const messageCreateSuccess = "Create successfully";
-const messageDeleteSuccess = "Delete successfully";
+// const messageCreateSuccess = "Create successfully";
+// const messageDeleteSuccess = "Delete successfully";
 
 const actions = {
     doChangeAvatar: (avatar) => async (dispatch) => {

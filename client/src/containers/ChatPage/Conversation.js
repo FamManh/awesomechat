@@ -1,5 +1,5 @@
 import React from "react";
-import { Icon, Avatar } from "antd";
+import { Icon} from "antd";
 import { useSelector } from "react-redux";
 import selectors from "./selectors";
 import userSelectors from "../UserPage/selectors";
@@ -77,6 +77,7 @@ function Conversation({ messages }) {
                                                             "underline",
                                                         color: "white",
                                                     }}
+                                                    
                                                     href={`${process.env.REACT_APP_STATIC_FILES}/${file.path}`}
                                                 >
                                                     <Icon type="paper-clip" />{" "}

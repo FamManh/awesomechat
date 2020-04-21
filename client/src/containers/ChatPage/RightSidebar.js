@@ -1,43 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
-    Avatar,
-    Input,
     Layout,
-    List,
-    Menu,
-    Badge,
     Row,
-    Button,
-    Dropdown,
-    Divider,
-    Tooltip,
     Collapse,
     Icon,
 } from "antd";
-import {
-    CheckCircle,
-    Heart,
-    RefreshCcw,
-    Star,
-    Phone,
-    Video,
-    UserPlus,
-    MoreHorizontal,
-    Users,
-    MessageCircle,
-    Bell,
-    Search as SearchIcon,
-} from "react-feather";
-import { Link, useLocation } from "react-router-dom";
-import authActions from "../AuthPage/actions";
-import { getUserInfo } from "../shared/getUserInfo";
-import MessageList from "./MessageList";
-import ContactList from "../ContactPage/list/List";
-import UserList from "../UserPage/list/List";
-import { isAuthenticated } from "../shared/routes/permissionChecker";
 import { useSelector } from "react-redux";
 import userSelectors from "../UserPage/selectors";
-import ModalCreateGroupchat from "./ModalCreateGroupchat";
 import selectors from "./selectors";
 import AvatarCus from "../../components/AvatarCus";
 
@@ -70,7 +39,6 @@ const ButtonCus = ({ text, icon, onClick }) => {
 };
 
 function RightSideBar() {
-    const currentUser = useSelector(userSelectors.selectCurrentUser);
     const record = useSelector(selectors.selectRecord);
     const userInfo = (
         <Header

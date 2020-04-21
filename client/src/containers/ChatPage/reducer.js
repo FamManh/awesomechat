@@ -1,10 +1,8 @@
 import constants from "./constants";
 import produce from "immer";
-import getStore from "../configureStore";
 
 const initialState = {
     initLoading: true,
-    dataLoading: false,
     findLoading: false,
     error: null,
     record: null,
@@ -50,6 +48,7 @@ const messageReducer = (state = initialState, { type, payload }) =>
                 draft.findLoading = true;
                 draft.error = null;
                 draft.typing = {};
+                draft.rightSidebarVisible = false;
                 break;
             case constants.CHAT_FIND_SUCCESS:
                 draft.findLoading = false;
@@ -154,7 +153,7 @@ const messageReducer = (state = initialState, { type, payload }) =>
                 draft.error = null;
                 break;
             case constants.SOCKET_TYPING_ON:
-                if(state.record){
+                if (state.record) {
                     if (
                         payload.conversationType === "ChatGroup" &&
                         payload.receiver.id === state.record.receiver.id
@@ -171,7 +170,7 @@ const messageReducer = (state = initialState, { type, payload }) =>
                 }
                 break;
             case constants.SOCKET_TYPING_OFF:
-               if(state.record){
+                if (state.record) {
                     if (
                         payload.conversationType === "ChatGroup" &&
                         payload.receiver.id === state.record.receiver.id
@@ -183,16 +182,18 @@ const messageReducer = (state = initialState, { type, payload }) =>
                     ) {
                         draft.typing = {};
                     }
-               }
+                }
                 break;
-            case constants.CHAT_CREATE_START:
-                draft.error = null;
+            case constants.CHAT_CREATE_GROUP_START:
+                draft.findLoading = true;
                 break;
-            case constants.CHAT_CREATE_SUCCESS:
+            case constants.CHAT_CREATE_GROUP_SUCCESS:
+                draft.findLoading = false;
                 break;
-            case constants.CHAT_CREATE_ERROR:
-                draft.error = payload;
+            case constants.CHAT_CREATE_GROUP_ERROR:
+                draft.findLoading = false;
                 break;
+
             default:
                 break;
         }

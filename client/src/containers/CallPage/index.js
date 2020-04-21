@@ -1,5 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
-import MediaHandler from "./MediaHandler";
+import React, { useRef, useEffect } from "react";
 import { Button, Row, Modal } from "antd";
 import { useSelector, useDispatch } from "react-redux";
 import selectors from "./selectors";
@@ -140,7 +139,6 @@ const Reject = () => {
     const dispatch = useDispatch();
 
     const callStatus = useSelector(selectors.selectStatus);
-    const caller = useSelector(selectors.selectCaller);
     const listener = useSelector(selectors.selectListener);
 
     return (
@@ -188,8 +186,6 @@ const Answer = () => {
     const dispatch = useDispatch();
 
     const callStatus = useSelector(selectors.selectStatus);
-    const caller = useSelector(selectors.selectCaller);
-    const listener = useSelector(selectors.selectListener);
 
     return (
         <Modal visible={callStatus === "answer"} footer={null} closable={false}>
@@ -233,8 +229,6 @@ const VideoStream = () => {
     const callStatus = useSelector(selectors.selectStatus);
     const caller = useSelector(selectors.selectCaller);
     const listener = useSelector(selectors.selectListener);
-    const [hasMedia, setHasMedia] = useState(false);
-    const [otherUserId, setOtherUserId] = useState(null);
     const localStream = useSelector(selectors.selectLocalStream);
     const remoteStream = useSelector(selectors.selectRemoteStream);
 
@@ -317,9 +311,6 @@ const VideoStream = () => {
 };
 
 function CallPage() {
-    const caller = useSelector(selectors.selectCaller);
-    const listener = useSelector(selectors.selectListener);
-
     return (
         <>
             <Contacting />

@@ -1,24 +1,15 @@
 import React, { useState, useEffect } from "react";
 import {
-    Avatar,
-    Input,
-    Layout,
     List,
-    Menu,
     Badge,
-    Row,
     Button,
-    Dropdown,
-    Divider,
     Icon,
     Collapse
 } from "antd";
-import { PhoneCall, Phone, Video, UserPlus, UserMinus } from "react-feather";
 import Search from "antd/lib/input/Search";
 import { useDispatch, useSelector } from "react-redux";
 import actions from "../actions";
 import selectors from "../selectors";
-import Text from "antd/lib/typography/Text";
 import { Link } from "react-router-dom";
 import AvatarCus from "../../../components/AvatarCus";
 
@@ -37,7 +28,6 @@ const ContactList = () => {
     const contacts = useSelector(selectors.selectContacts);
     const requests = useSelector(selectors.selectRequests);
     const requestsSent = useSelector(selectors.selectRequestsSent);
-
     const handleSearch = term => {
         dispatch(actions.list({ term }));
     };

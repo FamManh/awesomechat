@@ -1,21 +1,16 @@
-import { Button, Form, Input, Row, Icon, Upload, message, Col } from "antd";
+import { Button, Form, Input, Row, Col } from "antd";
 import actions from "../actions";
 import selectors from "../selectors";
-import React, { useEffect, useState } from "react";
-import Spinner from "../../shared/Spinner";
-import FormWrapper, {
-    tailFormItemLayout,
-    formItemLayout
-} from "../../shared/styles/FormWrapper";
+import React, { useEffect} from "react";
+import FormWrapper from "../../shared/styles/FormWrapper";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
-import { User, Mail, Eye } from "react-feather";
+import { User, Mail} from "react-feather";
 import UpdateAvatar from "./UpdateAvatar";
 import {Link} from 'react-router-dom'
-const FormComp = ({ match, form }) => {
+const FormComp = ({ form }) => {
     const dispatch = useDispatch();
     const saveLoading = useSelector(selectors.selectSaveLoading);
-    const dataLoading = useSelector(selectors.selectDataLoading);
     const record = useSelector(selectors.selectRecord);
     let { userId } = useParams();
     let doSubmit = values => {
