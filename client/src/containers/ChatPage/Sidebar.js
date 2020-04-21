@@ -1,38 +1,24 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
-    Avatar,
     Input,
     Layout,
-    List,
     Menu,
     Badge,
     Row,
     Button,
     Dropdown,
-    Divider,
     Tooltip
 } from "antd";
 import {
-    CheckCircle,
-    Heart,
-    RefreshCcw,
-    Star,
-    Phone,
-    Video,
-    UserPlus,
-    MoreHorizontal,
     Users,
     MessageCircle,
-    Bell,
     Search as SearchIcon
 } from "react-feather";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import authActions from "../AuthPage/actions";
-import { getUserInfo } from "../shared/getUserInfo";
 import MessageList from "./MessageList";
 import ContactList from "../ContactPage/list/List";
 import UserList from "../UserPage/list/List";
-import { isAuthenticated } from "../shared/routes/permissionChecker";
 import { useSelector, useDispatch } from "react-redux";
 import userSelectors from '../UserPage/selectors'
 import ModalCreateGroupchat from "./ModalCreateGroupchat";
@@ -40,34 +26,6 @@ import AvatarCus from "../../components/AvatarCus";
 
 const { Sider, Header } = Layout;
 const { Search } = Input;
-
-const getAvatar = (record, size = 40) => {
-    if (!record) return <Avatar size={size} icon="user" />;
-
-    if (record.picture) {
-        return (
-            <Avatar
-                shape="circle"
-                size={size}
-                src={process.env.REACT_APP_STATIC_URI + "/" + record.picture}
-            />
-        );
-    }
-    return (
-        <Avatar
-            size={size}
-            style={{
-                color: "#f56a00",
-                backgroundColor: "#fde3cf"
-            }}
-        >
-            {record.firstname[0].toUpperCase() +
-                record.lastname[0].toUpperCase()}
-        </Avatar>
-    );
-};
-
-
 
 function ChatSidebar() {
     const dispatch = useDispatch()
@@ -106,7 +64,7 @@ function ChatSidebar() {
             <Menu.Item
                 key="message"
                 style={{
-                    width: "25%",
+                    width: "33%",
                     textAlign: "center"
                 }}
             >
@@ -115,7 +73,7 @@ function ChatSidebar() {
             <Menu.Item
                 key="contact"
                 style={{
-                    width: "25%",
+                    width: "33%",
                     textAlign: "center"
                 }}
             >
@@ -126,13 +84,13 @@ function ChatSidebar() {
             <Menu.Item
                 key="user"
                 style={{
-                    width: "25%",
+                    width: "33%",
                     textAlign: "center"
                 }}
             >
                 <SearchIcon size={20} strokeWidth={1} />
             </Menu.Item>
-            <Menu.Item
+            {/* <Menu.Item
                 key="notification"
                 style={{
                     width: "25%",
@@ -142,7 +100,7 @@ function ChatSidebar() {
                 <Badge dot={true}>
                     <Bell size={20} strokeWidth={1} />
                 </Badge>
-            </Menu.Item>
+            </Menu.Item> */}
         </Menu>
     );
 

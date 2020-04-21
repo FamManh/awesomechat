@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { Modal, Button, AutoComplete, List, Avatar, Input, Divider } from "antd";
-import Search from 'antd/lib/input/Search';
+import React, { useState } from 'react'
+import { Modal, Button, AutoComplete, List, Input, Divider } from "antd";
 import userActions from '../UserPage/actions'
 import userSelectors from '../UserPage/selectors'
 import { useSelector, useDispatch } from 'react-redux';

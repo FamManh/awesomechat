@@ -1,7 +1,5 @@
 import constants from "./constants";
-import userConstants from "../UserPage/constants";
 import getStore, { getHistory } from "../configureStore";
-import message from "../shared/message";
 import Errors from "../shared/error/errors";
 import services from "./service";
 import { emitSentMessage, emitCreateGroup } from "./socket";

@@ -55,16 +55,16 @@ const contactReducer = (state = initialState, { type, payload }) =>
                 draft.error = payload;
                 break;
             case constants.USER_GET_START:
-                draft.dataLoading = true;
+                draft.findLoading = true;
                 draft.error = null;
                 break;
             case constants.USER_GET_SUCCESS:
-                draft.dataLoading = false;
+                draft.findLoading = false;
                 draft.users = payload;
                 draft.error = null;
                 break;
             case constants.USER_GET_ERROR:
-                draft.dataLoading = false;
+                draft.findLoading = false;
                 draft.error = payload;
                 break;
             case constants.USER_UPDATE_CONTACT_START:

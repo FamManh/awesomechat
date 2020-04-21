@@ -1,5 +1,4 @@
 import React from "react";
-import Layout from "../../Layout";
 import PageTitle from "../../shared/styles/PageTitle";
 import FormComp from "./FormComp";
 import styled from "styled-components";

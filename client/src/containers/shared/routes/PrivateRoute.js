@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import userActions from "../../UserPage/actions";
 import userSelectors from "../../UserPage/selectors";
 import { configSocket } from "../../rootSocket";
-import socketActions from '../../socket/actions'
 import { getPeerId } from "../../CallPage/socket";
 const PrivateRoute = ({ component: Component, ...rest }) => {
     const currentUser = useSelector(userSelectors.selectCurrentUser);

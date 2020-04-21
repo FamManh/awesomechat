@@ -1,15 +1,7 @@
-import { Button, Form, Input, Row, Icon, Upload, message } from "antd";
+import {  Form, Icon, Upload, message } from "antd";
 import actions from "../actions";
-import selectors from "../selectors";
 import React, { useEffect, useState } from "react";
-import Spinner from "../../shared/Spinner";
-import FormWrapper, {
-    tailFormItemLayout,
-    formItemLayout
-} from "../../shared/styles/FormWrapper";
-import { useSelector, useDispatch } from "react-redux";
-import { useParams } from "react-router-dom";
-import { User, Mail, Eye } from "react-feather";
+import { useDispatch } from "react-redux";
 import { isAuthenticated } from "../../shared/routes/permissionChecker";
 const UpdateAvatar = ({picture}) => {
     const [loading, setLoading] = useState(false);

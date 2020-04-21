@@ -1,5 +1,5 @@
 import React from "react";
-import { Avatar, Spin, Icon, Row } from "antd";
+import { Icon, Row } from "antd";
 
 function ImageUploadList({ fileList, onDelete }) {
     return (

@@ -2,6 +2,11 @@ import {createSelector} from 'reselect'
 
 const selectRaw = state=>state.message;
 
+const selectFindLoading = createSelector(
+    [selectRaw],
+    (message) => message.findLoading
+);
+
 const selectRecord = createSelector([selectRaw], message=>message.record);
 
 const selectMessages = createSelector([selectRaw], message=> message.messages)
@@ -22,6 +27,7 @@ const selectTyping = createSelector(
 )
 
 const selectors = {
+    selectFindLoading,
     selectRecord,
     selectMessages,
     selectInputMessage,

@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Layout } from "antd";
+import React, { useEffect } from "react";
+import { Layout, Row, Result } from "antd";
 
 import Sidebar from "./Sidebar";
 import ChatContent from "./ChatContent";
 import actions from './actions'
-import userActions from '../UserPage/actions'
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import RightSideBar from "./RightSidebar";
@@ -27,8 +26,26 @@ export default function ChatPage() {
         <Layout style={{ height: "100vh", backgroundColor: "#fff" }}>
             <Layout className="fill-workspace rounded shadow-sm overflow-hidden">
                 <Sidebar />
-                <ChatContent />
-                {rightSidebarVisible && <RightSideBar />}
+                {record ? (
+                    <>
+                        <ChatContent />
+                        {rightSidebarVisible && <RightSideBar />}
+                    </>
+                ) : (
+                    <Row
+                        type="flex"
+                        align="middle"
+                        justify="center"
+                        className="px-3 bg-white mh-page"
+                        style={{ minHeight: "100vh", width: "100%" }}
+                    >
+                        <Result
+                            icon={<img width="300" src="/logo-chat.png" />}
+                            title="Welcome to Awesome Chat"
+                            subTitle="On Being Awesome"
+                        />
+                    </Row>
+                )}
             </Layout>
         </Layout>
     );

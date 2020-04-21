@@ -1,5 +1,5 @@
 import React from 'react';
-import { notification, Avatar, message } from 'antd';
+import { notification, message } from 'antd';
 import AvatarCus from '../../components/AvatarCus';
 
 export default class Message {

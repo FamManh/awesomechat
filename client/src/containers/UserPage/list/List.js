@@ -1,45 +1,37 @@
 import React, { useState } from "react";
 import {
-    Avatar,
-    Input,
-    Layout,
     List,
-    Menu,
     Badge,
-    Row,
     Button,
-    Dropdown,
-    Divider,
-    Icon,
     Tooltip
 } from "antd";
 import {
-    PhoneCall,
-    Phone,
-    Video,
-    UserPlus,
-    UserMinus,
-    MessageCircle,
-    UserCheck,
-    UserX
+    MessageCircle
 } from "react-feather";
 import Search from "antd/lib/input/Search";
 import { useDispatch, useSelector } from "react-redux";
 import actions from "../actions";
 import selectors from "../selectors";
 import contactActions from "../../ContactPage/actions";
-import contactSelectors from "../../ContactPage/selectors";
+import AvatarCus from "../../../components/AvatarCus";
 const UserList = () => {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const dispatch = useDispatch();
     const users = useSelector(selectors.selectUsers);
+    const findLoading = useSelector(selectors.selectFindLoading);
+
     const handleSearch = term => {
+        if(term.trim() === "") return
         dispatch(actions.list({ term }));
     };
 
     const searchbar = (
         <div className="py-3 px-3" style={{ backgroundColor: "#fff" }}>
-            <Search placeholder="Search contact" onSearch={handleSearch} />
+            <Search
+                placeholder="Search contact"
+                onSearch={handleSearch}
+                loading={findLoading}
+            />
         </div>
     );
 
@@ -74,27 +66,7 @@ const UserList = () => {
                         <List.Item.Meta
                             avatar={
                                 <Badge dot status="success">
-                                    {item.picture ? (
-                                        <Avatar
-                                            src={
-                                                process.env
-                                                    .REACT_APP_STATIC_URI +
-                                                "/" +
-                                                item.picture
-                                            }
-                                        />
-                                    ) : (
-                                        <Avatar
-                                            size={48}
-                                            style={{
-                                                color: "#f56a00",
-                                                backgroundColor: "#fde3cf"
-                                            }}
-                                        >
-                                            {item.firstname[0].toUpperCase() +
-                                                item.lastname[0].toUpperCase()}
-                                        </Avatar>
-                                    )}
+                                    <AvatarCus record={item} />
                                 </Badge>
                             }
                             title={

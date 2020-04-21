@@ -2,7 +2,7 @@ import * as constants from "./constants";
 import { getHistory } from "../configureStore";
 import { fetchSignin, fetchSignup } from "./service";
 import Errors from "../shared/error/errors";
-import getSocket, {socketDisconnect, configSocket} from '../rootSocket';
+import {socketDisconnect, configSocket} from '../rootSocket';
 const actions = {
     doInitLoadingDone: ()=>{
         return { type: constants.SIGNIN_INIT_LOADING_DONE };

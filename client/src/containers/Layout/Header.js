@@ -1,4 +1,4 @@
-import { Icon, Layout, Menu, Dropdown, Avatar, Button, Badge } from 'antd';
+import { Icon, Layout, Menu, Dropdown, Avatar } from 'antd';
 import React from 'react';
 import HeaderWrapper from './styles/HeaderWrapper';
 import selectors from './selectors';
