@@ -53,6 +53,7 @@ function ChatContentFooter() {
     };
 
     const onInputFileListChange = ({ fileList }) => {
+        console.log(fileList)
         dispatch({
             type: constants.INPUT_FILE_LIST_CHANGE,
             payload: [...fileList],
@@ -143,7 +144,7 @@ function ChatContentFooter() {
                 accept="application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint, text/plain, application/pdf"
                 name="files"
                 multiple={true}
-                // fileList={inputMessage.images}
+                fileList={inputMessage.files}
                 action={`${process.env.REACT_APP_API_URI}/message/files`}
                 showUploadList={false}
                 onChange={(files) => {

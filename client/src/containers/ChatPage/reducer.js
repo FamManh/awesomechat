@@ -4,6 +4,8 @@ import produce from "immer";
 const initialState = {
     initLoading: true,
     findLoading: false,
+    getImageListLoading: false,
+    getFileListLoading: false,
     error: null,
     record: null,
     messages: [],
@@ -14,6 +16,8 @@ const initialState = {
     },
     typing: {},
     rightSidebarVisible: false,
+    imageList: [],
+    fileList: [],
 };
 
 const messageReducer = (state = initialState, { type, payload }) =>
@@ -193,7 +197,42 @@ const messageReducer = (state = initialState, { type, payload }) =>
             case constants.CHAT_CREATE_GROUP_ERROR:
                 draft.findLoading = false;
                 break;
+            case constants.CHAT_GET_IMAGE_LIST_START:
+                draft.getImageListLoading = true;
+                break;
+            case constants.CHAT_GET_IMAGE_LIST_SUCCESS:
+                draft.getImageListLoading = false;
+                let tempImages = payload.images.map((image) => {
+                    return {
+                        src: `${process.env.REACT_APP_STATIC_PHOTOS}/${image}`,
+                    };
+                });
+                if (payload.skip) {
+                    // Nếu tồn tại skip => xem thêm
+                    draft.imageList = draft.imageList.concat(tempImages);
+                } else {
+                    draft.imageList = tempImages;
+                }
 
+                break;
+            case constants.CHAT_GET_IMAGE_LIST_ERROR:
+                draft.getImageListLoading = false;
+                break;
+            case constants.CHAT_GET_FILE_LIST_START:
+                draft.getFileListLoading = true;
+                break;
+            case constants.CHAT_GET_FILE_LIST_SUCCESS:
+                draft.getFileListLoading = false;
+                if (payload.skip) {
+                    // Nếu tồn tại skip => xem thêm
+                    draft.fileList = draft.fileList.concat(payload.files);
+                } else {
+                    draft.fileList = payload.files;
+                }
+                break;
+            case constants.CHAT_GET_FILE_LIST_ERROR:
+                draft.getFileListLoading = false;
+                break;
             default:
                 break;
         }

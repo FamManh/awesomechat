@@ -1,7 +1,7 @@
 const httpStatus = require("http-status");
 const { omit } = require("lodash");
 const Message = require("../models/message.model");
-const ChatGroup = require("../models/chatGroup.model")
+const ChatGroup = require("../models/chatGroup.model");
 const User = require("../models/user.model");
 const APIError = require("../utils/APIError");
 const multer = require("multer");
@@ -12,8 +12,8 @@ const path = require("path");
 const fs = require("fs");
 const storagePhoto = require("../utils/storagePhoto");
 const storageFile = require("../utils/storageFile");
-const _ = require('lodash')
-const logger = require('../../config/logger')
+const _ = require("lodash");
+const logger = require("../../config/logger");
 
 const getPhotoPath = (images, basePath) => {
   if (!images || !images.length < 0) return null;
@@ -42,51 +42,81 @@ exports.load = async (req, res, next, id) => {
  * @public
  */
 exports.get = async (req, res) => {
-  try{
-let senderId = req.user.id;
-let receiverId = req.params.receiverId;
-let receiverInfo = await User.findById(receiverId);
-let responsceList = [];
-let responeData = {};
+  try {
+    let senderId = req.user.id;
+    let receiverId = req.params.receiverId;
+    let receiverInfo = await User.findById(receiverId);
+    let responsceList = [];
+    let responeData = {};
 
-if (!receiverInfo) {
-  // Tìm id hiện tại có phải là group chat hay không
-  receiverInfo = await ChatGroup.findById(receiverId);
+    if (!receiverInfo) {
+      // Tìm id hiện tại có phải là group chat hay không
+      receiverInfo = await ChatGroup.findById(receiverId);
 
-  // Nếu không phải group chat thì trả về lỗi không tìm thấý
-  if (!receiverInfo) {
-    throw new APIError({message: 'Not found', status: httpStatus.BAD_REQUEST})
-  }
+      // Nếu không phải group chat thì trả về lỗi không tìm thấý
+      if (!receiverInfo) {
+        throw new APIError({
+          message: "Not found",
+          status: httpStatus.BAD_REQUEST,
+        });
+      }
 
-  // Lấy danh sách cuộc trò chuyện
-  const groupMessages = await Message.getGroup({ groupId: receiverInfo.id });
+      // Lấy danh sách cuộc trò chuyện
+      const groupMessages = await Message.getGroup({
+        groupId: receiverInfo.id,
+      });
 
-  // Transform kết quả trả về
-  responsceList = await groupMessages.map((message) => message.transform());
-  responeData.conversationType = "ChatGroup";
-  responeData.receiver = {
-    id: receiverInfo.id,
-    picture: receiverInfo.picture,
-    name: receiverInfo.name,
-    members: receiverInfo.members,
-  };
-} else {
-  // personal chat
-  const personalMessages = await Message.getPersonal({ senderId, receiverId });
-  responsceList = await personalMessages.map((message) => message.transform());
-  responeData.conversationType = "User";
-  responeData.receiver = {
-    picture: receiverInfo.picture,
-    firstname: receiverInfo.firstname,
-    lastname: receiverInfo.lastname,
-    id: receiverInfo.id,
-  };
-}
+      // Lấy thông tin của admin
+      let admin = await User.findById(receiverInfo.admin);
 
-responeData.messages = responsceList.reverse();
-res.json(responeData);
-  }catch(error){
-    next(error)
+      // Lấy thông tin members
+      let members = await User.find({
+        _id: { $in: receiverInfo.members },
+      });
+      members = members.map((member) => {
+        let tempMember = {
+          id: member.id,
+          firstname: member.firstname,
+          lastname: member.lastname,
+          picture: member.picture,
+        };
+        if (member.id === receiverInfo.admin){
+          tempMember.admin = true;
+        }
+          return tempMember;
+      });
+      
+      // Transform kết quả trả về
+      responsceList = await groupMessages.map((message) => message.transform());
+      responeData.conversationType = "ChatGroup";
+      responeData.receiver = {
+        id: receiverInfo.id,
+        picture: receiverInfo.picture,
+        name: receiverInfo.name,
+        members,
+      };
+    } else {
+      // personal chat
+      const personalMessages = await Message.getPersonal({
+        senderId,
+        receiverId,
+      });
+      responsceList = await personalMessages.map((message) =>
+        message.transform()
+      );
+      responeData.conversationType = "User";
+      responeData.receiver = {
+        picture: receiverInfo.picture,
+        firstname: receiverInfo.firstname,
+        lastname: receiverInfo.lastname,
+        id: receiverInfo.id,
+      };
+    }
+
+    responeData.messages = responsceList.reverse();
+    res.json(responeData);
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -100,8 +130,8 @@ exports.create = async (req, res, next) => {
     const sender = req.user.id;
     const { conversationType } = req.body;
     // Nếu tin nhắn group thì conversation id = group id
-    let conversationId = [sender, req.body.receiver].sort().join(".")
-    if(conversationType === "ChatGroup"){
+    let conversationId = [sender, req.body.receiver].sort().join(".");
+    if (conversationType === "ChatGroup") {
       conversationId = req.body.receiver;
     }
 
@@ -167,12 +197,11 @@ exports.list = async (req, res, next) => {
     let sender = req.user._id;
     let currentUserId = req.user._id;
 
-    let personalMessages = await Message.listPersonal({ userId: sender })
+    let personalMessages = await Message.listPersonal({ userId: sender });
     let groupMessages = await ChatGroup.list({
       userId: [sender.toString()],
     });
-    let groupMessagesPromise = groupMessages.map(async item=>{
-
+    let groupMessagesPromise = groupMessages.map(async (item) => {
       let tempItem = {
         receiver: {
           _id: item.id,
@@ -194,17 +223,19 @@ exports.list = async (req, res, next) => {
         tempItem.type = lastMessage[0].type;
         tempItem.conversationType = lastMessage[0].conversationType;
         tempItem.updatedAt = lastMessage[0].updatedAt;
-      } 
-      
+      }
+
       return tempItem;
-    })
+    });
 
     let personalMessagesResponse = await Promise.all(groupMessagesPromise);
     let messages = personalMessages.concat(personalMessagesResponse);
-    
-    res.json(_.sortBy(messages, item=>{
-      return -item.updatedAt;
-    }));
+
+    res.json(
+      _.sortBy(messages, (item) => {
+        return -item.updatedAt;
+      })
+    );
   } catch (error) {
     next(error);
   }
@@ -253,9 +284,7 @@ let photosUploadFile = multer(storagePhoto).single("photos");
 exports.addPhotos = (req, res, next) => {
   photosUploadFile(req, res, async (err) => {
     try {
-      
       if (!req.file) {
-        console.log(err);
         throw new APIError({
           message: "Please select a file.",
           status: httpStatus.BAD_REQUEST,
@@ -284,25 +313,17 @@ exports.addPhotos = (req, res, next) => {
   });
 };
 
-let filesUpload = multer(storageFile).single('files');
+let filesUpload = multer(storageFile).single("files");
 
 exports.addFiles = (req, res, next) => {
   filesUpload(req, res, async (err) => {
     try {
-      
       if (!req.file) {
-        console.log(err);
         throw new APIError({
           message: "Please select a file.",
           status: httpStatus.BAD_REQUEST,
         });
       }
-      // let outputFile = req.file.path + "_b.jpg";
-
-      // await sharp(req.file.path).jpeg({ quality: 80 }).toFile(outputFile);
-
-      // delete old file
-      // fs.unlinkSync(req.file.path);
 
       let temp = {
         uid: uuidv4(),
@@ -319,3 +340,66 @@ exports.addFiles = (req, res, next) => {
   });
 };
 
+exports.imagesList = async (req, res, next) => {
+  try {
+    let { id, skip, limit } = req.query;
+    // Kiểm tra xem id hiện tại có phải là User hay không.
+    let isUser = await User.findById(id);
+    let conversationId = null;
+    if (isUser) {
+      conversationId = [id, req.user._id].sort().join(".");
+    } else {
+      // Kiểm tra xem id có phải của group chat hay không
+      let isGroupChat = await ChatGroup.findById(id);
+      if (isGroupChat) {
+        conversationId = id;
+      }
+    }
+
+    // Nếu không tồn tại Id return lỗi Not Found
+    if (!conversationId) {
+      throw new APIError({
+        message: "Not found.",
+        status: httpStatus.NOT_FOUND,
+      });
+    }
+
+    let images = await Message.imagesList({ conversationId, limit, skip });
+    images = images[0] ? images[0].list : [];
+    return res.json({ images });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.filesList = async (req, res, next) => {
+  try {
+    let { id, skip, limit } = req.query;
+    // Kiểm tra xem id hiện tại có phải là User hay không.
+    let isUser = await User.findById(id);
+    let conversationId = null;
+    if (isUser) {
+      conversationId = [id, req.user._id].sort().join(".");
+    } else {
+      // Kiểm tra xem id có phải của group chat hay không
+      let isGroupChat = await ChatGroup.findById(id);
+      if (isGroupChat) {
+        conversationId = id;
+      }
+    }
+
+    // Nếu không tồn tại Id return lỗi Not Found
+    if (!conversationId) {
+      throw new APIError({
+        message: "Not found.",
+        status: httpStatus.NOT_FOUND,
+      });
+    }
+
+    let files = await Message.filesList({ conversationId, limit, skip });
+    files = files[0] ? files[0].list : [];
+    return res.json({ files });
+  } catch (error) {
+    next(error);
+  }
+};

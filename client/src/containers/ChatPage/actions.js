@@ -5,7 +5,7 @@ import services from "./service";
 import { emitSentMessage, emitCreateGroup } from "./socket";
 
 const actions = {
-    doToggleRightSidebar: ()=> ({ type: constants.CHAT_TOGGLE_RIGHT_SIDEBAR }),
+    doToggleRightSidebar: () => ({ type: constants.CHAT_TOGGLE_RIGHT_SIDEBAR }),
     list: () => async (dispatch) => {
         try {
             dispatch({ type: constants.CHAT_GET_START });
@@ -21,7 +21,7 @@ const actions = {
             dispatch({
                 type: constants.CHAT_GET_ERROR,
             });
-            getHistory().push('/')
+            getHistory().push("/");
         }
     },
     doFind: (id) => async (dispatch) => {
@@ -94,6 +94,52 @@ const actions = {
             Errors.handle(error);
             dispatch({
                 type: constants.CHAT_CREATE_GROUP_ERROR,
+            });
+        }
+    },
+
+    listImage: (data) => async (dispatch) => {
+        try {
+            dispatch({
+                type: constants.CHAT_GET_IMAGE_LIST_START,
+            });
+
+            const response = await services.listImageFn(data);
+
+            dispatch({
+                type: constants.CHAT_GET_IMAGE_LIST_SUCCESS,
+                payload: {
+                    images: response.data.images,
+                    skip: data.skip,
+                },
+            });
+        } catch (error) {
+            Errors.handle(error);
+            dispatch({
+                type: constants.CHAT_GET_IMAGE_LIST_ERROR,
+            });
+        }
+    },
+
+    listFile: (data) => async (dispatch) => {
+        try {
+            dispatch({
+                type: constants.CHAT_GET_FILE_LIST_START,
+            });
+
+            const response = await services.listFileFn(data);
+
+            dispatch({
+                type: constants.CHAT_GET_FILE_LIST_SUCCESS,
+                payload: {
+                    files : response.data.files,
+                    skip: data.skip,
+                },
+            });
+        } catch (error) {
+            Errors.handle(error);
+            dispatch({
+                type: constants.CHAT_GET_FILE_LIST_ERROR,
             });
         }
     },

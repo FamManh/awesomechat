@@ -36,6 +36,20 @@ const services = {
         const response = await asapi.post(`/chat-group`, info);
         return response;
     },
+
+    listImageFn: async ({ id, skip = 0, limit = 9 }) => {
+        const response = await asapi.get(
+            `/message/images?id=${id}&skip=${skip}&limit=${limit}`
+        );
+        return response;
+    },
+
+    listFileFn: async ({ id, skip = 0, limit = 9 }) => {
+        const response = await asapi.get(
+            `/message/files?id=${id}&skip=${skip}&limit=${limit}`
+        );
+        return response;
+    },
 };
 
 export default services;

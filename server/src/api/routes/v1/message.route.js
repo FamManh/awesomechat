@@ -3,10 +3,9 @@ const validate = require("express-validation");
 const controller = require("../../controllers/message.controller");
 const { authorize, ADMIN, LOGGED_USER } = require("../../middlewares/auth");
 const {
-  createContact,
-  deleteContact,
-  updateContact
-} = require("../../validations/contact.validation");
+  imagesList,
+  filesList
+} = require("../../validations/message.validation");
 
 const router = express.Router();
 
@@ -14,6 +13,14 @@ const router = express.Router();
  * Load contact when API with contactId route parameter is hit
  */
 router.param("contactId", controller.load);
+
+router
+  .route("/images")
+  .get(authorize(LOGGED_USER), validate(imagesList), controller.imagesList);
+
+router
+  .route("/files")
+  .get(authorize(LOGGED_USER), validate(filesList), controller.filesList);
 
 router
   .route("/")
