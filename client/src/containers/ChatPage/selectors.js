@@ -7,6 +7,17 @@ const selectFindLoading = createSelector(
     (message) => message.findLoading
 );
 
+const selectGetImageListLoading = createSelector(
+    [selectRaw],
+    (message) => message.getImageListLoading
+);
+
+const selectGetFileListLoading = createSelector(
+    [selectRaw],
+    (message) => message.getFileListLoading
+);
+
+
 const selectRecord = createSelector([selectRaw], message=>message.record);
 
 const selectMessages = createSelector([selectRaw], message=> message.messages)
@@ -26,6 +37,16 @@ const selectTyping = createSelector(
     message => message.typing
 )
 
+const selectImageList = createSelector(
+    [selectRaw],
+    (message) => message.imageList
+);
+
+const selectFileList = createSelector(
+    [selectRaw],
+    (message) => message.fileList
+);
+
 const selectors = {
     selectFindLoading,
     selectRecord,
@@ -33,6 +54,10 @@ const selectors = {
     selectInputMessage,
     selectRightSidebarVisible,
     selectTyping,
+    selectImageList,
+    selectFileList,
+    selectGetImageListLoading,
+    selectGetFileListLoading,
 };
 
 export default selectors;

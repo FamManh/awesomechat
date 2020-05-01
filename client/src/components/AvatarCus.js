@@ -1,12 +1,14 @@
 import React from "react";
 import { Avatar } from "antd";
 
-function AvatarCus({ record, size = 40 }) {
+function AvatarCus(props) {
+    const { record, size = 40 } = props;
     if (!record) return <Avatar size={size} icon="user" />;
 
     if (record.picture) {
         return (
             <Avatar
+                {...props}
                 shape="circle"
                 size={size}
                 src={
@@ -19,6 +21,7 @@ function AvatarCus({ record, size = 40 }) {
     if (record.firstname && record.lastname) {
         return (
             <Avatar
+                {...props}
                 size={size}
                 style={{
                     color: "#f56a00",
@@ -31,7 +34,7 @@ function AvatarCus({ record, size = 40 }) {
         );
     }
 
-    return <Avatar size={size} icon="team" />;
+    return <Avatar {...props} size={size} icon="team" />;
 }
 
 export default AvatarCus;

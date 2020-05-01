@@ -111,7 +111,7 @@ messageSchema.statics = {
    * @param {ObjectId} id - The objectId of message.
    * @returns {Promise<Message, APIError>}
    */
-  getGroup({ groupId}) {
+  getGroup({ groupId }) {
     return this.find({
       $and: [{ receiver: groupId }],
     })
@@ -189,71 +189,66 @@ messageSchema.statics = {
     ]);
   },
 
-  // /**
-  //  * List messages in descending order of 'createdAt' timestamp.
-  //  * Lấy danh sách những người mình đã gửi tin nhắn
-  //  * @param {number} skip - Number of messages to be skipped.
-  //  * @param {number} limit - Limit number of messages to be returned.
-  //  * @returns {Promise<Message[]>}
-  //  */
-  // async listGroup({ page = 1, perPage = 30, userId }) {
-  //   return this.aggregate([
-  //     {
-  //       $match: {
-  //         $and: [{ sender: userId }, { conversationType: "group" }],
-  //       },
-  //     },
-  //     { $sort: { createdAt: -1 } },
-  //     {
-  //       $group: {
-  //         _id: "$conversationId",
-  //         message: { $first: "$message" },
-  //         type: { $first: "$type" },
-  //         conversationType: { $first: "$conversationType" },
-  //         // lastImages: { $first: "$message" },
-  //         sender: { $first: "$sender" },
-  //         receiver: { $first: "$receiver" },
-  //         createdAt: { $first: "$createdAt" },
-  //       },
-  //     },
-  //     {
-  //       $lookup: {
-  //         from: "users",
-  //         localField: "sender",
-  //         foreignField: "_id",
-  //         as: "sender",
-  //       },
-  //     },
-  //     {
-  //       $lookup: {
-  //         from: "chatgroups",
-  //         localField: "receiver",
-  //         foreignField: "_id",
-  //         as: "receiver",
-  //       },
-  //     },
-  //     { $unwind: { path: "$sender" } },
-  //     { $unwind: { path: "$receiver" } },
-  //     {
-  //       $project: {
-  //         _id: 1,
-  //         message: 1,
-  //         type: 1,
-  //         conversationType: 1,
-  //         "sender._id": 1,
-  //         "sender.firstname": 1,
-  //         "sender.lastname": 1,
-  //         "sender.picture": 1,
-  //         "receiver._id": 1,
-  //         "receiver.name": 1,
-  //         "receiver.admin": 1,
-  //         "receiver.members": 1,
-  //         "receiver.picture": 1,
-  //         createdAt: 1,
-  //       },
-  //     },
-  //   ]);
-  // },
+  // Lấy danh sách hình ảnh dựa vào conversation id
+  imagesList({ conversationId, limit = 9, skip = 0 }) {
+    return this.aggregate([
+      {
+        $match: { conversationId: conversationId },
+      },
+      { $sort: { updatedAt: -1 } },
+      {
+        $group: {
+          _id: "$conversationId",
+          images: { $push: { $reverseArray: "$images" } },
+        },
+      },
+      {
+        $addFields: {
+          list: {
+            $reduce: {
+              input: "$images",
+              initialValue: [],
+              in: { $concatArrays: ["$$value", "$$this"] },
+            },
+          },
+        },
+      },
+      {
+        $project: { list: { $slice: ["$list", +skip, +limit] } },
+      },
+    ]);
+  },
+
+
+  // Lấy danh sách files dựa vào conversation Id 
+  filesList({ conversationId, limit = 9, skip = 0 }) {
+    return this.aggregate([
+      {
+        $match: { conversationId: conversationId },
+      },
+      { $sort: { updatedAt: -1 } },
+      {
+        $group: {
+          _id: "$conversationId",
+          files: { $push: { $reverseArray: "$files" } },
+        },
+      },
+      {
+        $addFields: {
+          list: {
+            $reduce: {
+              input: "$files",
+              initialValue: [],
+              in: { $concatArrays: ["$$value", "$$this"] },
+            },
+          },
+        },
+      },
+      {
+        $project: { list: { $slice: ["$list", +skip, +limit] } },
+      },
+    ]);
+  },
 };
 
 /**
