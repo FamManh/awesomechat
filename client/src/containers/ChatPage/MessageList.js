@@ -21,7 +21,7 @@ const MessageList = () => {
                 itemLayout="horizontal"
                 dataSource={messages}
                 renderItem={(item, index) => {
-                    if (!currentUser) return;
+                    if (!currentUser) return null;
                     let user = "";
                     if (item.conversationType === "ChatGroup") {
                         user = item.receiver;

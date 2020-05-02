@@ -32,11 +32,6 @@ const services = {
         return response;
     },
 
-    createGroupFn: async (info) => {
-        const response = await asapi.post(`/chat-group`, info);
-        return response;
-    },
-
     listImageFn: async ({ id, skip = 0, limit = 9 }) => {
         const response = await asapi.get(
             `/message/images?id=${id}&skip=${skip}&limit=${limit}`
@@ -48,6 +43,28 @@ const services = {
         const response = await asapi.get(
             `/message/files?id=${id}&skip=${skip}&limit=${limit}`
         );
+        return response;
+    },
+
+    createGroupFn: async (info) => {
+        const response = await asapi.post(`/chat-group`, info);
+        return response;
+    },
+
+    updateChatGroupFn: async (info) => {
+        const response = await asapi.patch(`/chat-group`, info);
+        return response;
+    },
+
+    removeMember: async ({ groupId, userId }) => {
+        const response = await asapi.delete(
+            `/chat-group/member?group=${groupId}&user=${userId}`
+        );
+        return response;
+    },
+
+    addMembers: async (data) => {
+        const response = await asapi.patch(`/chat-group/member`, data);
         return response;
     },
 };

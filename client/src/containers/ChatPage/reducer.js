@@ -157,6 +157,8 @@ const messageReducer = (state = initialState, { type, payload }) =>
                 draft.error = null;
                 break;
             case constants.SOCKET_TYPING_ON:
+                console.log(payload);
+                console.log(state.record);
                 if (state.record) {
                     if (
                         payload.conversationType === "ChatGroup" &&
@@ -187,15 +189,6 @@ const messageReducer = (state = initialState, { type, payload }) =>
                         draft.typing = {};
                     }
                 }
-                break;
-            case constants.CHAT_CREATE_GROUP_START:
-                draft.findLoading = true;
-                break;
-            case constants.CHAT_CREATE_GROUP_SUCCESS:
-                draft.findLoading = false;
-                break;
-            case constants.CHAT_CREATE_GROUP_ERROR:
-                draft.findLoading = false;
                 break;
             case constants.CHAT_GET_IMAGE_LIST_START:
                 draft.getImageListLoading = true;
@@ -232,6 +225,44 @@ const messageReducer = (state = initialState, { type, payload }) =>
                 break;
             case constants.CHAT_GET_FILE_LIST_ERROR:
                 draft.getFileListLoading = false;
+                break;
+
+            case constants.CHAT_CREATE_GROUP_START:
+                draft.findLoading = true;
+                break;
+            case constants.CHAT_CREATE_GROUP_SUCCESS:
+                draft.findLoading = false;
+                break;
+            case constants.CHAT_CREATE_GROUP_ERROR:
+                draft.findLoading = false;
+                break;
+            case constants.CHAT_GROUP_REMOVE_MEMBER_SUCCESS:
+                draft.record.receiver.members = draft.record.receiver.members.filter(
+                    (item) => item.id !== payload
+                );
+                break;
+            case constants.CHAT_GROUP_ADD_MEMBERS_SUCCESS:
+                draft.record.receiver.members = draft.record.receiver.members.concat(
+                    payload
+                );
+                break;
+            case constants.CHAT_GROUP_CHANGE_AVATAR:
+                draft.record.receiver.picture = payload.picture;
+                state.messages.forEach((item, index) => {
+                    if (item.receiver._id === payload.groupId) {
+                        draft.messages[index].receiver.picture =
+                            payload.picture;
+                    }
+                });
+                break;
+            case constants.CHAT_GROUP_UPDATE_SUCCESS:
+                draft.updateChatGroupLoading = false;
+                draft.record.receiver.name = payload.name;
+                state.messages.forEach((item, index) => {
+                    if (item.receiver._id === payload.id) {
+                        draft.messages[index].receiver.name = payload.name;
+                    }
+                });
                 break;
             default:
                 break;

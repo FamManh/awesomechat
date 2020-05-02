@@ -11,8 +11,11 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
     const dispatch = useDispatch();
     
     useEffect(() => {
-        configSocket();
-        getPeerId();
+        if (isAuthenticated()) {
+             configSocket();
+             getPeerId();
+        }
+       
         // dispatch(socketActions.doConnect());
         if (!currentUser && isAuthenticated()) {
             dispatch(userActions.getCurrent());

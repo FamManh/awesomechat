@@ -198,6 +198,8 @@ exports.list = async (req, res, next) => {
     let currentUserId = req.user._id;
 
     let personalMessages = await Message.listPersonal({ userId: sender });
+
+    // Lấy danh sách chat nhóm 
     let groupMessages = await ChatGroup.list({
       userId: [sender.toString()],
     });
@@ -206,6 +208,7 @@ exports.list = async (req, res, next) => {
         receiver: {
           _id: item.id,
           name: item.name,
+          picture: item.picture,
         },
         message: "",
         sender: "",

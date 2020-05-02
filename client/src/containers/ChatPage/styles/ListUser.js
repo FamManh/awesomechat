@@ -9,6 +9,10 @@ const ListUser = styled.div`
             margin-right: 5px;
         }
     }
+    .list-item-hover:hover {
+        background-color: #f3f3f3;
+        cursor: pointer;
+    }
 `;
 
 export default ListUser
