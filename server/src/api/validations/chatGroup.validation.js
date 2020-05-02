@@ -14,25 +14,42 @@ module.exports = {
   createChatGroup: {
     body: {
       members: Joi.array().min(3).max(50),
-      name: Joi.string().required(),
+      name: Joi.string().min(1).max(50).required(),
     },
   },
 
   // PATCH /v1/chatGroups/:chatGroupId
   updateChatGroup: {
-    query: {
-      chatGroupId: Joi.string()
+    body: {
+      id: Joi.string()
         .regex(/^[a-fA-F0-9]{24}$/)
         .required(),
-    },
-    body: {
-      members: Joi.array().min(3).max(50),
-      name: Joi.string().required(),
+      name: Joi.string().min(1).max(50).required(),
     },
   },
   deleteChatGroup: {
     query: {
       chatGroupId: Joi.string()
+        .regex(/^[a-fA-F0-9]{24}$/)
+        .required(),
+    },
+  },
+
+  removeMember: {
+    query: {
+      group: Joi.string()
+        .regex(/^[a-fA-F0-9]{24}$/)
+        .required(),
+      user: Joi.string()
+        .regex(/^[a-fA-F0-9]{24}$/)
+        .required(),
+    },
+  },
+
+  addMember: {
+    body: {
+      members: Joi.array().items(Joi.string()).min(1).max(50),
+      groupId: Joi.string()
         .regex(/^[a-fA-F0-9]{24}$/)
         .required(),
     },

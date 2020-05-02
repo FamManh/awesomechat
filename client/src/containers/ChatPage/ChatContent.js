@@ -4,7 +4,6 @@ import "./picturewallStyle.css";
 import {
     Layout
 } from "antd";
-import ChatStyled from "./styles/chat";
 import { useSelector, useDispatch } from "react-redux";
 import selectors from "./selectors";
 import ImageUploadList from "./ImageUploadList";
@@ -17,20 +16,14 @@ import Spinner from '../shared/Spinner'
 
 
 function ChatContent() {
-    const scrollRef = useRef();
+    
     const dispatch = useDispatch();
     const record = useSelector(selectors.selectRecord);
     const inputMessage = useSelector(selectors.selectInputMessage);
     const findLoading = useSelector(selectors.selectFindLoading)
     
 
-    const scrollToBottom = () => {
-        if (scrollRef.current)
-            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    };
-    useEffect(() => {
-        scrollToBottom();
-    }, [record]);
+    
 
     const onInputImageListChange = ({ fileList }) => {
         dispatch({
@@ -54,9 +47,10 @@ function ChatContent() {
     return (
             <Layout style={{ position: "relative" }}>
                 <ChatContentHeader />
-                <ChatStyled ref={scrollRef}>
+                
+                
                     {record && <Conversation messages={record.messages} />}
-                </ChatStyled>
+                
                 <div className="px-3 py-2" style={{ background: "#f9f9f9" }}>
                     {inputMessage && inputMessage.images.length > 0 && (
                         <ImageUploadList

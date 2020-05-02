@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Icon } from "antd";
 import { useSelector } from "react-redux";
 import selectors from "./selectors";
@@ -6,8 +6,10 @@ import userSelectors from "../UserPage/selectors";
 import AvatarCus from "../../components/AvatarCus";
 import TypingIndicator from "../../components/TypingIndicator";
 import Carousel, { Modal, ModalGateway } from "react-images";
-
+import ChatStyled from "./styles/chat";
+import Infinite from 'react-infinite'
 function Conversation({ messages }) {
+    const scrollRef = useRef();
     const record = useSelector(selectors.selectRecord);
     const typing = useSelector(selectors.selectTyping);
     const currentUser = useSelector(userSelectors.selectCurrentUser);
@@ -212,6 +214,18 @@ function Conversation({ messages }) {
         })
     }
 
+    const scrollToBottom = () => {
+        if (scrollRef.current)
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    };
+    useEffect(() => {
+        scrollToBottom();
+    }, [record]);
+
+    const loadMore = () => {
+        console.log('load more')
+    }
+    
     return (
         <>
             <ModalGateway>
@@ -225,8 +239,10 @@ function Conversation({ messages }) {
                     </Modal>
                 ) : null}
             </ModalGateway>
-            {renderConversation(messages)}
-            {typing && typing.status && typIndocator}
+            <ChatStyled ref={scrollRef}>
+                {renderConversation(messages)}
+                {typing && typing.status && typIndocator}
+            </ChatStyled>
         </>
     );
 }

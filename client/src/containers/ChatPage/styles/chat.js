@@ -2,7 +2,8 @@ import styled from 'styled-components';
 
 const Chat = styled.div`
     flex: 1;
-    overflow-y: auto;
+    // overflow-y: auto;
+    overflow: auto;
     position: relative;
     padding: 5rem 2rem;
     background-color: #f9f9f9;
@@ -65,7 +66,7 @@ const Chat = styled.div`
         font-size: 11px;
         padding-top: 2px;
         font-weight: 600;
-        color: ${props => props.theme.textColorSecondary};
+        color: ${(props) => props.theme.textColorSecondary};
         text-align: right;
     }
     .date-Sent {

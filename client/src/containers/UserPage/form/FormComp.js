@@ -39,6 +39,9 @@ const FormComp = ({ form }) => {
                                         ? `${process.env.REACT_APP_STATIC_URI}/images/users/${record.picture}`
                                         : null
                                 }
+                                onSuccess={(picture) =>
+                                    dispatch(actions.doChangeAvatar(picture))
+                                }
                             />
                         </Col>
                     </Row>

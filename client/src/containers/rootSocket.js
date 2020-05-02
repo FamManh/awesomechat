@@ -34,6 +34,7 @@ const onDisconnect = () => {
 
 export const configSocket = () => {
     if (socket && socket.disconnected) {
+        console.log("came here")
         socket.connect();
     }
     if (socket) return;

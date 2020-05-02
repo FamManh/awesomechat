@@ -4,7 +4,11 @@ const ChatGroup = require("../models/chatGroup.model");
 const Message = require("../models/message.model");
 const User = require("../models/user.model");
 const APIError = require("../utils/APIError");
-
+const storageAvatar = require("../utils/storageAvatar");
+const fsExtra = require("fs-extra");
+const multer = require("multer");
+const _ = require("lodash");
+const {avatarDirectory} = require('../../config/vars')
 /**
  * Load chatGroup and append to req.
  * @public
@@ -55,16 +59,6 @@ exports.create = async (req, res, next) => {
       admin: req.user.id,
     });
 
-    // create notif created by
-    // const notifMessage = new Message({
-    //   conversationType: "ChatGroup",
-    //   type: "createdBy",
-    //   receiver: chatGroup.id,
-    //   sender: req.user.id,
-    //   conversationId: chatGroup.id,
-    // });
-    // await notifMessage.save();
-
     await chatGroup.save();
     
     res.status(httpStatus.CREATED);
@@ -100,33 +94,30 @@ exports.replace = async (req, res, next) => {
  */
 exports.update = async (req, res, next) => {
   try {
+    let {id, name} = req.body
+    console.log(req.body)
+    const currentUser = req.user
     // check user exists
-    const chatGroupUser = await User.get(req.query.user);
-    const currentUser = req.user;
+    const group = await ChatGroup.findById(id);
 
-    // check chatGroup exists
-    const chatGroup = await ChatGroup.findOne({
-      $or: [
-        {
-          $and: [{ userId: currentUser.id }, { chatGroupId: chatGroupUser.id }]
-        },
-        {
-          $and: [{ userId: chatGroupUser.id }, { chatGroupId: currentUser.id }]
-        }
-      ]
-    });
-    console.log(chatGroup);
-    if (chatGroup) {
-      chatGroup.status = true;
-      const savedChatGroup = await chatGroup.save();
-      res.status(httpStatus.CREATED);
-      res.json(savedChatGroup.transform());
-    } else {
+    // Nếu không tim thấy group thì đẩy lỗi về
+    if (!group) {
       throw new APIError({
         message: "ChatGroup does not exist",
-        status: httpStatus.BAD_REQUEST
+        status: httpStatus.BAD_REQUEST,
       });
     }
+    if (group.members.includes(currentUser.id)) {
+      // Nếu người dùng hiện tại là members thif cho update
+      group.name = name;
+      await group.save();
+      return res.status(httpStatus.OK).json(group.transform());
+    }
+    // Nếu người dùng hiện tại không phải là admin đẩy lỗi về
+    throw new APIError({
+      message: "Something went wrong",
+      status: httpStatus.BAD_REQUEST,
+    });
   } catch (error) {
     next(error);
   }
@@ -186,40 +177,133 @@ exports.list = async (req, res, next) => {
   }
 };
 
-/**
- * Delete chatGroup
- * @public
- */
-exports.remove = async (req, res, next) => {
+exports.removeMember = async(req, res, next) => {
+  try{
+    let groupId = req.query.group;
+    let userId = req.query.user;
+    let currentUser = req.user;
+    const group = await ChatGroup.findById(groupId);
+
+    // Nếu không tim thấy group thì đẩy lỗi về 
+    if(!group){
+      throw new APIError({
+        message: 'ChatGroup does not exist',
+        status: httpStatus.BAD_REQUEST
+      })
+    }
+
+    if(group.admin === currentUser.id){
+      // Nếu người dùng hiện tại là admin thì xóa 
+      group.members.remove(userId)
+      await group.save();
+      return res.status(httpStatus.OK).end();
+    }
+    // Nếu người dùng hiện tại không phải là admin đẩy lỗi về 
+      throw new APIError({
+        message: 'Something went wrong',
+        status: httpStatus.BAD_REQUEST
+      })
+  }catch(error){
+    next(error);
+  }
+}
+
+exports.removeMember = async (req, res, next) => {
   try {
-    // check user exists
-    const chatGroupUser = await User.get(req.query.user);
-    const currentUser = req.user;
+    let groupId = req.query.group;
+    let userId = req.query.user;
+    let currentUser = req.user;
+    const group = await ChatGroup.findById(groupId);
 
-    // check chatGroup exists
-    const chatGroup = await ChatGroup.findOne({
-      $or: [
-        {
-          $and: [{ userId: currentUser.id }, { chatGroupId: chatGroupUser.id }]
-        },
-        {
-          $and: [{ userId: chatGroupUser.id }, { chatGroupId: currentUser.id }]
-        }
-      ]
-    });
-
-    if (chatGroup) {
-      chatGroup
-        .remove()
-        .then(() => res.status(httpStatus.OK).end())
-        .catch(e => next(e));
-    } else {
+    // Nếu không tim thấy group thì đẩy lỗi về
+    if (!group) {
       throw new APIError({
         message: "ChatGroup does not exist",
-        status: httpStatus.BAD_REQUEST
+        status: httpStatus.BAD_REQUEST,
       });
     }
+
+    if (group.admin === currentUser.id) {
+      // Nếu người dùng hiện tại là admin thì xóa
+      group.members.remove(userId);
+      await group.save();
+      return res.status(httpStatus.OK).end();
+    }
+    // Nếu người dùng hiện tại không phải là admin đẩy lỗi về
+    throw new APIError({
+      message: "Something went wrong",
+      status: httpStatus.BAD_REQUEST,
+    });
   } catch (error) {
     next(error);
   }
 };
+
+
+exports.addMember = async (req, res, next) => {
+  try {
+    let {members, groupId} = req.body;
+    let currentUser = req.user;
+    const group = await ChatGroup.findById(groupId);
+    // Nếu không tim thấy group thì đẩy lỗi về
+    if (!group) {
+      throw new APIError({
+        message: "ChatGroup does not exist",
+        status: httpStatus.BAD_REQUEST,
+      });
+    }
+
+    if (group.members.includes(currentUser.id)) {
+      // Nếu người dùng hiện tại là 1 trong những members
+      await ChatGroup.findOneAndUpdate(
+        { _id: groupId },
+        {
+          $addToSet: { members },
+        }
+      );
+      return res.status(httpStatus.OK).end();
+    }
+    // Nếu người dùng hiện tại không phải là members 
+    throw new APIError({
+      message: "Something went wrong",
+      status: httpStatus.BAD_REQUEST,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+let avatarUploadFile = multer(storageAvatar).single("avatar");
+
+exports.updateAvatar = (req, res, next) => {
+  avatarUploadFile(req, res, async (err) => {
+    try {
+      if (!req.file) {
+        throw new APIError({
+          message: "Please select a file.",
+          status: httpStatus.BAD_REQUEST,
+        });
+      }
+
+      // update user
+      let chatGroupUpdate = await ChatGroup.findOneAndUpdate(
+        { _id: req.params.chatGroupId },
+        { picture: req.file.filename }
+      );
+      // Delete old user picture
+      if (chatGroupUpdate.picture) {
+        await fsExtra.remove(`${avatarDirectory}/${chatGroupUpdate.picture}`); // return old item after updated
+      }
+
+      let result = {
+        message: "success",
+        picture: `${req.file.filename}`,
+      };
+      return res.send(result);
+    } catch (error) {
+      next(error);
+    }
+  });
+};
+

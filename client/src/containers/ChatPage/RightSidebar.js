@@ -15,10 +15,12 @@ import selectors from "./selectors";
 import AvatarCus from "../../components/AvatarCus";
 import actions from "./actions";
 import ImageGrid from "./styles/ImageGrid";
-import FileList from './styles/FileList'
+import FileList from "./styles/FileList";
 import Carousel, { Modal, ModalGateway } from "react-images";
 import ListUser from "./styles/ListUser";
-import {Link} from 'react-router-dom'
+import { Link } from "react-router-dom";
+import ModalAddMemberToGroup from "./ModalAddMemberToGroup";
+import ModalUpdateChatGroup from "./ModalUpdateChatGroup";
 const { Sider, Header } = Layout;
 
 const ButtonCus = ({ text, icon, onClick }) => {
@@ -49,16 +51,17 @@ function RightSideBar() {
     const getImageListLoading = useSelector(
         selectors.selectGetImageListLoading
     );
-    const getFileListLoading = useSelector(selectors.selectGetFileListLoading)
+    const getFileListLoading = useSelector(selectors.selectGetFileListLoading);
     const images = useSelector(selectors.selectImageList);
     const files = useSelector(selectors.selectFileList);
 
     const [imageModalShow, setImageModalShow] = useState(false);
-    const [currentImageIndex, setCurrentImageIndex] = useState(0)
-
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [modalAddmemberVisible, setModalAddmemberVisible] = useState(false);
+    const [modalUpdateChatGroup, setModalUpdateChatGroup] = useState(false);
 
     const getMoreImage = () => {
-        if(images){
+        if (images) {
             dispatch(
                 actions.listImage({
                     id: record.receiver.id,
@@ -66,10 +69,10 @@ function RightSideBar() {
                 })
             );
         }
-    }
+    };
 
     const getMoreFile = () => {
-        if(files){
+        if (files) {
             dispatch(
                 actions.listFile({ id: record.receiver.id, skip: files.length })
             );
@@ -91,21 +94,21 @@ function RightSideBar() {
                 marginTop: "30px",
             }}
         >
-            <Row>
-                <div>
-                    <AvatarCus
-                        record={record ? record.receiver : null}
-                        size={100}
-                    />
-                </div>
-                <div style={{ fontWeight: "bold", fontSize: "18px" }}>
+            <div>
+                <AvatarCus
+                    record={record ? record.receiver : null}
+                    size={100}
+                />
+            </div>
+            <div style={{ margin: "10px 0px", textAlign: "center" }}>
+                <h2>
                     {record
                         ? record.conversationType === "ChatGroup"
                             ? `${record.receiver.name}`
                             : `${record.receiver.firstname} ${record.receiver.lastname}`
                         : null}
-                </div>
-            </Row>
+                </h2>
+            </div>
         </Header>
     );
 
@@ -117,8 +120,18 @@ function RightSideBar() {
                 </Menu.Item>
                 {members.filter((item) => item.admin === true)[0].id ===
                     currentUser.id && (
-                    <Menu.Item key="1">
-                        <a href="http://www.alipay.com/">Remove from group</a>
+                    <Menu.Item
+                        key="1"
+                        onClick={() =>
+                            dispatch(
+                                actions.doRemoveMember({
+                                    userId: member.id,
+                                    groupId: record.receiver.id,
+                                })
+                            )
+                        }
+                    >
+                        Remove from group
                     </Menu.Item>
                 )}
             </Menu>
@@ -131,13 +144,13 @@ function RightSideBar() {
                 <div>
                     <AvatarCus className="avatar" record={member} />
                     {`${member.firstname} ${member.lastname}`}
-                </div>
-                <div style={{ lineHeight: "40px" }}>
                     {member.admin ? (
-                        <span style={{ color: "#6e6e6e" }}>admin</span>
+                        <span style={{ color: "#959595" }}> (admin)</span>
                     ) : (
                         ""
                     )}
+                </div>
+                <div style={{ lineHeight: "40px" }}>
                     {currentUser && currentUser.id === member.id ? (
                         ""
                     ) : (
@@ -155,7 +168,7 @@ function RightSideBar() {
                 </div>
             </div>
         ));
-    }
+    };
 
     const renderImagesGrid = (source) => {
         if (!source || (source && source.length === 0)) {
@@ -191,19 +204,19 @@ function RightSideBar() {
                 </a>
             </div>
         ));
-    }
+    };
 
     const renderContent = () => {
         return (
             <Collapse
                 bordered={false}
-                defaultActiveKey={["1", "2", "3"]}
+                defaultActiveKey={["1", "4"]}
                 expandIcon={({ isActive }) => (
                     <Icon type="caret-right" rotate={isActive ? 90 : 0} />
                 )}
                 expandIconPosition="right"
             >
-                <Collapse.Panel
+                {/* <Collapse.Panel
                     header={
                         <span style={{ color: "rgba(126, 126, 126, 0.85)" }}>
                             OPTIONS
@@ -216,7 +229,7 @@ function RightSideBar() {
                         icon="stop"
                         onClick={() => alert("Clicked")}
                     />
-                </Collapse.Panel>
+                </Collapse.Panel> */}
                 {record && record.receiver && record.receiver.members && (
                     <Collapse.Panel
                         header={
@@ -230,9 +243,13 @@ function RightSideBar() {
                     >
                         <ListUser>
                             {renderPeople(record.receiver.members)}
-                            <Button block>Add people</Button>
+                            <Button
+                                block
+                                onClick={() => setModalAddmemberVisible(true)}
+                            >
+                                Add people
+                            </Button>
                         </ListUser>
-
                     </Collapse.Panel>
                 )}
                 {files && files.length && (
@@ -290,12 +307,29 @@ function RightSideBar() {
                     <Modal onClose={() => setImageModalShow(false)}>
                         <Carousel
                             currentIndex={currentImageIndex}
-                            components={{ FooterCaption: ()=> null }}
+                            components={{ FooterCaption: () => null }}
                             views={images}
                         />
                     </Modal>
                 ) : null}
             </ModalGateway>
+            {modalAddmemberVisible && (
+                <ModalAddMemberToGroup
+                    visible={modalAddmemberVisible}
+                    doToggle={() =>
+                        setModalAddmemberVisible(!modalAddmemberVisible)
+                    }
+                />
+            )}
+            {modalUpdateChatGroup && (
+                <ModalUpdateChatGroup
+                    visible={modalUpdateChatGroup}
+                    doToggle={() =>
+                        setModalUpdateChatGroup(!modalUpdateChatGroup)
+                    }
+                    info={record.receiver}
+                />
+            )}
             <div
                 style={{
                     display: "flex",
@@ -306,6 +340,16 @@ function RightSideBar() {
                     borderLeft: "1px solid rgba(0, 0, 0, 0.05)",
                 }}
             >
+                {record && record.conversationType === "ChatGroup" && (
+                    <div style={{ margin: "5px 5px 0 0" }}>
+                        <Button
+                            style={{ float: "right", border: "0px" }}
+                            shape="circle"
+                            icon="edit"
+                            onClick={() => setModalUpdateChatGroup(true)}
+                        ></Button>
+                    </div>
+                )}
                 {userInfo}
                 {renderContent()}
             </div>

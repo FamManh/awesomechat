@@ -73,31 +73,6 @@ const actions = {
         }
     },
 
-    doCreateGroup: (data) => async (dispatch) => {
-        try {
-            dispatch({
-                type: constants.CHAT_CREATE_GROUP_START,
-            });
-
-            const response = await services.createGroupFn(data);
-            if (response.status === 201) {
-                // Created
-                emitCreateGroup(response.data);
-            }
-
-            dispatch({
-                type: constants.CHAT_CREATE_GROUP_SUCCESS,
-                payload: response.data,
-            });
-            getHistory().push(`/m/${response.data.id}`);
-        } catch (error) {
-            Errors.handle(error);
-            dispatch({
-                type: constants.CHAT_CREATE_GROUP_ERROR,
-            });
-        }
-    },
-
     listImage: (data) => async (dispatch) => {
         try {
             dispatch({
@@ -132,7 +107,7 @@ const actions = {
             dispatch({
                 type: constants.CHAT_GET_FILE_LIST_SUCCESS,
                 payload: {
-                    files : response.data.files,
+                    files: response.data.files,
                     skip: data.skip,
                 },
             });
@@ -141,6 +116,75 @@ const actions = {
             dispatch({
                 type: constants.CHAT_GET_FILE_LIST_ERROR,
             });
+        }
+    },
+
+    doCreateGroup: (data) => async (dispatch) => {
+        try {
+            dispatch({
+                type: constants.CHAT_CREATE_GROUP_START,
+            });
+
+            const response = await services.createGroupFn(data);
+            if (response.status === 201) {
+                // Created
+                emitCreateGroup(response.data);
+            }
+
+            dispatch({
+                type: constants.CHAT_CREATE_GROUP_SUCCESS,
+                payload: response.data,
+            });
+            getHistory().push(`/m/${response.data.id}`);
+        } catch (error) {
+            Errors.handle(error);
+            dispatch({
+                type: constants.CHAT_CREATE_GROUP_ERROR,
+            });
+        }
+    },
+
+    doRemoveMember: (data) => async (dispatch) => {
+        try {
+            await services.removeMember(data);
+            dispatch({
+                type: constants.CHAT_GROUP_REMOVE_MEMBER_SUCCESS,
+                payload: data.userId,
+            });
+        } catch (error) {
+            Errors.handle(error);
+        }
+    },
+
+    doAddNewMembers: (data) => async (dispatch) => {
+        try {
+            let usersId = data.members.map((item) => item.id);
+            await services.addMembers({ ...data, members: usersId });
+            dispatch({
+                type: constants.CHAT_GROUP_ADD_MEMBERS_SUCCESS,
+                payload: data.members,
+            });
+        } catch (error) {
+            Errors.handle(error);
+        }
+    },
+
+    doChatGroupChangeAvatar: (data) => async (dispatch) => {
+        dispatch({
+            type: constants.CHAT_GROUP_CHANGE_AVATAR,
+            payload: data,
+        });
+    },
+
+    doChatGroupUpdate: (data) => async (dispatch) => {
+        try {
+            const response = await services.updateChatGroupFn(data);
+            dispatch({
+                type: constants.CHAT_GROUP_UPDATE_SUCCESS,
+                payload: response.data,
+            });
+        } catch (error) {
+            Errors.handle(error);
         }
     },
 };

@@ -7,6 +7,7 @@ const uuidv4 = require("uuid/v4");
 const multer = require("multer");
 const fsExtra = require("fs-extra");
 const APIError = require("../utils/APIError");
+const storageAvatar = require('../utils/storageAvatar')
 
 const {
   avatarDirectory,
@@ -166,24 +167,13 @@ exports.remove = (req, res, next) => {
     .catch((e) => next(e));
 };
 
-let storageAvatar = multer.diskStorage({
-  destination: (req, file, callback) => {
-    callback(null, avatarDirectory);
-  },
-  filename: (req, file, callback) => {
-    let math = avatarTypes;
-    if (math.indexOf(file.mimetype) === -1) {
-      return callback(transErrors.avatar_type, null);
-    }
-    let avatarName = `${Date.now()}-${uuidv4()}-${file.originalname}`;
-    callback(null, avatarName);
-  },
-});
 
-let avatarUploadFile = multer({
-  storage: storageAvatar,
-  limits: { fileSize: avatarLimitSize },
-}).single("avatar");
+// let avatarUploadFile = multer({
+//   storage: storageAvatar,
+//   limits: { fileSize: avatarLimitSize },
+// }).single("avatar");
+
+let avatarUploadFile = multer(storageAvatar).single("avatar");
 
 exports.updateAvatar = (req, res, next) => {
   avatarUploadFile(req, res, async (err) => {

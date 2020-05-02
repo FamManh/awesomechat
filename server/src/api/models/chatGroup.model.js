@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
-
+const APIError = require('../utils/APIError')
+const httpStatus = require('http-status')
 let schema = mongoose.Schema;
 
 let chatGroupSchema = new schema(
@@ -24,7 +25,7 @@ let chatGroupSchema = new schema(
 chatGroupSchema.method({
   transform() {
     const transformed = {};
-    const fields = ["id", "name", "members", "createdAt", "updatedAt"];
+    const fields = ["id","picture", "name", "members", "createdAt", "updatedAt"];
 
     fields.forEach((field) => {
       transformed[field] = this[field];

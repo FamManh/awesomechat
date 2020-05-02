@@ -3,20 +3,23 @@ import actions from "../actions";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { isAuthenticated } from "../../shared/routes/permissionChecker";
-const UpdateAvatar = ({picture}) => {
+const UpdateAvatar = ({
+    picture,
+    action = `${process.env.REACT_APP_API_URI}/user/avatar`,
+    onSuccess
+}) => {
     const [loading, setLoading] = useState(false);
     const [imageUrl, setImageUrl] = useState(picture ? picture : "");
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
     useEffect(() => {
         setImageUrl(picture);
-        return () => {
-        };
+        return () => {};
     }, [picture]);
     let getBase64 = (img, callback) => {
         const reader = new FileReader();
         reader.addEventListener("load", () => callback(reader.result));
         reader.readAsDataURL(img);
-    }
+    };
 
     let beforeUpload = (file) => {
         const isJpgOrPng =
@@ -29,22 +32,21 @@ const UpdateAvatar = ({picture}) => {
             message.error("Image must smaller than 2MB!");
         }
         return isJpgOrPng && isLt2M;
-    }
-    let handleChange = info => {
+    };
+    let handleChange = (info) => {
         if (info.file.status === "uploading") {
             setLoading(true);
             return;
         }
         if (info.file.status === "done") {
             // Get this url from response in real world.
-            if (info.file.response.message === "success"){
-                dispatch(actions.doChangeAvatar(info.file.response.picture))
+            if (info.file.response.message === "success") {
+                onSuccess(info.file.response.picture);
             }
-                getBase64(info.file.originFileObj, (imageUrl) => {
-                    setImageUrl(imageUrl);
-                    setLoading(false);
-                });
-            
+            getBase64(info.file.originFileObj, (imageUrl) => {
+                setImageUrl(imageUrl);
+                setLoading(false);
+            });
         }
     };
 
@@ -55,33 +57,26 @@ const UpdateAvatar = ({picture}) => {
         </div>
     );
 
-    
-        return (
-            <Upload
-                name="avatar"
-                listType="picture-card"
-                className="avatar-uploader"
-                showUploadList={false}
-                action={`${process.env.REACT_APP_API_URI}/user/avatar`}
-                headers={{
-                    Authorization: "Bearer " + isAuthenticated()
-                }}
-                beforeUpload={beforeUpload}
-                onChange={handleChange}
-            >
-                {imageUrl ? (
-                    <img
-                        src={imageUrl}
-                        alt="avatar"
-                        style={{ width: "100%" }}
-                    />
-                ) : (
-                    uploadButton
-                )}
-            </Upload>
-        );
-    
-
+    return (
+        <Upload
+            name="avatar"
+            listType="picture-card"
+            className="avatar-uploader"
+            showUploadList={false}
+            action={action}
+            headers={{
+                Authorization: "Bearer " + isAuthenticated(),
+            }}
+            beforeUpload={beforeUpload}
+            onChange={handleChange}
+        >
+            {imageUrl ? (
+                <img src={imageUrl} alt="avatar" style={{ width: "100%" }} />
+            ) : (
+                uploadButton
+            )}
+        </Upload>
+    );
 };
 
 export default Form.create()(UpdateAvatar);
