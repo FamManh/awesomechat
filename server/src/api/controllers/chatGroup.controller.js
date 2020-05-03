@@ -42,10 +42,17 @@ exports.loggedIn = (req, res) => res.json(req.chatGroup.transform());
 exports.create = async (req, res, next) => {
   try {
     
-    const members = [...req.body.members, req.user.id]
+    let members = [...req.body.members, req.user.id]
+    members = [...new Set(members)];
+    if(members.length < 3){
+      throw new APIError({
+        message: "Must be at least 3 people",
+        status: httpStatus.BAD_REQUEST,
+      });
+    }
 
     // Check group exists
-    const groupExists = await ChatGroup.findOne({members: {$all: members}})
+    const groupExists = await ChatGroup.findOne({members})
     
     // Nếu nhóm đã tồn tại thì trả về ngay cho người dùng 
     if (groupExists){
@@ -62,7 +69,7 @@ exports.create = async (req, res, next) => {
     await chatGroup.save();
     
     res.status(httpStatus.CREATED);
-    res.json({ ...chatGroup.transform() });
+    res.json({ ...chatGroup.transform(), admin: {id: req.user.id, firstname: req.user.firstname, lastname: req.user.lastname, picture: req.user.picture} });
   } catch (error) {
     next(error);
   }
@@ -95,7 +102,6 @@ exports.replace = async (req, res, next) => {
 exports.update = async (req, res, next) => {
   try {
     let {id, name} = req.body
-    console.log(req.body)
     const currentUser = req.user
     // check user exists
     const group = await ChatGroup.findById(id);

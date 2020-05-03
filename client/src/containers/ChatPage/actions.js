@@ -5,7 +5,11 @@ import services from "./service";
 import { emitSentMessage, emitCreateGroup } from "./socket";
 
 const actions = {
+    doToggleScrollToBottom: () => ({
+        type: constants.CHAT_SCROLL_TO_BOTTOM_TOGGLE,
+    }),
     doToggleRightSidebar: () => ({ type: constants.CHAT_TOGGLE_RIGHT_SIDEBAR }),
+    // Lấy danh sách những cuộc trò chuyện
     list: () => async (dispatch) => {
         try {
             dispatch({ type: constants.CHAT_GET_START });
@@ -24,23 +28,21 @@ const actions = {
             getHistory().push("/");
         }
     },
-    doFind: (id) => async (dispatch) => {
+
+    // lấy thông tin cuộc trò chuyện theo id
+    doFind: (id, skip = 0, limit = 20) => async (dispatch) => {
         try {
             if (!id) {
-                dispatch({
-                    type: constants.CHAT_FIND_SUCCESS,
-                    payload: null,
-                });
                 return;
             }
             dispatch({
                 type: constants.CHAT_FIND_START,
             });
 
-            const response = await services.findFn(id);
+            const response = await services.findFn(id, skip, limit);
             dispatch({
                 type: constants.CHAT_FIND_SUCCESS,
-                payload: response.data,
+                payload: { data: response.data, skip },
             });
         } catch (error) {
             Errors.handle(error);
@@ -57,6 +59,7 @@ const actions = {
             });
 
             const response = await services.createFn(info);
+
             emitSentMessage(response.data);
 
             let state = getStore().getState();
@@ -129,7 +132,20 @@ const actions = {
             if (response.status === 201) {
                 // Created
                 emitCreateGroup(response.data);
+                dispatch(
+                    actions.doCreate({
+                        type: "notification",
+                        message: `${
+                            response.data.admin.firstname +
+                            " " +
+                            response.data.admin.lastname
+                        } created the group.`,
+                        receiver: response.data.id,
+                        conversationType: "ChatGroup",
+                    })
+                );
             }
+            // console.log(response.data);
 
             dispatch({
                 type: constants.CHAT_CREATE_GROUP_SUCCESS,
@@ -164,6 +180,14 @@ const actions = {
                 type: constants.CHAT_GROUP_ADD_MEMBERS_SUCCESS,
                 payload: data.members,
             });
+            dispatch(
+                actions.doCreate({
+                    type: "notification",
+                    message: data.message,
+                    receiver: data.groupId,
+                    conversationType: "ChatGroup",
+                })
+            );
         } catch (error) {
             Errors.handle(error);
         }
@@ -174,15 +198,31 @@ const actions = {
             type: constants.CHAT_GROUP_CHANGE_AVATAR,
             payload: data,
         });
+         dispatch(
+             actions.doCreate({
+                 type: "notification",
+                 message: data.message,
+                 receiver: data.groupId,
+                 conversationType: "ChatGroup",
+             })
+         );
     },
 
     doChatGroupUpdate: (data) => async (dispatch) => {
         try {
-            const response = await services.updateChatGroupFn(data);
+            const response = await services.updateChatGroupFn({name: data.name, id: data.id});
             dispatch({
                 type: constants.CHAT_GROUP_UPDATE_SUCCESS,
                 payload: response.data,
             });
+            dispatch(
+                actions.doCreate({
+                    type: "notification",
+                    message: data.message,
+                    receiver: data.id,
+                    conversationType: "ChatGroup",
+                })
+            );
         } catch (error) {
             Errors.handle(error);
         }

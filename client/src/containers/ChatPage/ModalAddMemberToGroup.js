@@ -25,6 +25,7 @@ function ModalAddMemberToGroup({ visible, doToggle }) {
     const [newMembers, setNewMembers] = useState([]);
 
     const isMemberAdded = (userId) => {
+        // Đây có phải là member group hay không ?
         const memberExists = record.receiver.members.find(
             (item) => item.id === userId
         );
@@ -32,9 +33,34 @@ function ModalAddMemberToGroup({ visible, doToggle }) {
     };
 
     const idNewMemberAdded = (userId) => {
+        // Đây có phải là new member hay không?
         const memberExists = newMembers.find((item) => item.id === userId);
         return memberExists ? true : false;
     };
+
+    const handleOnOkClick = () => {
+        let notifMessage = ""
+        newMembers.forEach((item, index) => {
+            if (index > 0) notifMessage += ", ";
+            notifMessage += item.firstname + " " + item.lastname;
+        });
+        dispatch(
+            actions.doAddNewMembers({
+                groupId: record.receiver.id,
+                members: newMembers,
+                message: `${
+                    currentUser.firstname + " " + currentUser.lastname
+                } added ${notifMessage} to the group.`
+            })
+        );
+        
+      
+        doToggle();
+    };
+
+    useEffect(() => {
+        dispatch(userActions.list());
+    }, []);
 
     const renderUsers = (users) => {
         return users.map((user, key) => (
@@ -72,15 +98,6 @@ function ModalAddMemberToGroup({ visible, doToggle }) {
             </div>
         ));
     };
-
-    const handleOnOkClick = () => {
-        dispatch(actions.doAddNewMembers({groupId: record.receiver.id, members: newMembers}))
-        doToggle();
-    };
-
-    useEffect(() => {
-        dispatch(userActions.list());
-    }, []);
 
     return (
         <Modal

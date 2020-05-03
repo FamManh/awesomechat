@@ -117,6 +117,8 @@ function ChatContentFooter() {
             );
             onInputFileListChange({ fileList: [] });
         }
+        //   dispatch(actions.doToggleScrollToBottom());
+
         handleTypingOff();
     };
     return (

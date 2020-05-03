@@ -9,7 +9,7 @@ const APIError = require("../utils/APIError");
  * @private
  */
 
-const messageTypes = ["text", "image", 'file'];
+const messageTypes = ["text", "image", "file", "notification"];
 const conversationTypes = ["User", "ChatGroup"];
 
 const messageSchema = new mongoose.Schema(
@@ -81,13 +81,10 @@ messageSchema.method({
  * Statics
  */
 messageSchema.statics = {
-  /**
-   * Get message
-   *
-   * @param {ObjectId} id - The objectId of message.
-   * @returns {Promise<Message, APIError>}
-   */
-  getPersonal({ senderId, receiverId }) {
+  messageTypes,
+  conversationTypes,
+  // Lấy danh sách tin nhắn riếng tư
+  getPersonal({ senderId, receiverId, skip = 0, limit = 20 }) {
     return this.find({
       $or: [
         {
@@ -99,24 +96,21 @@ messageSchema.statics = {
       ],
     })
       .sort("-createdAt")
-      .limit(20)
+      .limit(limit)
+      .skip(skip)
       .populate("sender", "id picture lastname firstname")
       .populate("receiver", "id picture lastname firstname")
       .exec();
   },
 
-  /**
-   * Get message
-   *
-   * @param {ObjectId} id - The objectId of message.
-   * @returns {Promise<Message, APIError>}
-   */
-  getGroup({ groupId }) {
+  // Lấy danh sách tin nhắn group
+  getGroup({ groupId, skip = 0, limit = 20 }) {
     return this.find({
       $and: [{ receiver: groupId }],
     })
       .sort("-createdAt")
-      .limit(20)
+      .limit(limit)
+      .skip(skip)
       .populate("sender", "id picture lastname firstname")
       .exec();
   },
@@ -219,8 +213,7 @@ messageSchema.statics = {
     ]);
   },
 
-
-  // Lấy danh sách files dựa vào conversation Id 
+  // Lấy danh sách files dựa vào conversation Id
   filesList({ conversationId, limit = 9, skip = 0 }) {
     return this.aggregate([
       {

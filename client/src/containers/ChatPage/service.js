@@ -1,19 +1,19 @@
 import asapi from "../../api/asapi";
 
 const services = {
-    listFn: async ({ term }) => {
-        let url = "/user";
-        url = term ? url + `?term=${term}` : url;
-        const response = await asapi.get(url);
-        return response;
-    },
+    // listFn: async ({ term }) => {
+    //     let url = "/user";
+    //     url = term ? url + `?term=${term}` : url;
+    //     const response = await asapi.get(url);
+    //     return response;
+    // },
     getListFn: async () => {
         const response = await asapi.get(`/message`);
         return response;
     },
 
-    findFn: async (id) => {
-        const response = await asapi.get(`/message/${id}`);
+    findFn: async (id, skip, limit) => {
+        const response = await asapi.get(`/message/${id}?skip=${skip}&limit=${limit}`);
         return response;
     },
 

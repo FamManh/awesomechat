@@ -13,18 +13,19 @@ import Conversation from "./Conversation";
 import ChatContentFooter from "./ChatContentFooter";
 import ChatContentHeader from "./ChatContentHeader";
 import Spinner from '../shared/Spinner'
+import ChatStyled from "./styles/chat";
+import { useParams } from "react-router-dom";
+import actions from "./actions";
 
 
 function ChatContent() {
-    
+    const scrollRef = useRef();
     const dispatch = useDispatch();
+    let { userId } = useParams();
     const record = useSelector(selectors.selectRecord);
     const inputMessage = useSelector(selectors.selectInputMessage);
     const findLoading = useSelector(selectors.selectFindLoading)
-    
-
-    
-
+    const isScrollToBottom = useSelector(selectors.selectScrollToBottom);
     const onInputImageListChange = ({ fileList }) => {
         dispatch({
             type: constants.INPUT_IMAGE_LIST_CHANGE,
@@ -39,38 +40,50 @@ function ChatContent() {
         });
     };
 
-    if(findLoading){
-        
-        return <Spinner/>
-    }
+      const scrollToBottom = () => {
+          if (scrollRef.current)
+              scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      };
 
+      if (isScrollToBottom) {
+          scrollToBottom();
+          dispatch(actions.doToggleScrollToBottom());
+      }
+          useEffect(() => {
+              console.log("Sroll to bottom");
+              scrollToBottom();
+          }, [userId]);
+ 
     return (
-            <Layout style={{ position: "relative" }}>
-                <ChatContentHeader />
-                
-                
-                    {record && <Conversation messages={record.messages} />}
-                
-                <div className="px-3 py-2" style={{ background: "#f9f9f9" }}>
-                    {inputMessage && inputMessage.images.length > 0 && (
-                        <ImageUploadList
-                            fileList={inputMessage.images}
-                            onDelete={(fileList) =>
-                                onInputImageListChange({ fileList })
-                            }
-                        />
-                    )}
-                    {inputMessage && inputMessage.files.length > 0 && (
-                        <FileUploadList
-                            onDelete={(fileList) =>
-                                onInputFileListChange({ fileList })
-                            }
-                            fileList={inputMessage.files}
-                        />
-                    )}
-                    <ChatContentFooter />
-                </div>
-            </Layout>
+        <Layout style={{ position: "relative" }}>
+            <ChatContentHeader />
+
+            {record.messages && (
+                <ChatStyled ref={scrollRef}>
+                    <Conversation messages={record.messages} />
+                </ChatStyled>
+            )}
+
+            <div className="px-3 py-2" style={{ background: "#f9f9f9" }}>
+                {inputMessage && inputMessage.images.length > 0 && (
+                    <ImageUploadList
+                        fileList={inputMessage.images}
+                        onDelete={(fileList) =>
+                            onInputImageListChange({ fileList })
+                        }
+                    />
+                )}
+                {inputMessage && inputMessage.files.length > 0 && (
+                    <FileUploadList
+                        onDelete={(fileList) =>
+                            onInputFileListChange({ fileList })
+                        }
+                        fileList={inputMessage.files}
+                    />
+                )}
+                <ChatContentFooter />
+            </div>
+        </Layout>
     );
 }
 

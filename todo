@@ -12,7 +12,6 @@
 
 # xử lý loading 
 
-# Load 20 tin nhắn
 
 # Load 20 danh sach tin nhắn 
 
@@ -20,14 +19,8 @@
 
 # bắn socket khi chap nhận lời mời kết bạn 
 
-# login vẫn chưa run socket
-
 # khi connect tới socket cần phải kiểm tra jwt
 
-# đăng xuất thì phải clear thông tin curent user 
+# infinite load
 
-# bắt sự kiện members trùng id 
-
-# Thêm người vào chat group
-
-# xóa người khỏi chat group 
+# làm giao diện cho mobile 

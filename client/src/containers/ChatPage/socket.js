@@ -21,7 +21,7 @@ export const emitCreateGroup = (payload) => {
 
 export const onCreateGroup = (payload) => {
     getStore().dispatch({
-        type: constants.SOCKET_CREATE_GROUP,
+        type: constants.CHAT_CREATE_GROUP_SUCCESS,
         payload: payload,
     });
 };
