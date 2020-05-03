@@ -74,8 +74,13 @@ const MessageList = () => {
                                                 textOverflow: "ellipsis",
                                             }}
                                         >
-                                            {item.type === "text" ? (
-                                                item.message ? item.message : ""
+                                            {item.type === "text" ||
+                                            item.type === "notification" ? (
+                                                item.message ? (
+                                                    item.message
+                                                ) : (
+                                                    ""
+                                                )
                                             ) : item.type === "image" ? (
                                                 <>
                                                     <Icon type="file-image" />

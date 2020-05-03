@@ -44,15 +44,16 @@ function ModalCreateGroupchat({visible, doToggle}) {
         }
     });
 
-    
-
     const onCreateGroup = () => {
         if(members.length > 1){
             let membersListId = members.map(item=>item.id);
             dispatch(actions.doCreateGroup({ name: groupName, members:membersListId }));
+            
             setGroupName("Group name");
             setMembers([])
+            
         }
+
         doToggle();
     }
 

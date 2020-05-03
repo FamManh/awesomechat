@@ -41,10 +41,11 @@ exports.load = async (req, res, next, id) => {
  * Lấy nhưng danh sách những tin nhắn cho receiver
  * @public
  */
-exports.get = async (req, res) => {
+exports.get = async (req, res, next) => {
   try {
     let senderId = req.user.id;
     let receiverId = req.params.receiverId;
+    let { skip, limit } = req.query;
     let receiverInfo = await User.findById(receiverId);
     let responsceList = [];
     let responeData = {};
@@ -52,9 +53,8 @@ exports.get = async (req, res) => {
     if (!receiverInfo) {
       // Tìm id hiện tại có phải là group chat hay không
       receiverInfo = await ChatGroup.findById(receiverId);
-
       // Nếu không phải group chat thì trả về lỗi không tìm thấý
-      if (!receiverInfo) {
+      if (!receiverInfo || !receiverInfo.members.includes(req.user.id)) {
         throw new APIError({
           message: "Not found",
           status: httpStatus.BAD_REQUEST,
@@ -64,6 +64,8 @@ exports.get = async (req, res) => {
       // Lấy danh sách cuộc trò chuyện
       const groupMessages = await Message.getGroup({
         groupId: receiverInfo.id,
+        skip,
+        limit,
       });
 
       // Lấy thông tin của admin
@@ -80,12 +82,12 @@ exports.get = async (req, res) => {
           lastname: member.lastname,
           picture: member.picture,
         };
-        if (member.id === receiverInfo.admin){
+        if (member.id === receiverInfo.admin) {
           tempMember.admin = true;
         }
-          return tempMember;
+        return tempMember;
       });
-      
+
       // Transform kết quả trả về
       responsceList = await groupMessages.map((message) => message.transform());
       responeData.conversationType = "ChatGroup";
@@ -100,6 +102,8 @@ exports.get = async (req, res) => {
       const personalMessages = await Message.getPersonal({
         senderId,
         receiverId,
+        skip,
+        limit,
       });
       responsceList = await personalMessages.map((message) =>
         message.transform()
@@ -130,12 +134,29 @@ exports.create = async (req, res, next) => {
     const sender = req.user.id;
     const { conversationType } = req.body;
     // Nếu tin nhắn group thì conversation id = group id
-    let conversationId = [sender, req.body.receiver].sort().join(".");
+    let conversationId = null;
     if (conversationType === "ChatGroup") {
-      conversationId = req.body.receiver;
+      // check group có tồn tại không? 
+      const group = await ChatGroup.findById(req.body.receiver);
+
+      // check user hiện tại có phải là member hay không?
+      if (group && group.members.includes(req.user.id))
+        conversationId = req.body.receiver;
+     
+    } else if (conversationType === "User") {
+      // check người dùng tồn tại hay không 
+      const user = await User.findById(req.body.receiver);
+      if(user)conversationId = [sender, req.body.receiver].sort().join(".");
     }
 
-    const message = new Message({ ...req.body, sender, conversationId });
+    if (!conversationId){
+      // Nếu không tồn tại users hay group => return lỗi 
+       throw new APIError({
+         message: "Something went wrong",
+         status: httpStatus.BAD_REQUEST,
+       });
+    }
+      const message = new Message({ ...req.body, sender, conversationId });
     let savedMessage = await message.save();
 
     savedMessage = await savedMessage
@@ -199,7 +220,7 @@ exports.list = async (req, res, next) => {
 
     let personalMessages = await Message.listPersonal({ userId: sender });
 
-    // Lấy danh sách chat nhóm 
+    // Lấy danh sách chat nhóm
     let groupMessages = await ChatGroup.list({
       userId: [sender.toString()],
     });

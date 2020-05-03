@@ -8,6 +8,12 @@ const Chat = styled.div`
     padding: 5rem 2rem;
     background-color: #f9f9f9;
 
+    .notification-message {
+        color: #00000066;
+        font-size: 12px;
+        text-align: center;
+        padding: 0.425rem 2rem;
+    }
     .weakColor & {
         -webkit-filter: invert(100%);
         filter: invert(100%);

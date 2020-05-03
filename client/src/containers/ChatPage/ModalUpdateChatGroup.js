@@ -4,14 +4,16 @@ import UpdateAvatar from "../UserPage/form/UpdateAvatar";
 import { useSelector, useDispatch } from "react-redux";
 import selectors from "./selectors";
 import actions from './actions'
-
+import userSelectors from '../UserPage/selectors'
 function ModalUpdateChatGroup({ visible, doToggle, info }) {
     const dispatch = useDispatch();
     const record = useSelector(selectors.selectRecord);
+    const currentUser = useSelector(userSelectors.selectCurrentUser)
     const [groupName, setGroupName] = useState(info.name)
+  
     if(!info) return null
     const handleUpdateClick = () => {
-        dispatch(actions.doChatGroupUpdate({ name: groupName, id: info.id }));
+        dispatch(actions.doChatGroupUpdate({ name: groupName, id: info.id, message: `${currentUser.firstname + " " + currentUser.lastname} named the conversation: ${groupName}.` }));
         doToggle();
     }
 
@@ -50,6 +52,7 @@ function ModalUpdateChatGroup({ visible, doToggle, info }) {
                                 actions.doChatGroupChangeAvatar({
                                     picture,
                                     groupId: info.id,
+                                    message: `${currentUser.firstname + " " + currentUser.lastname} changed the group photo.`
                                 })
                             )
                         }

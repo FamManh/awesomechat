@@ -112,6 +112,27 @@ function RightSideBar() {
         </Header>
     );
 
+    const handleRemoveMember = (member) => {
+        dispatch(
+            actions.doRemoveMember({
+                userId: member.id,
+                groupId: record.receiver.id,
+            })
+        );
+        dispatch(
+            actions.doCreate({
+                type: "notification",
+                message: `${
+                    currentUser.firstname + " " + currentUser.lastname
+                } removed ${
+                    member.firstname + " " + member.lastname
+                } from the group.`,
+                receiver: record.receiver.id,
+                conversationType: record.conversationType,
+            })
+        );
+    };
+
     const menu = (member, members) => {
         return (
             <Menu>
@@ -122,14 +143,7 @@ function RightSideBar() {
                     currentUser.id && (
                     <Menu.Item
                         key="1"
-                        onClick={() =>
-                            dispatch(
-                                actions.doRemoveMember({
-                                    userId: member.id,
-                                    groupId: record.receiver.id,
-                                })
-                            )
-                        }
+                        onClick={() => handleRemoveMember(member)}
                     >
                         Remove from group
                     </Menu.Item>

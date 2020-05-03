@@ -13,7 +13,14 @@ module.exports = {
   // POST /v1/chatGroups
   createChatGroup: {
     body: {
-      members: Joi.array().min(3).max(50),
+      members: Joi.array()
+        .min(2)
+        .max(50)
+        .items(
+          Joi.string()
+            .regex(/^[a-fA-F0-9]{24}$/)
+            .required()
+        ),
       name: Joi.string().min(1).max(50).required(),
     },
   },
@@ -48,7 +55,14 @@ module.exports = {
 
   addMember: {
     body: {
-      members: Joi.array().items(Joi.string()).min(1).max(50),
+      members: Joi.array()
+        .items(
+          Joi.string()
+            .regex(/^[a-fA-F0-9]{24}$/)
+            .required()
+        )
+        .min(1)
+        .max(50),
       groupId: Joi.string()
         .regex(/^[a-fA-F0-9]{24}$/)
         .required(),

@@ -3,7 +3,9 @@ import produce from "immer";
 
 const initialState = {
     initLoading: true,
+    scrollToBottom: false,
     findLoading: false,
+    hasMoreConversation: true,
     getImageListLoading: false,
     getFileListLoading: false,
     error: null,
@@ -24,6 +26,9 @@ const messageReducer = (state = initialState, { type, payload }) =>
     produce(state, (draft) => {
         let currentUser, message;
         switch (type) {
+            case constants.CHAT_SCROLL_TO_BOTTOM_TOGGLE:
+                draft.scrollToBottom = !state.scrollToBottom;
+                break;
             case constants.CHAT_TOGGLE_RIGHT_SIDEBAR:
                 draft.rightSidebarVisible = !state.rightSidebarVisible;
                 break;
@@ -52,16 +57,30 @@ const messageReducer = (state = initialState, { type, payload }) =>
                 draft.findLoading = true;
                 draft.error = null;
                 draft.typing = {};
-                draft.rightSidebarVisible = false;
+                draft.hasMoreConversation = true;
                 break;
             case constants.CHAT_FIND_SUCCESS:
                 draft.findLoading = false;
-                draft.record = payload;
+                if (payload && payload.skip && payload.data) {
+                    // Nếu cuộc trò chuyện là 0 => hết data
+                    if (payload.data.messages.length === 0) {
+                        draft.hasMoreConversation = false;
+                    } else {
+                        draft.record.messages = payload.data.messages.concat(
+                            state.record.messages
+                        );
+                    }
+                } else {
+                    if (payload && payload.data) {
+                        draft.record = payload.data;
+                    }
+                }
                 draft.error = null;
                 break;
             case constants.CHAT_FIND_ERROR:
                 draft.findLoading = false;
                 draft.record = null;
+                draft.hasMoreConversation = false;
                 draft.error = payload;
                 break;
             case constants.CHAT_GET_START:
@@ -84,11 +103,14 @@ const messageReducer = (state = initialState, { type, payload }) =>
                 // Nếu tin nhắn đang mở thì thêm vào tin nhắn
                 if (
                     (state.record &&
-                        state.record.receiver.id === message.sender._id) ||
+                        state.record.receiver.id === message.sender._id &&
+                        currentUser.id === message.receiver._id) ||
                     (state.record &&
-                        state.record.receiver.id === message.receiver._id)
+                        state.record.receiver.id === message.receiver._id &&
+                        currentUser.id === message.sender._id)
                 ) {
                     draft.record.messages.push(message);
+                    draft.scrollToBottom = true;
                 } else if (
                     state.record &&
                     state.record.receiver.id === message.receiver._id &&
@@ -96,6 +118,8 @@ const messageReducer = (state = initialState, { type, payload }) =>
                 ) {
                     // chat group
                     draft.record.messages.push(message);
+                    draft.scrollToBottom = true;
+
                 }
 
                 // Tìm index của item hiện tại trong danh sách  mesages
@@ -105,7 +129,6 @@ const messageReducer = (state = initialState, { type, payload }) =>
                     receivedMessageIndex = state.messages.findIndex((item) => {
                         return message.receiver._id === item.receiver._id;
                     });
-                    console.log(receivedMessageIndex);
                 } else if (message.conversationType === "User") {
                     receivedMessageIndex = state.messages.findIndex((item) => {
                         return (
@@ -128,6 +151,7 @@ const messageReducer = (state = initialState, { type, payload }) =>
                         receiver: message.receiver,
                         message: message.message,
                         type: message.type,
+                        conversationType: message.conversationType,
                     });
                 } else {
                     // Nếu tin nhắn hiện tại trong danh sách thì đưa lên đầu
@@ -157,8 +181,6 @@ const messageReducer = (state = initialState, { type, payload }) =>
                 draft.error = null;
                 break;
             case constants.SOCKET_TYPING_ON:
-                console.log(payload);
-                console.log(state.record);
                 if (state.record) {
                     if (
                         payload.conversationType === "ChatGroup" &&

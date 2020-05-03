@@ -1,23 +1,41 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Icon } from "antd";
-import { useSelector } from "react-redux";
+import { Icon, Spin } from "antd";
+import { useSelector, useDispatch } from "react-redux";
 import selectors from "./selectors";
 import userSelectors from "../UserPage/selectors";
 import AvatarCus from "../../components/AvatarCus";
 import TypingIndicator from "../../components/TypingIndicator";
 import Carousel, { Modal, ModalGateway } from "react-images";
 import ChatStyled from "./styles/chat";
-import Infinite from 'react-infinite'
+import actions from "./actions";
+import InfiniteScroll from "react-infinite-scroller";
+
 function Conversation({ messages }) {
-    const scrollRef = useRef();
+    const dispatch = useDispatch();
     const record = useSelector(selectors.selectRecord);
     const typing = useSelector(selectors.selectTyping);
+    const hasMoreConversation = useSelector(
+        selectors.selectHasMoreConversation
+    );
+    const findLoading = useSelector(selectors.selectFindLoading);
     const currentUser = useSelector(userSelectors.selectCurrentUser);
     const [imageViewModelVisible, setImageViewModelVisible] = useState(false);
     const [currentImageViewIndex, setCurrentImageViewIndex] = useState(0);
     let imagesList = [];
+
+    const loadMoreConversation = () => {
+        dispatch(actions.doFind(record.receiver.id, record.messages.length));
+    };
+
     const renderConversation = (messages) => {
         return messages.map((chat, index) => {
+            if (chat.type === "notification") {
+                return (
+                    <div key={index} className="notification-message">
+                        <span>{chat.message}</span>
+                    </div>
+                );
+            }
             return (
                 <div
                     key={index}
@@ -201,31 +219,23 @@ function Conversation({ messages }) {
         </div>
     );
 
-    if(record && record.messages){
-        let tempList = []
-        record.messages.forEach((message, index)=>{
-            if(message.images && message.images.length > 0){
+    if (record && record.messages) {
+        let tempList = [];
+        record.messages.forEach((message, index) => {
+            if (message.images && message.images.length > 0) {
                 tempList = tempList.concat(message.images);
             }
-        })
+        });
         tempList = tempList.reverse();
-        imagesList = tempList.map((image)=>{
+        imagesList = tempList.map((image) => {
             return { src: `${process.env.REACT_APP_STATIC_PHOTOS}/${image}` };
-        })
+        });
     }
 
-    const scrollToBottom = () => {
-        if (scrollRef.current)
-            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    const handleInfiniteOnLoad = () => {
+        loadMoreConversation();
     };
-    useEffect(() => {
-        scrollToBottom();
-    }, [record]);
 
-    const loadMore = () => {
-        console.log('load more')
-    }
-    
     return (
         <>
             <ModalGateway>
@@ -239,10 +249,21 @@ function Conversation({ messages }) {
                     </Modal>
                 ) : null}
             </ModalGateway>
-            <ChatStyled ref={scrollRef}>
+
+            <InfiniteScroll
+                initialLoad={false}
+                pageStart={0}
+                loadMore={handleInfiniteOnLoad}
+                hasMore={!findLoading && hasMoreConversation}
+                useWindow={false}
+                isReverse={true}
+            >
+                <div style={{ textAlign: "center" }}>
+                    <Spin spinning={findLoading && hasMoreConversation}></Spin>
+                </div>
                 {renderConversation(messages)}
                 {typing && typing.status && typIndocator}
-            </ChatStyled>
+            </InfiniteScroll>
         </>
     );
 }

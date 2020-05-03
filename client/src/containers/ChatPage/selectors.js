@@ -47,6 +47,16 @@ const selectFileList = createSelector(
     (message) => message.fileList
 );
 
+const selectHasMoreConversation = createSelector(
+    [selectRaw],
+    (message) => message.hasMoreConversation
+);
+
+const selectScrollToBottom = createSelector(
+    [selectRaw],
+    (message) => message.scrollToBottom
+);
+
 const selectors = {
     selectFindLoading,
     selectRecord,
@@ -58,6 +68,8 @@ const selectors = {
     selectFileList,
     selectGetImageListLoading,
     selectGetFileListLoading,
+    selectHasMoreConversation,
+    selectScrollToBottom,
 };
 
 export default selectors;

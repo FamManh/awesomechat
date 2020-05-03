@@ -18,7 +18,9 @@ export default function ChatPage() {
         dispatch(actions.list());
     }, []);
     useEffect(() => {
-        dispatch(actions.doFind(userId));
+        if(userId){
+            dispatch(actions.doFind(userId));
+        }
     }, [userId]);
     
     
