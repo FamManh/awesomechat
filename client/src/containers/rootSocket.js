@@ -34,7 +34,6 @@ const onDisconnect = () => {
 
 export const configSocket = () => {
     if (socket && socket.disconnected) {
-        console.log("came here")
         socket.connect();
     }
     if (socket) return;
@@ -44,9 +43,7 @@ export const configSocket = () => {
         query: `token=${isAuthenticated()}`,
         
     });
-    console.log(socket)
     
-
     socket.on("connect", onConnected);
     socket.on("disconnect", onDisconnect);
     socket.on("res-add-new-contact", onAddContact);

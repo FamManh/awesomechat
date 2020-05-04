@@ -21,6 +21,10 @@ import ListUser from "./styles/ListUser";
 import { Link } from "react-router-dom";
 import ModalAddMemberToGroup from "./ModalAddMemberToGroup";
 import ModalUpdateChatGroup from "./ModalUpdateChatGroup";
+import layoutSelectors from "../Layout/selectors";
+import layoutActions from '../Layout/actions'
+import { ArrowLeft } from "react-feather";
+
 const { Sider, Header } = Layout;
 
 const ButtonCus = ({ text, icon, onClick }) => {
@@ -54,6 +58,11 @@ function RightSideBar() {
     const getFileListLoading = useSelector(selectors.selectGetFileListLoading);
     const images = useSelector(selectors.selectImageList);
     const files = useSelector(selectors.selectFileList);
+    const isMobileDevice = useSelector(layoutSelectors.selectIsMobileDevice);
+    const rightSidebarVisible = useSelector(
+        layoutSelectors.selectRightSidebarVisible
+    );
+    const windowWidth = useSelector(layoutSelectors.selectWindowWidth);
 
     const [imageModalShow, setImageModalShow] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -315,7 +324,11 @@ function RightSideBar() {
     }, []);
 
     return (
-        <Sider width={350} style={{ overflowY: "auto" }}>
+        <Sider
+            width={isMobileDevice ? "100vw" :  "300px"}
+            style={{ overflowY: "auto" }}
+            
+        >
             <ModalGateway>
                 {imageModalShow ? (
                     <Modal onClose={() => setImageModalShow(false)}>
@@ -354,16 +367,36 @@ function RightSideBar() {
                     borderLeft: "1px solid rgba(0, 0, 0, 0.05)",
                 }}
             >
-                {record && record.conversationType === "ChatGroup" && (
-                    <div style={{ margin: "5px 5px 0 0" }}>
+                <div style={{ margin: "5px 5px 0 0" }}>
+                    {isMobileDevice && rightSidebarVisible && (
                         <Button
-                            style={{ float: "right", border: "0px" }}
+                            style={{
+                                float: "left",
+                                border: "0px",
+                                margin: "10px 0px 0px 15px",
+                            }}
+                            shape="circle"
+                            onClick={() =>
+                                dispatch(layoutActions.doHideRightSidebar())
+                            }
+                        >
+                            <ArrowLeft size={20} strokeWidth={2} />
+                        </Button>
+                    )}
+                    {record && record.conversationType === "ChatGroup" && (
+                        <Button
+                            style={{
+                                float: "right",
+                                border: "0px",
+                                margin: "10px 15px 0px 0px",
+                            }}
                             shape="circle"
                             icon="edit"
                             onClick={() => setModalUpdateChatGroup(true)}
                         ></Button>
-                    </div>
-                )}
+                    )}
+                </div>
+
                 {userInfo}
                 {renderContent()}
             </div>

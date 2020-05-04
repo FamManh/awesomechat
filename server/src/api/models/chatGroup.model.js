@@ -74,13 +74,14 @@ chatGroupSchema.statics = {
    * @returns {Promise<ChatGroup[]>}
    */
   async list({
-    page = 1, perPage = 30, userId
+    skip=0, userId, limit=12
   }) {
        return this.find({
          members: {
            $in: userId,
          },
        })
+       .skip(+skip).limit(limit)
          .sort({ updatedAt: -1 })
          .exec();
      }

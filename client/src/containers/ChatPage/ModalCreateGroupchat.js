@@ -1,104 +1,77 @@
-import React, { useState } from 'react'
-import { Modal, Button, AutoComplete, List, Input, Divider } from "antd";
-import userActions from '../UserPage/actions'
-import userSelectors from '../UserPage/selectors'
-import { useSelector, useDispatch } from 'react-redux';
-import AvatarCus from '../../components/AvatarCus'
-import actions from './actions';
+import React, { useState, useEffect } from "react";
+import { Modal, Button, AutoComplete, List, Input, Divider, Icon } from "antd";
+import userActions from "../UserPage/actions";
+import userSelectors from "../UserPage/selectors";
+import { useSelector, useDispatch } from "react-redux";
+import AvatarCus from "../../components/AvatarCus";
+import actions from "./actions";
+import contactActions from "../ContactPage/actions";
+import contactSelectors from "../ContactPage/selectors";
+import ListUser from "./styles/ListUser";
 const { Option } = AutoComplete;
 
-function ModalCreateGroupchat({visible, doToggle}) {
-    let users = useSelector(userSelectors.selectUsers);
-    const currentUser = useSelector(userSelectors.selectCurrentUser)
-    const [members, setMembers] = useState([])
+function ModalCreateGroupchat({ visible, doToggle }) {
+    let users = useSelector(contactSelectors.selectContacts);
+    const currentUser = useSelector(userSelectors.selectCurrentUser);
+    const [newMembers, setNewMembers] = useState([]);
     const [groupName, setGroupName] = useState("Group name");
-    const [term, setTerm] = useState("")
-    const dispatch = useDispatch()
+    const [term, setTerm] = useState("");
+    const dispatch = useDispatch();
 
-    const onSelect = (value, option) => {
-        
-        const memberExists = members.findIndex((item) => item.id === value);
-        if(memberExists === -1) setMembers([...members, option.props.data]);
-        
-        setTerm("")
-    }
-
-    const onDeleteMember = (id) => {
-        const tempData = members.filter(item => item.id !== id)
-        setMembers(tempData);
+    const idNewMemberAdded = (userId) => {
+        // Đây có phải là new member hay không?
+        const memberExists = newMembers.find((item) => item.id === userId);
+        return memberExists ? true : false;
     };
-
-    const onSearch = term => {
-        if(term.trim() !== ""){
-            dispatch(userActions.list({term}));
-        }
+    const renderUsers = (users) => {
+        return users.map((user, key) => (
+            <div
+                className="list-item list-item-hover"
+                key={key}
+                onClick={() => {
+                    if (!idNewMemberAdded(user.id)) {
+                        setNewMembers([...newMembers, user]);
+                    } else {
+                        let tempNewMembers = newMembers;
+                        tempNewMembers = tempNewMembers.filter(
+                            (item) => item.id !== user.id
+                        );
+                        setNewMembers(tempNewMembers);
+                    }
+                }}
+            >
+                <div>
+                    <AvatarCus className="avatar" record={user} />
+                    {`${user.firstname} ${user.lastname}`}
+                </div>
+                <div style={{ lineHeight: "40px", marginRight: "5px" }}>
+                    {idNewMemberAdded(user.id) && (
+                        <Icon type="check" style={{ color: "#1890ff" }} />
+                    )}
+                </div>
+            </div>
+        ));
     };
-
-    const children = users.map((item) => {
-        if(item.id !== currentUser.id){
-            return (
-                <Option data={item} key={item.id}>
-                    {item.firstname + " " + item.lastname}
-                </Option>
-            );
-        }
-    });
 
     const onCreateGroup = () => {
-        if(members.length > 1){
-            let membersListId = members.map(item=>item.id);
-            dispatch(actions.doCreateGroup({ name: groupName, members:membersListId }));
-            
+        if (newMembers.length > 1) {
+            let membersListId = newMembers.map((item) => item.id);
+            dispatch(
+                actions.doCreateGroup({
+                    name: groupName,
+                    members: membersListId,
+                })
+            );
+
             setGroupName("Group name");
-            setMembers([])
-            
+            setNewMembers([]);
         }
-
         doToggle();
-    }
-
-    const renderList = () => {
-        return (
-            <List
-                className="flex-1 bg-transparent"
-                itemLayout="horizontal"
-                dataSource={members}
-                renderItem={(item, index) => (
-                    <List.Item className={`border-0 border-0 px-0 py-3`}>
-                        <List.Item.Meta
-                            avatar={
-                                <AvatarCus record={item}/>
-                            }
-                            title={
-                                <>
-                                    <span
-                                        style={{
-                                            display: "flex",
-                                            width: "100%",
-                                        }}
-                                    >
-                                        {item.firstname + " " + item.lastname}
-                                    </span>
-                                </>
-                            }
-                            description={
-                                <>
-                                    <Button
-                                        shape="round"
-                                        size="small"
-                                        onClick={() => onDeleteMember(item.id)}
-                                    >
-                                        Delete
-                                    </Button>
-                                </>
-                            }
-                        />
-                    </List.Item>
-                )}
-            />
-        );
     };
-
+    useEffect(() => {
+        dispatch(contactActions.listContacts());
+    }, []);
+    if (!currentUser) return <span></span>;
     return (
         <div>
             <Modal
@@ -107,7 +80,7 @@ function ModalCreateGroupchat({visible, doToggle}) {
                 onOk={onCreateGroup}
                 okButtonProps={{
                     disabled:
-                        members.length > 1 && groupName.trim().length > 0
+                        newMembers.length > 1 && groupName.trim().length > 0
                             ? false
                             : true,
                 }}
@@ -123,8 +96,8 @@ function ModalCreateGroupchat({visible, doToggle}) {
                         onChange={(e) => setGroupName(e.target.value)}
                         placeholder="Enter name of group"
                     />
-                    <Divider orientation="left">Members </Divider>
-                    <AutoComplete
+                    <Divider orientation="left">People </Divider>
+                    {/* <AutoComplete
                         // dataSource={Users}
                         style={{ width: "100%" }}
                         onSelect={onSelect}
@@ -134,12 +107,15 @@ function ModalCreateGroupchat({visible, doToggle}) {
                         value={term}
                     >
                         {children}
-                    </AutoComplete>
-                    {renderList()}
+                    </AutoComplete> */}
+                    {/* {renderList()} */}
+                    <ListUser style={{ maxHeight: "400px", overflowY: "auto" }}>
+                        {renderUsers(users)}
+                    </ListUser>
                 </div>
             </Modal>
         </div>
     );
 }
 
-export default ModalCreateGroupchat
+export default ModalCreateGroupchat;

@@ -16,6 +16,7 @@ import Spinner from '../shared/Spinner'
 import ChatStyled from "./styles/chat";
 import { useParams } from "react-router-dom";
 import actions from "./actions";
+import layoutSelectors from "../Layout/selectors";
 
 
 function ChatContent() {
@@ -26,6 +27,11 @@ function ChatContent() {
     const inputMessage = useSelector(selectors.selectInputMessage);
     const findLoading = useSelector(selectors.selectFindLoading)
     const isScrollToBottom = useSelector(selectors.selectScrollToBottom);
+     const isMobileDevice = useSelector(layoutSelectors.selectIsMobileDevice);
+     const rightSidebarVisible = useSelector(
+         layoutSelectors.selectRightSidebarVisible
+     );
+     const windowWidth = useSelector(layoutSelectors.selectWindowWidth)
     const onInputImageListChange = ({ fileList }) => {
         dispatch({
             type: constants.INPUT_IMAGE_LIST_CHANGE,
@@ -50,12 +56,18 @@ function ChatContent() {
           dispatch(actions.doToggleScrollToBottom());
       }
           useEffect(() => {
-              console.log("Sroll to bottom");
               scrollToBottom();
           }, [userId]);
- 
     return (
-        <Layout style={{ position: "relative" }}>
+        <Layout
+            style={{
+                position: "relative",
+                width:
+                    isMobileDevice && rightSidebarVisible
+                        ? 0
+                        : "auto",
+            }}
+        >
             <ChatContentHeader />
 
             {record.messages && (

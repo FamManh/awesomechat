@@ -58,10 +58,10 @@ const Chat = styled.div`
         background-color: #f1f0f0;
     }
     .photo {
-        width: 250px;
-        height: 250px;
+        width: 100px;
+        height: 100px;
         display: inline-block;
-        margin: 0px 3px;
+        // margin: 0px 3px;
         border-radius: 10px;
         background-position: center center;
         background-repeat: no-repeat;

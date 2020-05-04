@@ -7,32 +7,35 @@ import {
     Row,
     Button,
     Dropdown,
-    Tooltip
+    Tooltip,
 } from "antd";
-import {
-    Users,
-    MessageCircle,
-    Search as SearchIcon
-} from "react-feather";
+import { Users, MessageCircle, Search as SearchIcon } from "react-feather";
 import { Link } from "react-router-dom";
 import authActions from "../AuthPage/actions";
 import MessageList from "./MessageList";
 import ContactList from "../ContactPage/list/List";
 import UserList from "../UserPage/list/List";
 import { useSelector, useDispatch } from "react-redux";
-import userSelectors from '../UserPage/selectors'
+import userSelectors from "../UserPage/selectors";
 import ModalCreateGroupchat from "./ModalCreateGroupchat";
 import AvatarCus from "../../components/AvatarCus";
+import layoutSelectors from "../Layout/selectors";
 
 const { Sider, Header } = Layout;
 const { Search } = Input;
 
 function ChatSidebar() {
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
     const [currentTab, setCurrentTab] = useState("message");
-    const [modalCreateGroupChatVisible, setModalCreateGroupChatVisible] = useState(false)
+    const [
+        modalCreateGroupChatVisible,
+        setModalCreateGroupChatVisible,
+    ] = useState(false);
     const currentUser = useSelector(userSelectors.selectCurrentUser);
-
+    const isMobileDevice = useSelector(layoutSelectors.selectIsMobileDevice);
+    const leftSidebarVisible = useSelector(
+        layoutSelectors.selectLeftSidebarVisible
+    );
     const messageFooter = (
         <div className="py-3 px-3" style={{ backgroundColor: "#fff" }}>
             <Search placeholder="Search contact" />
@@ -45,12 +48,12 @@ function ChatSidebar() {
         } else if (currentTab === "notification") {
             return <div>Notifications</div>;
         } else if (currentTab === "user") {
-            return <UserList/>;
+            return <UserList />;
         }
         return <MessageList />;
     };
 
-    const handleMenuClick = e => {
+    const handleMenuClick = (e) => {
         setCurrentTab(e.key);
     };
 
@@ -65,7 +68,7 @@ function ChatSidebar() {
                 key="message"
                 style={{
                     width: "33%",
-                    textAlign: "center"
+                    textAlign: "center",
                 }}
             >
                 <MessageCircle size={20} strokeWidth={1} />
@@ -74,7 +77,7 @@ function ChatSidebar() {
                 key="contact"
                 style={{
                     width: "33%",
-                    textAlign: "center"
+                    textAlign: "center",
                 }}
             >
                 <Badge dot={true}>
@@ -85,7 +88,7 @@ function ChatSidebar() {
                 key="user"
                 style={{
                     width: "33%",
-                    textAlign: "center"
+                    textAlign: "center",
                 }}
             >
                 <SearchIcon size={20} strokeWidth={1} />
@@ -124,7 +127,10 @@ function ChatSidebar() {
                 <a>Settings</a>
             </Menu.Item>
             <Menu.Divider />
-            <Menu.Item key="3" onClick={()=>dispatch(authActions.doSignout())}>
+            <Menu.Item
+                key="3"
+                onClick={() => dispatch(authActions.doSignout())}
+            >
                 <a>Sign out</a>
             </Menu.Item>
         </Menu>
@@ -186,7 +192,15 @@ function ChatSidebar() {
     );
 
     return (
-        <Sider width={350}>
+        <Sider
+            width={
+                isMobileDevice && leftSidebarVisible
+                    ? "100vw"
+                    : isMobileDevice && !leftSidebarVisible
+                    ? "0"
+                    : "300"
+            }
+        >
             <ModalCreateGroupchat
                 visible={modalCreateGroupChatVisible}
                 doToggle={() =>

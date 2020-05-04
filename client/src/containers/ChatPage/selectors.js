@@ -1,6 +1,6 @@
-import {createSelector} from 'reselect'
+import { createSelector } from "reselect";
 
-const selectRaw = state=>state.message;
+const selectRaw = (state) => state.message;
 
 const selectFindLoading = createSelector(
     [selectRaw],
@@ -17,14 +17,26 @@ const selectGetFileListLoading = createSelector(
     (message) => message.getFileListLoading
 );
 
+const selectMessageListLoading = createSelector(
+    [selectRaw],
+    (message) => message.messageListLoading
+);
 
-const selectRecord = createSelector([selectRaw], message=>message.record);
+const selectHasMoreMessageList = createSelector(
+    [selectRaw],
+    (message) => message.hasMoreMessageList
+);
 
-const selectMessages = createSelector([selectRaw], message=> message.messages)
+const selectRecord = createSelector([selectRaw], (message) => message.record);
+
+const selectMessages = createSelector(
+    [selectRaw],
+    (message) => message.messages
+);
 
 const selectInputMessage = createSelector(
     [selectRaw],
-    message => message.inputMesage
+    (message) => message.inputMesage
 );
 
 const selectRightSidebarVisible = createSelector(
@@ -32,10 +44,7 @@ const selectRightSidebarVisible = createSelector(
     (message) => message.rightSidebarVisible
 );
 
-const selectTyping = createSelector(
-    [selectRaw],
-    message => message.typing
-)
+const selectTyping = createSelector([selectRaw], (message) => message.typing);
 
 const selectImageList = createSelector(
     [selectRaw],
@@ -59,6 +68,7 @@ const selectScrollToBottom = createSelector(
 
 const selectors = {
     selectFindLoading,
+    selectMessageListLoading,
     selectRecord,
     selectMessages,
     selectInputMessage,
@@ -70,6 +80,7 @@ const selectors = {
     selectGetFileListLoading,
     selectHasMoreConversation,
     selectScrollToBottom,
+    selectHasMoreMessageList,
 };
 
 export default selectors;

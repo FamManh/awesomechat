@@ -1,5 +1,5 @@
 import React from 'react'
-import { Phone, Video, Info } from "react-feather";
+import { Phone, Video, Info, ArrowLeft } from "react-feather";
 import actions from "./actions";
 import selectors from "./selectors";
 import callSelectors from '../CallPage/selectors'
@@ -8,7 +8,9 @@ import { Button, Row, Layout } from "antd";
 import AvatarCus from "../../components/AvatarCus";
 import { useSelector, useDispatch } from 'react-redux';
 import { emitCheckListenerStatus } from '../CallPage/socket';
-
+import layoutActions from '../Layout/actions'
+import layoutSelectors from '../Layout/selectors'
+import {Link} from 'react-router-dom'
 const { Header } = Layout;
 
 function ChatContentHeader() {
@@ -17,6 +19,8 @@ function ChatContentHeader() {
     const record = useSelector(selectors.selectRecord);
     const currentUser = useSelector(userSelectors.selectCurrentUser)
     const peerId = useSelector(callSelectors.selectPeerId);
+    const isMobileDevice = useSelector(layoutSelectors.selectIsMobileDevice);
+
     const handleCallVideoClick = () => {
 
         // b01. kiểm trả listener có online hay không 
@@ -27,11 +31,6 @@ function ChatContentHeader() {
             picture: currentUser.picture,
         };
         emitCheckListenerStatus({ caller, listener: record.receiver });
-        // window.open(
-        //     "/call",
-        //     "sdfasdfasdf",
-        //     "scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=0,height=0,left=-1000,top=-10000"
-        // );
     }
 
     return (
@@ -49,6 +48,22 @@ function ChatContentHeader() {
             }}
         >
             <Row type="flex" align="middle">
+                {isMobileDevice && (
+                    <Link to="/">
+                        <Button
+                            style={{ border: "0", marginLeft: "-1.2rem" }}
+                            shape="circle"
+                            onClick={() =>{
+                                dispatch(actions.doClear());
+                                dispatch(layoutActions.doShowLeftSidebar())
+                            }
+                            }
+                        >
+                            <ArrowLeft size={20} strokeWidth={2} />
+                        </Button>
+                    </Link>
+                )}
+
                 <AvatarCus record={record ? record.receiver : null} />
 
                 <span className="ml-3" style={{ lineHeight: "1" }}>
@@ -87,7 +102,9 @@ function ChatContentHeader() {
                 <Button
                     style={{ border: "0" }}
                     shape="circle"
-                    onClick={() => dispatch(actions.doToggleRightSidebar())}
+                    onClick={() =>
+                        dispatch(layoutActions.doToggleRightSidebar())
+                    }
                 >
                     <Info size={20} strokeWidth={1} />
                 </Button>

@@ -17,7 +17,7 @@ module.exports = {
     },
   },
   getConversation: {
-    param: {
+    params: {
       receiverId: Joi.string()
         .regex(/^[a-fA-F0-9]{24}$/)
         .required(),

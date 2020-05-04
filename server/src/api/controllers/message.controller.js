@@ -15,13 +15,6 @@ const storageFile = require("../utils/storageFile");
 const _ = require("lodash");
 const logger = require("../../config/logger");
 
-const getPhotoPath = (images, basePath) => {
-  if (!images || !images.length < 0) return null;
-  const tempImages = [];
-  images.forEach((item) => tempImages.push(basePath + item));
-  return tempImages;
-};
-
 /**
  * Load message and append to req.
  * @public
@@ -216,13 +209,12 @@ exports.update = async (req, res, next) => {
 exports.list = async (req, res, next) => {
   try {
     let sender = req.user._id;
-    let currentUserId = req.user._id;
-
-    let personalMessages = await Message.listPersonal({ userId: sender });
+    let personalMessages = await Message.listPersonal({ userId: sender, skip: req.query.pskip });
 
     // Lấy danh sách chat nhóm
     let groupMessages = await ChatGroup.list({
       userId: [sender.toString()],
+      skip: req.query.gskip,
     });
     let groupMessagesPromise = groupMessages.map(async (item) => {
       let tempItem = {

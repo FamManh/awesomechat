@@ -28,6 +28,7 @@ function Conversation({ messages }) {
     };
 
     const renderConversation = (messages) => {
+        if(!currentUser) return <span></span>;
         return messages.map((chat, index) => {
             if (chat.type === "notification") {
                 return (
@@ -45,7 +46,7 @@ function Conversation({ messages }) {
                     }}
                 >
                     <div style={{ width: 30, marginRight: "5px" }}>
-                        {chat.sender._id !== currentUser.id && (
+                        {currentUser && chat.sender._id !== currentUser.id && (
                             <AvatarCus
                                 record={
                                     record.conversationType === "ChatGroup"
