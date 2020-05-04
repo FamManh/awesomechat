@@ -122,7 +122,7 @@ messageSchema.statics = {
    * @param {number} limit - Limit number of messages to be returned.
    * @returns {Promise<Message[]>}
    */
-  async listPersonal({ page = 1, perPage = 30, userId }) {
+  async listPersonal({ limit = 12, skip=0, userId }) {
     return this.aggregate([
       {
         $match: {
@@ -133,6 +133,7 @@ messageSchema.statics = {
         },
       },
       { $sort: { updatedAt: -1 } },
+
       {
         $group: {
           _id: "$conversationId",
@@ -180,6 +181,8 @@ messageSchema.statics = {
           updatedAt: 1,
         },
       },
+      { $skip: +skip },
+      { $limit: limit },
     ]);
   },
 

@@ -3,6 +3,8 @@ import produce from "immer";
 
 const initialState = {
     initLoading: true,
+    messageListLoading: false,
+    hasMoreMessageList: true,
     scrollToBottom: false,
     findLoading: false,
     hasMoreConversation: true,
@@ -10,14 +12,13 @@ const initialState = {
     getFileListLoading: false,
     error: null,
     record: null,
-    messages: [],
+    messages: null,
     inputMesage: {
         images: [],
         text: "",
         files: [],
     },
     typing: {},
-    rightSidebarVisible: false,
     imageList: [],
     fileList: [],
 };
@@ -26,11 +27,11 @@ const messageReducer = (state = initialState, { type, payload }) =>
     produce(state, (draft) => {
         let currentUser, message;
         switch (type) {
+            case constants.CHAT_CLEAR_DATA:
+                draft.record = null;
+                break;
             case constants.CHAT_SCROLL_TO_BOTTOM_TOGGLE:
                 draft.scrollToBottom = !state.scrollToBottom;
-                break;
-            case constants.CHAT_TOGGLE_RIGHT_SIDEBAR:
-                draft.rightSidebarVisible = !state.rightSidebarVisible;
                 break;
             case constants.INPUT_MESSAGE_CHANGE:
                 draft.inputMesage.text = payload;
@@ -84,17 +85,29 @@ const messageReducer = (state = initialState, { type, payload }) =>
                 draft.error = payload;
                 break;
             case constants.CHAT_GET_START:
-                draft.messageLoading = true;
+                draft.messageListLoading = true;
+                draft.hasMoreMessageList = true;
                 draft.error = null;
                 draft.typing = {};
                 break;
             case constants.CHAT_GET_SUCCESS:
-                draft.messageLoading = false;
-                draft.messages = payload;
+                draft.messageListLoading = false;
+                if (payload.skip && payload.skip > 0) {
+                    // Nếu skip > 0 => Load more
+                    if (payload.messages.length < 1) {
+                        // Nếu không còn message list => hasMore = false
+                        draft.hasMoreMessageList = false;
+                    }
+                    draft.messages = state.messages.concat(payload.messages);
+                } else {
+                    // Get messages list lần đầu tiên
+                    draft.messages = payload.messages;
+                }
                 draft.error = null;
                 break;
             case constants.CHAT_GET_ERROR:
-                draft.messageLoading = false;
+                draft.messageListLoading = false;
+                draft.hasMoreMessageList = false;
                 draft.error = payload;
                 break;
             case constants.SOCKET_SENT_MESSAGE:
@@ -119,7 +132,6 @@ const messageReducer = (state = initialState, { type, payload }) =>
                     // chat group
                     draft.record.messages.push(message);
                     draft.scrollToBottom = true;
-
                 }
 
                 // Tìm index của item hiện tại trong danh sách  mesages
@@ -168,16 +180,19 @@ const messageReducer = (state = initialState, { type, payload }) =>
                 break;
             case constants.SOCKET_CREATE_GROUP:
                 draft.typing = {};
-                draft.messages.unshift({
-                    sender: {},
-                    receiver: {
-                        _id: payload.id,
-                        name: payload.name,
-                    },
-                    message: "",
-                    conversationType: "ChatGroup",
-                    updatedAt: payload.updatedAt,
-                });
+                if (draft.messages){
+                    draft.messages.unshift({
+                        sender: {},
+                        receiver: {
+                            _id: payload.id,
+                            name: payload.name,
+                        },
+                        message: "",
+                        conversationType: "ChatGroup",
+                        updatedAt: payload.updatedAt,
+                    });
+                }
+                    
                 draft.error = null;
                 break;
             case constants.SOCKET_TYPING_ON:

@@ -1,30 +1,35 @@
-import {
-    MENU_HIDE, MENU_SHOW, MENU_TOGGLE
-} from "./constants";
+import constants from "./constants";
 import { getHistory } from "../configureStore";
 
 const actions = {
-    doToggleMenu: () => {
+    doWindowResize: (windowWidth) => ({
+        type: constants.LAYOUT_WINDOW_RESIZE,
+        payload: windowWidth,
+    }),
+    doToggleRightSidebar: () => {
         return {
-            type: MENU_TOGGLE
+            type: constants.LAYOUT_RIGHT_SIDEBAR_TOGGLE,
         };
     },
-
-    doShowMenu: () => {
+    doHideRightSidebar: () => {
         return {
-            type: MENU_SHOW
+            type: constants.LAYOUT_RIGHT_SIDEBAR_HIDE,
         };
     },
-
-    doHideMenu: () => {
+    doShowRightSidebar: () => {
         return {
-            type: MENU_HIDE
+            type: constants.LAYOUT_RIGHT_SIDEBAR_SHOW,
         };
     },
-
-    doSignout: () => {
-        window.localStorage.removeItem("ssauth");
-        getHistory().push("/signin");
-    }
+    doHideLeftSidebar: () => {
+        return {
+            type: constants.LAYOUT_LEFT_SIDEBAR_HIDE,
+        };
+    },
+    doShowLeftSidebar: () => {
+        return {
+            type: constants.LAYOUT_LEFT_SIDEBAR_SHOW,
+        };
+    },
 };
 export default actions;

@@ -52,7 +52,10 @@ exports.create = async (req, res, next) => {
     }
 
     // Check group exists
-    const groupExists = await ChatGroup.findOne({members})
+    const groupExists = await ChatGroup.findOne({"$and": [
+      {members: {"$all": members}},
+      {members: {"$size": members.length}}
+    ]})
     
     // Nếu nhóm đã tồn tại thì trả về ngay cho người dùng 
     if (groupExists){

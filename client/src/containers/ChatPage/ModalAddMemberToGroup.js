@@ -16,11 +16,13 @@ import {
 import ListUser from "./styles/ListUser";
 import AvatarCus from "../../components/AvatarCus";
 import actions from "./actions";
+import contactActions from '../ContactPage/actions'
+import contactSelectors from '../ContactPage/selectors'
 
 function ModalAddMemberToGroup({ visible, doToggle }) {
     const dispatch = useDispatch();
     const record = useSelector(selectors.selectRecord);
-    const users = useSelector(userSelectors.selectUsers);
+    const users = useSelector(contactSelectors.selectContacts);
     const currentUser = useSelector(userSelectors.selectCurrentUser);
     const [newMembers, setNewMembers] = useState([]);
 
@@ -59,7 +61,7 @@ function ModalAddMemberToGroup({ visible, doToggle }) {
     };
 
     useEffect(() => {
-        dispatch(userActions.list());
+        dispatch(contactActions.listContacts())
     }, []);
 
     const renderUsers = (users) => {

@@ -7,8 +7,8 @@ const services = {
     //     const response = await asapi.get(url);
     //     return response;
     // },
-    getListFn: async () => {
-        const response = await asapi.get(`/message`);
+    getListFn: async ({gskip=0, pskip=0}) => {
+        const response = await asapi.get(`/message?gskip=${gskip}&pskip=${pskip}`);
         return response;
     },
 

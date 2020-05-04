@@ -1,23 +1,38 @@
-import {
-    MENU_HIDE, MENU_SHOW, MENU_TOGGLE
-} from "./constants";
+import constants from "./constants";
 import produce from 'immer';
 const initialState = {
-    menuVisible: true,
-    loading: false
-}
+    leftSidebarVisible: true,
+    rightSidebarVisible: false,
+    windowWidth: 0,
+    isMobileDevice: true,
+};
 
 const layoutReducer = (state = initialState, {type, payload})=>
     produce(state, draft=> {
     switch (type) {
-        case MENU_TOGGLE:
-            draft.menuVisible = !state.menuVisible;
+        case constants.LAYOUT_WINDOW_RESIZE:
+            if(payload <  648) {
+                draft.isMobileDevice = true;
+                draft.rightSidebarVisible= false
+            }else{
+                draft.isMobileDevice = false;
+            }
+            draft.windowWidth = payload;
             break;
-        case MENU_SHOW:
-            draft.menuVisible = true;
+        case constants.LAYOUT_LEFT_SIDEBAR_HIDE:
+            draft.leftSidebarVisible = false;
             break;
-        case MENU_HIDE:
-            draft.menuVisible = false;
+        case constants.LAYOUT_LEFT_SIDEBAR_SHOW:
+            draft.leftSidebarVisible = true;
+            break;
+        case constants.LAYOUT_RIGHT_SIDEBAR_TOGGLE:
+            draft.rightSidebarVisible = !state.rightSidebarVisible;
+            break;
+        case constants.LAYOUT_RIGHT_SIDEBAR_HIDE:
+            draft.rightSidebarVisible = false;
+            break;
+        case constants.LAYOUT_RIGHT_SIDEBAR_SHOW:
+            draft.rightSidebarVisible = true;
             break;
         default:
             break;

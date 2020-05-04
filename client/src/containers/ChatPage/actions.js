@@ -5,20 +5,27 @@ import services from "./service";
 import { emitSentMessage, emitCreateGroup } from "./socket";
 
 const actions = {
+    
     doToggleScrollToBottom: () => ({
         type: constants.CHAT_SCROLL_TO_BOTTOM_TOGGLE,
     }),
-    doToggleRightSidebar: () => ({ type: constants.CHAT_TOGGLE_RIGHT_SIDEBAR }),
+    doClear:()=>({
+        type: constants.CHAT_CLEAR_DATA
+    }),
     // Lấy danh sách những cuộc trò chuyện
-    list: () => async (dispatch) => {
+    list: (data) => async (dispatch) => {
         try {
             dispatch({ type: constants.CHAT_GET_START });
-
-            let response = await services.getListFn();
+            let gskip = data && data.gskip ?  data.gskip : 0
+            let pskip = data && data.pskip ? data.pskip : 0;
+            let response = await services.getListFn({ gskip, pskip });
 
             dispatch({
                 type: constants.CHAT_GET_SUCCESS,
-                payload: response.data,
+                payload: {
+                    messages: response.data,
+                    skip: gskip + pskip,
+                },
             });
         } catch (error) {
             Errors.handle(error);

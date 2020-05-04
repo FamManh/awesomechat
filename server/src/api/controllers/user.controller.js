@@ -113,7 +113,7 @@ exports.list = async (req, res, next) => {
     });
 
     let responseUsers = [];
-    users = users.map((user) => user.transform());
+    // users = users.map((user) => user.transform());
 
     users.forEach((userItem) => {
       let tempItem = { ...userItem, type: "notContact" };
@@ -179,7 +179,6 @@ exports.updateAvatar = (req, res, next) => {
   avatarUploadFile(req, res, async (err) => {
     try {
       if (!req.file) {
-        console.log(err);
         throw new APIError({
           message: "Please select a file.",
           status: httpStatus.BAD_REQUEST,
