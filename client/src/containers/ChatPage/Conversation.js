@@ -10,6 +10,7 @@ import ChatStyled from "./styles/chat";
 import actions from "./actions";
 import InfiniteScroll from "react-infinite-scroller";
 
+
 function Conversation({ messages }) {
     const dispatch = useDispatch();
     const record = useSelector(selectors.selectRecord);
@@ -258,6 +259,8 @@ function Conversation({ messages }) {
         loadMoreConversation();
     };
 
+    
+
     return (
         <>
             <ModalGateway>
@@ -280,20 +283,22 @@ function Conversation({ messages }) {
                 useWindow={false}
                 isReverse={true}
             >
-                <div style={{ textAlign: "center" }}>
-                    <Spin spinning={findLoading && hasMoreConversation}></Spin>
-                </div>
-                {renderConversation(messages)}
-                {typing && typing.status && typIndicator}
-                <div
-                    style={{
-                        textAlign: "right",
-                        color: "#8d8d8d",
-                        fontSize: "12px",
-                    }}
-                >
-                    {sending && <span>Sending...</span>}
-                </div>
+                    <div style={{ textAlign: "center" }}>
+                        <Spin
+                            spinning={findLoading && hasMoreConversation}
+                        ></Spin>
+                    </div>
+                    {renderConversation(messages)}
+                    {typing && typing.status && typIndicator}
+                    <div
+                        style={{
+                            textAlign: "right",
+                            color: "#8d8d8d",
+                            fontSize: "12px",
+                        }}
+                    >
+                        {sending && <span>Sending...</span>}
+                    </div>
             </InfiniteScroll>
         </>
     );

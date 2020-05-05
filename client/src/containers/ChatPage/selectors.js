@@ -7,6 +7,16 @@ const selectFindLoading = createSelector(
     (message) => message.findLoading
 );
 
+const selectCurrentSound = createSelector(
+    [selectRaw],
+    (message) => message.currentSound
+);
+
+const selectSoundPlayStatus = createSelector(
+    [selectRaw],
+    (message) => message.soundPlayStatus
+);
+
 const selectSending = createSelector([selectRaw], (message) => message.sending);
 
 const selectGetImageListLoading = createSelector(
@@ -84,6 +94,8 @@ const selectors = {
     selectScrollToBottom,
     selectHasMoreMessageList,
     selectSending,
+    selectSoundPlayStatus,
+    selectCurrentSound
 };
 
 export default selectors;
