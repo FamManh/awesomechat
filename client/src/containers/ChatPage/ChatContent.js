@@ -62,10 +62,7 @@ function ChatContent() {
         <Layout
             style={{
                 position: "relative",
-                width:
-                    isMobileDevice && rightSidebarVisible
-                        ? 0
-                        : "auto",
+                width: isMobileDevice && rightSidebarVisible ? 0 : "auto",
             }}
         >
             <ChatContentHeader />

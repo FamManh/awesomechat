@@ -1,5 +1,7 @@
 import constants from "./constants";
 import produce from "immer";
+import playBell from "../shared/sound/bell";
+
 
 const initialState = {
     initLoading: true,
@@ -30,6 +32,7 @@ const messageReducer = (state = initialState, { type, payload }) =>
         switch (type) {
             case constants.CHAT_CLEAR_DATA:
                 draft.record = null;
+                break;
                 break;
             case constants.CHAT_SCROLL_TO_BOTTOM_TOGGLE:
                 draft.scrollToBottom = !state.scrollToBottom;
@@ -116,6 +119,34 @@ const messageReducer = (state = initialState, { type, payload }) =>
             case constants.SOCKET_SENT_MESSAGE:
                 currentUser = payload.currentUser;
                 message = payload.message;
+
+                // nếu current user là người nhận tin nhắn 
+                // hoặc curent user không phải là người nhắn tin vào group 
+                // thì bật âm thanh thông báo tin nhắn tới 
+                if (
+                    (state.record &&
+                        currentUser.id === message.receiver._id) ||
+                    (message.conversationType === "ChatGroup" &&
+                        currentUser.id !== message.sender._id)
+                ) {
+                    // Nếu tin nhắn đang mở thì âm thanh nhỏ
+                    if (
+                        (state.record.receiver.id === message.sender._id &&
+                            message.conversationType === "User") ||
+                        (state.record.receiver.id === message.receiver._id &&
+                            message.conversationType === "ChatGroup")
+                    ) {
+                        playBell("new-message1");
+                    } else {
+                        playBell("new-message");
+                    }
+                    
+                }else{
+                    // người gửi tin nhắn 
+                    playBell("sent");
+
+                }
+
                 // Nếu tin nhắn đang mở thì thêm vào tin nhắn
                 if (
                     (state.record &&
@@ -210,12 +241,16 @@ const messageReducer = (state = initialState, { type, payload }) =>
                     ) {
                         draft.typing.status = true;
                         draft.typing.info = payload.info;
+                        draft.scrollToBottom = true;
+                        playBell("typing");
                     } else if (
                         payload.conversationType === "User" &&
                         payload.info.id === state.record.receiver.id
                     ) {
                         draft.typing.status = true;
                         draft.typing.info = payload.info;
+                        draft.scrollToBottom = true;
+                        playBell("typing");
                     }
                 }
                 break;
