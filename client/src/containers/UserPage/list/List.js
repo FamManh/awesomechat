@@ -65,9 +65,9 @@ const UserList = () => {
                     >
                         <List.Item.Meta
                             avatar={
-                                <Badge dot status="success">
+                                // <Badge dot status="success"> </Badge>
+                                
                                     <AvatarCus record={item} />
-                                </Badge>
                             }
                             title={
                                 <span
@@ -151,19 +151,6 @@ const UserList = () => {
                                                 >
                                                     Remove Contact
                                                 </Button>
-                                            </Tooltip>
-                                            <Tooltip title="Send a message">
-                                                <a
-                                                    href="#"
-                                                    style={{
-                                                        margin: "0px 3px"
-                                                    }}
-                                                >
-                                                    <MessageCircle
-                                                        size={20}
-                                                        strokeWidth={2}
-                                                    />
-                                                </a>
                                             </Tooltip>
                                         </>
                                     )}

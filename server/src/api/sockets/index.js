@@ -1,6 +1,7 @@
 const socketioJwt = require("socketio-jwt");
 const { jwtSecret } = require("../../config/vars");
 const addNewContact = require("./contact/addNewContact");
+const acceptRequestContact = require("./contact/acceptRequestContact");
 const sentMessage = require("./chat/sentMessage");
 const createGroup = require("./chat/createGroup");
 const typingOn = require("./chat/typingOn");
@@ -45,6 +46,10 @@ let initSockets = (io) => {
     socket.on("add-new-contact", (data) =>
       addNewContact(io, data, clients, user)
     );
+    socket.on("accept-request-contact", (data) =>
+      acceptRequestContact(io, data, clients, user)
+    );
+    
     socket.on("typing-on", (data) => typingOn(io, data, clients, user));
     socket.on("typing-off", (data) => typingOff(io, data, clients, user));
     // check trang thái của người nghe online / offline
@@ -75,7 +80,6 @@ let initSockets = (io) => {
     socket.on("--server-call-ended", (data) =>
       callEnded(io, data, clients, user)
     );
-    
   });
 };
 

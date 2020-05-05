@@ -1,7 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Icon, Row } from "antd";
 
 function ImageUploadList({ fileList, onDelete }) {
+    // useEffect(() => {
+    //     fileList.forEach((file) => {
+    //         console.log(file)
+    //         // if (file && file.status === "error") {
+    //         //     onDelete(fileList.filter((item) => item.uid !== file.uid));
+    //         // }
+    //     });
+    // }, [fileList]);
     return (
         <div
             className="clearfix"
@@ -19,7 +27,9 @@ function ImageUploadList({ fileList, onDelete }) {
                         >
                             <div className="ant-upload-list-picture-card-container">
                                 <span>
-                                    <div className="ant-upload-list-item ant-upload-list-item-list-type-picture-card">
+                                    <div
+                                        className={`ant-upload-list-item ${file.status === "error"? "ant-upload-list-item-error" : ""} ant-upload-list-item-list-type-picture-card`}
+                                    >
                                         {file.status === "uploading" ? (
                                             <Row
                                                 type="flex"

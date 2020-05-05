@@ -3,11 +3,7 @@ import * as userConstants from "../UserPage/constants";
 import Message from "../shared/message";
 import Errors from "../shared/error/errors";
 import services from "./service";
-import {emitAddNewContact} from './socket';
-
-const messageUpdateSuccess = "Update succesfully";
-// const messageCreateSuccess = "Tạo chi nhánh thành công.";
-const messageDeleteSuccess = "Delete succesfully";
+import {emitAddNewContact, emitAcceptRequestContact} from './socket';
 
 const actions = {
     listContacts: () => async dispatch => {
@@ -108,8 +104,8 @@ const actions = {
                 type: userConstants.USER_UPDATE_CONTACT_START
             });
 
-            await services.updateFn(userInfo.id);
-
+            const response = await services.updateFn(userInfo.id);
+            emitAcceptRequestContact({id: response.data.userId})
             dispatch({
                 type: userConstants.USER_UPDATE_CONTACT_SUCCESS,
                 payload: { ...userInfo, type: "contact" }
@@ -120,7 +116,6 @@ const actions = {
                 payload: { ...userInfo, type: "contact" }
             });
 
-            Message.success(messageUpdateSuccess);
         } catch (error) {
             Errors.handle(error);
 
@@ -146,7 +141,6 @@ const actions = {
                 type: userConstants.USER_REMOVE_CONTACT_SUCCESS,
                 payload: { ...userInfo, type: "notContact" }
             });
-            Message.success(messageDeleteSuccess);
         } catch (error) {
             Errors.handle(error);
             dispatch({
@@ -170,7 +164,6 @@ const actions = {
                 type: userConstants.USER_REMOVE_CONTACT_SUCCESS,
                 payload: { ...userInfo, type: "notContact" }
             });
-            Message.success(messageDeleteSuccess);
         } catch (error) {
             Errors.handle(error);
             dispatch({
@@ -194,7 +187,6 @@ const actions = {
                 type: userConstants.USER_REMOVE_CONTACT_SUCCESS,
                 payload: { ...userInfo, type: "notContact" }
             });
-            Message.success(messageDeleteSuccess);
         } catch (error) {
             Errors.handle(error);
             dispatch({

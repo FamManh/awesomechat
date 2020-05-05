@@ -44,7 +44,7 @@ const Chat = styled.div`
         color: white;
         float: right;
         order: 1;
-        text-align: right;
+        // text-align: right;
     }
 
     .body-sent-no-backdround {
@@ -61,11 +61,17 @@ const Chat = styled.div`
         width: 100px;
         height: 100px;
         display: inline-block;
-        // margin: 0px 3px;
+        margin: 1px 3px;
         border-radius: 10px;
         background-position: center center;
         background-repeat: no-repeat;
         background-size: cover;
+    }
+    // .photo:not(:last-child) {
+    //     margin: 0px 3px;
+    // }
+    .photo:last-child {
+        margin-left: 3px;
     }
     .date {
         display: block;

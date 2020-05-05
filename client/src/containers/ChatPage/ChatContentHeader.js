@@ -74,9 +74,9 @@ function ChatContentHeader() {
                                 : `${record.receiver.firstname} ${record.receiver.lastname}`
                             : ""}
                     </span>
-                    <small className="text-muted">
+                    {/* <small className="text-muted">
                         <span>Online</span>
-                    </small>
+                    </small> */}
                 </span>
             </Row>
             <span className="mr-auto" />

@@ -5,6 +5,7 @@ const initialState = {
     initLoading: true,
     messageListLoading: false,
     hasMoreMessageList: true,
+    sending: false,
     scrollToBottom: false,
     findLoading: false,
     hasMoreConversation: true,
@@ -43,21 +44,22 @@ const messageReducer = (state = initialState, { type, payload }) =>
                 draft.inputMesage.files = payload;
                 break;
             case constants.CHAT_CREATE_START:
-                draft.saveLoading = true;
+                draft.sending = true;
                 draft.error = null;
                 break;
             case constants.CHAT_CREATE_SUCCESS:
-                draft.saveLoading = false;
+                draft.sending = false;
                 draft.error = null;
                 break;
             case constants.CHAT_CREATE_ERROR:
-                draft.saveLoading = false;
+                draft.sending = false;
                 draft.error = payload;
                 break;
             case constants.CHAT_FIND_START:
                 draft.findLoading = true;
                 draft.error = null;
                 draft.typing = {};
+                draft.sending = false;
                 draft.hasMoreConversation = true;
                 break;
             case constants.CHAT_FIND_SUCCESS:
@@ -89,6 +91,7 @@ const messageReducer = (state = initialState, { type, payload }) =>
                 draft.hasMoreMessageList = true;
                 draft.error = null;
                 draft.typing = {};
+                draft.sending = false;
                 break;
             case constants.CHAT_GET_SUCCESS:
                 draft.messageListLoading = false;
@@ -142,6 +145,7 @@ const messageReducer = (state = initialState, { type, payload }) =>
                         return message.receiver._id === item.receiver._id;
                     });
                 } else if (message.conversationType === "User") {
+                    // xử lý chat riêng tư 
                     receivedMessageIndex = state.messages.findIndex((item) => {
                         return (
                             (message.sender._id === item.sender._id &&
@@ -151,6 +155,7 @@ const messageReducer = (state = initialState, { type, payload }) =>
                         );
                     });
                 }
+                
 
                 if (receivedMessageIndex === 0) {
                     // Nếu tin nhắn hiện tại đã nằm đầu danh sách thì thay đổi tin nhắn cuối cùng
@@ -180,6 +185,8 @@ const messageReducer = (state = initialState, { type, payload }) =>
                 break;
             case constants.SOCKET_CREATE_GROUP:
                 draft.typing = {};
+                draft.sending = false;
+
                 if (draft.messages){
                     draft.messages.unshift({
                         sender: {},

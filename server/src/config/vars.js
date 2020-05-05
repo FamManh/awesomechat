@@ -26,12 +26,13 @@ module.exports = {
   },
   avatarDirectory: process.env.AVATAR_DIRECTORY,
   avatarTypes: ["image/png", "image/jpg", "image/jpeg"],
-  avatarLimitSize: 2097152, // 1mb
+  avatarLimitSize: 8097152, // 1mb
   photoDirectory: process.env.PHOTOS_DIRECTORY,
-  photoTypes: ["image/png", "image/jpg", "image/jpeg"],
-
+  photoTypes: ["image/png", "image/jpg", "image/jpeg", "image/gif"],
+  photoLimitSize: 8097152,
   fileDirectory: process.env.FILES_DIRECTORY,
-  fileTypes: ["image/png", "image/jpg", "image/jpeg"],
+  fileLimitSize: 8097152,
+  // fileTypes: ["image/png", "image/jpg", "image/jpeg"],
 
   staticUrl: process.env.STATIC_URL,
 };

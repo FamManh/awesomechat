@@ -112,7 +112,24 @@ userSchema.pre("update", async function (next) {
 userSchema.method({
   transform() {
     const transformed = {};
-    const fields = ["id", "firstname", "lastname", "picture", "createdAt"];
+    const fields = [
+      "id",
+      "firstname",
+      "lastname",
+      "picture",
+      "createdAt",
+      "email",
+    ];
+
+    fields.forEach((field) => {
+      transformed[field] = this[field];
+    });
+
+    return transformed;
+  },
+  publicInfoTransform() {
+    const transformed = {};
+    const fields = ["id", "firstname", "lastname", "picture"];
 
     fields.forEach((field) => {
       transformed[field] = this[field];

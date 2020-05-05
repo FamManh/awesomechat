@@ -1,6 +1,6 @@
 import io from "socket.io-client";
 import { isAuthenticated } from "./shared/routes/permissionChecker";
-import { onAddContact } from "./ContactPage/socket";
+import { onAddContact, onAcceptRequestContact } from "./ContactPage/socket";
 import {
     onSentMessage,
     onCreateGroup,
@@ -47,6 +47,7 @@ export const configSocket = () => {
     socket.on("connect", onConnected);
     socket.on("disconnect", onDisconnect);
     socket.on("res-add-new-contact", onAddContact);
+    socket.on("res-accept-request-contact", onAcceptRequestContact);
     socket.on("res-sent-message", onSentMessage);
     socket.on("res-create-group", onCreateGroup);
     socket.on("res-typing-on", onTypingOn);

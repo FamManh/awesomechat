@@ -111,9 +111,8 @@ exports.list = async (req, res, next) => {
         },
       ],
     });
-
     let responseUsers = [];
-    // users = users.map((user) => user.transform());
+    // users = users.map((user) => user.publicInfoTransform());
 
     users.forEach((userItem) => {
       let tempItem = { ...userItem, type: "notContact" };
@@ -121,9 +120,10 @@ exports.list = async (req, res, next) => {
         tempItem.type = "you";
       } else {
         contacts.forEach((contactItem) => {
-          if (userItem.id == contactItem.userId) {
+          console.log(contactItem + " === " + userItem.id);
+          if (userItem.id.toString() == contactItem.userId.toString()) {
             // request sent
-            if (contactItem.status) {
+            if (!!contactItem.status) {
               // accepted
               tempItem.type = "contact";
               return;
@@ -131,17 +131,19 @@ exports.list = async (req, res, next) => {
               tempItem.type = "request";
               return;
             }
-          } else if (userItem.id == contactItem.contactId) {
-            // request
-            if (contactItem.status) {
-              // accepted
-              tempItem.type = "contact";
-              return;
-            } else {
-              tempItem.type = "requestSent";
-              return;
-            }
-          }
+          } else if (
+                   userItem.id.toString() == contactItem.contactId.toString()
+                 ) {
+                   // request
+                   if (!!contactItem.status) {
+                     // accepted
+                     tempItem.type = "contact";
+                     return;
+                   } else {
+                     tempItem.type = "requestSent";
+                     return;
+                   }
+                 }
         });
       }
       responseUsers.push(tempItem);
