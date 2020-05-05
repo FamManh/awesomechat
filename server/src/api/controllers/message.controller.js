@@ -301,11 +301,11 @@ exports.addPhotos = (req, res, next) => {
   photosUploadFile(req, res, async (err) => {
     try {
       if (!req.file) {
-        
-        throw new APIError({
-          message: err,
-          status: httpStatus.BAD_REQUEST,
-        });
+      console.log(err);
+      throw new APIError({
+        message: err,
+        status: httpStatus.BAD_REQUEST,
+      });
       }
       let outputFile = req.file.path + ".jpg";
 
@@ -336,10 +336,11 @@ exports.addFiles = (req, res, next) => {
   filesUpload(req, res, async (err) => {
     try {
       if (!req.file) {
-        throw new APIError({
-          message: err,
-          status: httpStatus.BAD_REQUEST,
-        });
+      console.log(err);
+      throw new APIError({
+        message: err,
+        status: httpStatus.BAD_REQUEST,
+      });
       }
 
       let temp = {

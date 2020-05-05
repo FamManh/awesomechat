@@ -47,9 +47,9 @@ function ImageUploadList({ fileList, onDelete }) {
                                                     <span className="ant-upload-list-item-actions"></span>
                                                     <img
                                                         className="ant-upload-list-item-thumbnail"
-                                                        src={
+                                                        src={ file.response ?
                                                             file.response
-                                                                .thumbUrl
+                                                                .thumbUrl : ''
                                                         }
                                                     />
                                                 </div>

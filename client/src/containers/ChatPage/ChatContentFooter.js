@@ -8,6 +8,7 @@ import constants from "./constants";
 import userSelectors from "../UserPage/selectors";
 import { Picker } from "emoji-mart";
 import { emitTypingOn, emitTypingOff } from "./socket";
+import { isAuthenticated } from "../shared/routes/permissionChecker";
 
 let typingTimer = null;
 
@@ -150,13 +151,15 @@ function ChatContentFooter() {
     };
     return (
         <>
-            
             <div style={{ display: "flex", alignItems: "center" }}>
                 <Upload
                     accept="image/*"
                     name="photos"
                     multiple={true}
                     fileList={inputMessage.images}
+                    headers={{
+                        Authorization: `Bearer ${isAuthenticated()}`
+                    }}
                     action={`${process.env.REACT_APP_API_URI}/message/photos`}
                     showUploadList={false}
                     onChange={(files) => {
@@ -176,6 +179,11 @@ function ChatContentFooter() {
                     name="files"
                     multiple={true}
                     fileList={inputMessage.files}
+                    headers={{
+                        Authorization: `Bearer ${isAuthenticated()}`,
+                        "Content-Type":
+                            "multipart/form-data; boundary=----WebKitFormBoundaryqTqJIxvkWFYqvP5s",
+                    }}
                     action={`${process.env.REACT_APP_API_URI}/message/files`}
                     showUploadList={false}
                     onChange={(files) => {

@@ -13,7 +13,6 @@ const layoutReducer = (state = initialState, {type, payload})=>
         case constants.LAYOUT_WINDOW_RESIZE:
             if(payload <  648) {
                 draft.isMobileDevice = true;
-                draft.rightSidebarVisible= false
             }else{
                 draft.isMobileDevice = false;
             }

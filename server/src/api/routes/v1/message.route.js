@@ -31,8 +31,8 @@ router
   // Tạo mới tin nhắn 
   .post(authorize(LOGGED_USER), validate(createMessage), controller.create);
 
-router.route("/photos").post(controller.addPhotos);
-router.route("/files").post(controller.addFiles);
+router.route("/photos").post(authorize(LOGGED_USER),controller.addPhotos);
+router.route("/files").post(authorize(LOGGED_USER),controller.addFiles);
 
 router
   .route("/:receiverId")
