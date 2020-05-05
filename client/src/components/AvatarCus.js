@@ -1,20 +1,36 @@
-import React from "react";
+import React, { useState } from "react";
 import { Avatar } from "antd";
+import Carousel, { Modal, ModalGateway } from "react-images";
 
 function AvatarCus(props) {
     const { record, size = 40 } = props;
+    const [imageModalShow, setImageModalShow] = useState(false)
     if (!record) return <Avatar size={size} icon="user" />;
 
     if (record.picture) {
+        const imageUrl =
+            process.env.REACT_APP_STATIC_AVATARS + "/" + record.picture;
         return (
-            <Avatar
-                {...props}
-                shape="circle"
-                size={size}
-                src={
-                    process.env.REACT_APP_STATIC_AVATARS + "/" + record.picture
-                }
-            />
+            <>
+                <ModalGateway>
+                    {imageModalShow ? (
+                        <Modal onClose={() => setImageModalShow(false)}>
+                            <Carousel
+                                components={{ FooterCaption: () => null }}
+                                views={[{ source: imageUrl }]}
+                            />
+                        </Modal>
+                    ) : null}
+                </ModalGateway>
+                <span onClick={() => setImageModalShow(true)}>
+                    <Avatar style={{cursor: "pointer"}}
+                        {...props}
+                        shape="circle"
+                        size={size}
+                        src={imageUrl}
+                    />
+                </span>
+            </>
         );
     }
 

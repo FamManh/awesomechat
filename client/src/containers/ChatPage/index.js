@@ -37,7 +37,7 @@ export default function ChatPage() {
     useEffect(() => {
         if (userId) {
             dispatch(actions.doFind(userId));
-            dispatch(layoutActions.doHideRightSidebar())
+            // dispatch(layoutActions.doHideRightSidebar())
         }
     }, [userId]);
 
@@ -48,6 +48,7 @@ export default function ChatPage() {
     return (
         <Layout style={{ height: "100vh", backgroundColor: "#fff" }}>
             <Layout className="fill-workspace rounded shadow-sm overflow-hidden">
+     
                 <Sidebar />
                 {record ? (
                     <>

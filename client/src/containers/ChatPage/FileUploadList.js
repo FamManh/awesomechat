@@ -15,7 +15,7 @@ function FileUploadList({ fileList, onDelete }) {
                     return (
                         <div
                             key={index}
-                            className="ant-upload-list-item ant-upload-list-item-done ant-upload-list-item-list-type-text"
+                            className={`ant-upload-list-item ${file.status === "error" ? "ant-upload-list-item-error" : "ant-upload-list-item-done"} ant-upload-list-item-list-type-text`}
                         >
                             <span>
                                 <div className="ant-upload-list-item-info">

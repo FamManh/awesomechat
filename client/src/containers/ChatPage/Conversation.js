@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Icon, Spin } from "antd";
+import { Icon, Spin, Tooltip } from "antd";
 import { useSelector, useDispatch } from "react-redux";
 import selectors from "./selectors";
 import userSelectors from "../UserPage/selectors";
@@ -17,15 +17,23 @@ function Conversation({ messages }) {
     const hasMoreConversation = useSelector(
         selectors.selectHasMoreConversation
     );
+    const sending = useSelector(selectors.selectSending)
     const findLoading = useSelector(selectors.selectFindLoading);
     const currentUser = useSelector(userSelectors.selectCurrentUser);
     const [imageViewModelVisible, setImageViewModelVisible] = useState(false);
     const [currentImageViewIndex, setCurrentImageViewIndex] = useState(0);
+    
     let imagesList = [];
 
     const loadMoreConversation = () => {
         dispatch(actions.doFind(record.receiver.id, record.messages.length));
     };
+
+    const getFullName = (record) => {
+        if (record && record.firstname && record.lastname)
+            return record.firstname + " " + record.lastname;
+        return ""
+    }
 
     const renderConversation = (messages) => {
         if(!currentUser) return <span></span>;
@@ -46,16 +54,27 @@ function Conversation({ messages }) {
                     }}
                 >
                     <div style={{ width: 30, marginRight: "5px" }}>
-                        {currentUser && chat.sender._id !== currentUser.id && (
-                            <AvatarCus
-                                record={
-                                    record.conversationType === "ChatGroup"
-                                        ? chat.sender
-                                        : record.receiver
-                                }
-                                size={30}
-                            />
-                        )}
+                        {currentUser &&
+                            chat.sender._id !== currentUser.id &&
+                            record && (
+                                <Tooltip
+                                    title={
+                                        record.conversationType === "ChatGroup"
+                                            ? getFullName(chat.sender)
+                                            : getFullName(chat.receiver)
+                                    }
+                                >
+                                    <AvatarCus
+                                        record={
+                                            record.conversationType ===
+                                            "ChatGroup"
+                                                ? chat.sender
+                                                : record.receiver
+                                        }
+                                        size={30}
+                                    />
+                                </Tooltip>
+                            )}
                     </div>
                     <div
                         key={index}
@@ -72,7 +91,9 @@ function Conversation({ messages }) {
                             <>
                                 {chat.type === "text" ? (
                                     <div className={`body body-sent`}>
-                                        <p color="inherit">{chat.message}</p>
+                                        <span color="inherit">
+                                            {chat.message}
+                                        </span>
                                     </div>
                                 ) : chat.type === "image" &&
                                   chat.images.length > 0 ? (
@@ -199,7 +220,7 @@ function Conversation({ messages }) {
         });
     };
 
-    const typIndocator = (
+    const typIndicator = (
         <div
             style={{
                 display: "flex",
@@ -263,7 +284,16 @@ function Conversation({ messages }) {
                     <Spin spinning={findLoading && hasMoreConversation}></Spin>
                 </div>
                 {renderConversation(messages)}
-                {typing && typing.status && typIndocator}
+                {typing && typing.status && typIndicator}
+                <div
+                    style={{
+                        textAlign: "right",
+                        color: "#8d8d8d",
+                        fontSize: "12px",
+                    }}
+                >
+                    {sending && <span>Sending...</span>}
+                </div>
             </InfiniteScroll>
         </>
     );

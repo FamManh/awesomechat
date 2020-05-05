@@ -5,7 +5,6 @@ import services from "./service";
 import { emitSentMessage, emitCreateGroup } from "./socket";
 
 const actions = {
-    
     doToggleScrollToBottom: () => ({
         type: constants.CHAT_SCROLL_TO_BOTTOM_TOGGLE,
     }),

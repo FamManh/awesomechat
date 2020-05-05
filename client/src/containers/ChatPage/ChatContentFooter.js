@@ -40,7 +40,7 @@ function ChatContentFooter() {
             type: constants.INPUT_MESSAGE_CHANGE,
             payload: message,
         });
-        if(message.trim() === ""){
+        if (message.trim() === "") {
             handleTypingOff();
         }
     };
@@ -53,7 +53,6 @@ function ChatContentFooter() {
     };
 
     const onInputFileListChange = ({ fileList }) => {
-        console.log(fileList)
         dispatch({
             type: constants.INPUT_FILE_LIST_CHANGE,
             payload: [...fileList],
@@ -65,10 +64,9 @@ function ChatContentFooter() {
         inputMessageRef.current.focus();
     };
 
-    const handleSendClick = () => {
+    const sendText = () => {
         if (
-            inputMessage.text.trim() !== "" &&
-            inputMessage.images.length === 0
+            inputMessage.text.trim() !== ""
         ) {
             // Gửi text và emoji
             dispatch(
@@ -80,11 +78,22 @@ function ChatContentFooter() {
             );
             onInputMessageChange("");
         }
+    };
+
+    const sendImage = () => {
+        // Nếu đang uploading thì không gửi
+        let uploading = false;
+        inputMessage.images.forEach((item) => {
+            if (item.status === "uploading") uploading = true;
+        });
+        if (uploading) return;
         if (inputMessage.images.length > 0) {
             // gửi hình ảnh
             let images = [];
             inputMessage.images.forEach((item) => {
-                images.push(item.response.name);
+                if (item.response.name) {
+                    images.push(item.response.name);
+                }
             });
 
             dispatch(
@@ -97,14 +106,25 @@ function ChatContentFooter() {
             );
             onInputImageListChange({ fileList: [] });
         }
+    };
+
+    const sendFile = () => {
+        // Nếu đang uploading thì không gửi
+        let uploading = false
+        inputMessage.files.forEach((item) => {
+            if (item.status === "uploading") uploading = true;
+        });
+        if(uploading) return;
         if (inputMessage.files.length > 0) {
             // gửi file
             let files = [];
             inputMessage.files.forEach((item) => {
-                files.push({
-                    name: item.name,
-                    path: item.response.name,
-                });
+                if(item.status === "done"){
+                    files.push({
+                        name: item.name,
+                        path: item.response.name,
+                    });
+                }
             });
 
             dispatch(
@@ -117,102 +137,114 @@ function ChatContentFooter() {
             );
             onInputFileListChange({ fileList: [] });
         }
+    };
+
+    const handleSendClick = () => {
+        sendText();
+        sendImage();
+        sendFile();
         //   dispatch(actions.doToggleScrollToBottom());
 
         handleTypingOff();
+        inputMessageRef.current.focus();
     };
     return (
-        <div style={{ display: "flex", alignItems: "center" }}>
-            <Upload
-                accept="image/*"
-                name="photos"
-                multiple={true}
-                fileList={inputMessage.images}
-                action={`${process.env.REACT_APP_API_URI}/message/photos`}
-                showUploadList={false}
-                onChange={(files) => {
-                    onInputImageListChange(files);
-                }}
-            >
-                <Button
-                    shape="circle"
-                    className="bg-transparent"
-                    style={{ border: "0" }}
+        <>
+            
+            <div style={{ display: "flex", alignItems: "center" }}>
+                <Upload
+                    accept="image/*"
+                    name="photos"
+                    multiple={true}
+                    fileList={inputMessage.images}
+                    action={`${process.env.REACT_APP_API_URI}/message/photos`}
+                    showUploadList={false}
+                    onChange={(files) => {
+                        onInputImageListChange(files);
+                    }}
                 >
-                    <Image size={20} strokeWidth={1} />
-                </Button>
-            </Upload>
-            <Upload
-                accept="application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint, text/plain, application/pdf"
-                name="files"
-                multiple={true}
-                fileList={inputMessage.files}
-                action={`${process.env.REACT_APP_API_URI}/message/files`}
-                showUploadList={false}
-                onChange={(files) => {
-                    onInputFileListChange(files);
-                }}
-            >
-                <Button
-                    shape="circle"
-                    className="bg-transparent"
-                    style={{ border: "0" }}
-                >
-                    <Paperclip size={20} strokeWidth={1} />
-                </Button>
-            </Upload>
-            <Input
-                ref={inputMessageRef}
-                placeholder="Type a message"
-                value={inputMessage.text}
-                onChange={(e) => {
-                    onInputMessageChange(e.target.value);
-                }}
-                style={{ borderRadius: "1rem" }}
-                onPressEnter={handleSendClick}
-                onKeyUp={() => {
-                    if (!typing) {
-                        setTyping(true);
-                        if (inputMessage.text.trim() !== "") {
-                            emitTypingOn({
-                                info: currentUser,
-                                receiver: record.receiver,
-                                conversationType: record.conversationType,
-                            });
-                        }
-                    }
-                    delay(() => {
-                        handleTypingOff();
-                        setTyping(false);
-                    }, 1000);
-                }}
-                suffix={
-                    <Popover
-                        content={
-                            <Picker
-                                set="facebook"
-                                sheetSize={32}
-                                onSelect={addEmoji}
-                            />
-                        }
-                        title="Title"
-                        trigger="click"
-                        visible={emojiVisible}
-                        onVisibleChange={() => setEmojiVisible(!emojiVisible)}
+                    <Button
+                        shape="circle"
+                        className="bg-transparent"
+                        style={{ border: "0" }}
                     >
-                        <Smile
-                            style={{ cursor: "pointer" }}
-                            size={20}
-                            strokeWidth={1}
-                        />
-                    </Popover>
-                }
-            />
+                        <Image size={20} strokeWidth={1} />
+                    </Button>
+                </Upload>
+                <Upload
+                    accept="text/plain, application/pdf, .csv, .docx, .xlsx"
+                    name="files"
+                    multiple={true}
+                    fileList={inputMessage.files}
+                    action={`${process.env.REACT_APP_API_URI}/message/files`}
+                    showUploadList={false}
+                    onChange={(files) => {
+                        onInputFileListChange(files);
+                    }}
+                >
+                    <Button
+                        shape="circle"
+                        className="bg-transparent"
+                        style={{ border: "0" }}
+                    >
+                        <Paperclip size={20} strokeWidth={1} />
+                    </Button>
+                </Upload>
+                <Input
+                    ref={inputMessageRef}
+                    placeholder="Type a message"
+                    value={inputMessage.text}
+                    onChange={(e) => {
+                        onInputMessageChange(e.target.value);
+                    }}
+                    style={{ borderRadius: "1rem" }}
+                    onPressEnter={handleSendClick}
+                    onKeyUp={() => {
+                        if (!typing) {
+                            setTyping(true);
+                            if (inputMessage.text.trim() !== "") {
+                                emitTypingOn({
+                                    info: currentUser,
+                                    receiver: record.receiver,
+                                    conversationType: record.conversationType,
+                                });
+                            }
+                        }
+                        delay(() => {
+                            handleTypingOff();
+                            setTyping(false);
+                        }, 1000);
+                    }}
+                    suffix={
+                        <Popover
+                            content={
+                                <Picker
+                                    set="facebook"
+                                    sheetSize={32}
+                                    onSelect={addEmoji}
+                                />
+                            }
+                            title="Title"
+                            trigger="click"
+                            visible={emojiVisible}
+                            onVisibleChange={() =>
+                                setEmojiVisible(!emojiVisible)
+                            }
+                        >
+                            <Smile
+                                style={{ cursor: "pointer" }}
+                                size={20}
+                                strokeWidth={1}
+                            />
+                        </Popover>
+                    }
+                />
 
-            <Button shape="circle" type="link" onClick={handleSendClick}>
-                <Send size={20} strokeWidth={1} />
-            </Button>
-        </div>
+                <Button shape="circle" type="link" onClick={handleSendClick}>
+                    <Send size={20} strokeWidth={1} />
+                </Button>
+            </div>
+        </>
     );
 }
 

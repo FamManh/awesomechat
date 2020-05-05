@@ -80,9 +80,8 @@ function ChatSidebar() {
                     textAlign: "center",
                 }}
             >
-                <Badge dot={true}>
-                    <Users size={20} strokeWidth={1} />
-                </Badge>
+                {/* <Badge dot={true}></Badge> */}
+                <Users size={20} strokeWidth={1} />
             </Menu.Item>
             <Menu.Item
                 key="user"
@@ -158,9 +157,9 @@ function ChatSidebar() {
                             ? `${currentUser.firstname} ${currentUser.lastname}`
                             : ""}
                     </span>
-                    <small className="text-muted">
+                    {/* <small className="text-muted">
                         <span>Online</span>
-                    </small>
+                    </small> */}
                 </span>
             </Row>
             <span className="mr-auto" />

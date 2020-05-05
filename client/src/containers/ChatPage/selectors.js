@@ -7,6 +7,8 @@ const selectFindLoading = createSelector(
     (message) => message.findLoading
 );
 
+const selectSending = createSelector([selectRaw], (message) => message.sending);
+
 const selectGetImageListLoading = createSelector(
     [selectRaw],
     (message) => message.getImageListLoading
@@ -81,6 +83,7 @@ const selectors = {
     selectHasMoreConversation,
     selectScrollToBottom,
     selectHasMoreMessageList,
+    selectSending,
 };
 
 export default selectors;

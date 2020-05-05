@@ -1,34 +1,20 @@
 import React, { useState, useEffect } from "react";
-import {
-    List,
-    Badge,
-    Button,
-    Icon,
-    Collapse
-} from "antd";
+import { List, Badge, Button, Icon, Collapse, Dropdown, Menu } from "antd";
 import Search from "antd/lib/input/Search";
 import { useDispatch, useSelector } from "react-redux";
 import actions from "../actions";
 import selectors from "../selectors";
-import { Link } from "react-router-dom";
-import AvatarCus from "../../../components/AvatarCus";
+import ListContact from "./ListContact";
+import ListRequest from "./ListRequest";
+import ListRequestSent from "./ListRequestSent";
 
 const { Panel } = Collapse;
 
-const customPanelStyle = {
-    background: "#f7f7f7",
-    borderRadius: 4,
-    marginBottom: 24,
-    border: 0,
-    overflow: "hidden"
-};
 const ContactList = () => {
-    const [selectedIndex, setSelectedIndex] = useState(0);
     const dispatch = useDispatch();
-    const contacts = useSelector(selectors.selectContacts);
     const requests = useSelector(selectors.selectRequests);
     const requestsSent = useSelector(selectors.selectRequestsSent);
-    const handleSearch = term => {
+    const handleSearch = (term) => {
         dispatch(actions.list({ term }));
     };
 
@@ -38,198 +24,16 @@ const ContactList = () => {
         </div>
     );
 
-    const handleAddContactClick = userInfo => {
-        dispatch(actions.doCreate(userInfo));
-    };
-
-    const handleRemoveContactClick = userInfo => {
-        dispatch(actions.doDestroyContact(userInfo));
-    };
-
-    const handleConfirmContactClick = userInfo => {
-        dispatch(actions.doUpdate(userInfo));
-    };
-
-    const renderContactsList = () => {
-        return (
-            <div>
-                <List
-                    className="scroll-y flex-1 bg-transparent"
-                    itemLayout="horizontal"
-                    dataSource={contacts}
-                    renderItem={(item, index) => (
-                        <List.Item
-                            onClick={() => setSelectedIndex(index)}
-                            className={`"border-0" border-0 px-0 py-3`}
-                        >
-                            <List.Item.Meta
-                                avatar={
-                                    <Badge dot status="success">
-                                        <AvatarCus record={item} />
-                                    </Badge>
-                                }
-                                title={
-                                    <>
-                                        <span
-                                            style={{
-                                                display: "flex",
-                                                width: "100%",
-                                            }}
-                                        >
-                                            {item.firstname +
-                                                " " +
-                                                item.lastname}
-                                        </span>
-                                    </>
-                                }
-                                description={
-                                    <>
-                                        <Link to={`/m/${item.id}`}>
-                                            <Button
-                                                shape="circle"
-                                                icon="message"
-                                                style={{ border: 0 }}
-                                            ></Button>
-                                        </Link>
-                                        <Button
-                                            shape="circle"
-                                            icon="delete"
-                                            style={{ border: 0 }}
-                                            onClick={() =>
-                                                dispatch(
-                                                    actions.doDestroyContact(
-                                                        item
-                                                    )
-                                                )
-                                            }
-                                        ></Button>
-                                    </>
-                                }
-                            />
-                        </List.Item>
-                    )}
-                />
-            </div>
-        );
-    };
-    const renderRequestsList = () => {
-        return (
-            <div>
-                <List
-                    className="scroll-y flex-1 bg-transparent"
-                    itemLayout="horizontal"
-                    dataSource={requests}
-                    renderItem={(item, index) => (
-                        <List.Item
-                            onClick={() => setSelectedIndex(index)}
-                            className={`"border-0" border-0 px-0 py-3`}
-                        >
-                            <List.Item.Meta
-                                avatar={
-                                    <Badge dot status="success">
-                                        <AvatarCus record={item} />
-                                    </Badge>
-                                }
-                                title={
-                                    <span
-                                        style={{
-                                            display: "flex",
-                                            width: "100%",
-                                        }}
-                                    >
-                                        {item.firstname + " " + item.lastname}
-                                    </span>
-                                }
-                                description={
-                                    <>
-                                        <Button
-                                            type="primary"
-                                            shape="round"
-                                            onClick={() =>
-                                                handleConfirmContactClick(item)
-                                            }
-                                        >
-                                            Confirm
-                                        </Button>
-                                        <Button
-                                            shape="round"
-                                            onClick={() =>
-                                                dispatch(
-                                                    actions.doDestroyRequest(
-                                                        item
-                                                    )
-                                                )
-                                            }
-                                        >
-                                            Delete
-                                        </Button>
-                                    </>
-                                }
-                            />
-                        </List.Item>
-                    )}
-                />
-            </div>
-        );
-    };
-    const renderRequestsSentList = () => {
-        return (
-            <div>
-                <List
-                    className="scroll-y flex-1 bg-transparent"
-                    itemLayout="horizontal"
-                    dataSource={requestsSent}
-                    renderItem={(item, index) => (
-                        <List.Item
-                            onClick={() => setSelectedIndex(index)}
-                            className={`"border-0" border-0 px-0 py-3`}
-                        >
-                            <List.Item.Meta
-                                avatar={<AvatarCus record={item} />}
-                                title={
-                                    <span
-                                        style={{
-                                            display: "flex",
-                                            width: "100%",
-                                        }}
-                                    >
-                                        {item.firstname + " " + item.lastname}
-                                    </span>
-                                }
-                                description={
-                                    <>
-                                        <Button
-                                            shape="round"
-                                            onClick={() =>
-                                                dispatch(
-                                                    actions.doDestroyRequestSent(
-                                                        item
-                                                    )
-                                                )
-                                            }
-                                        >
-                                            Delete
-                                        </Button>
-                                    </>
-                                }
-                            />
-                        </List.Item>
-                    )}
-                />
-            </div>
-        );
-    };
-
     useEffect(() => {
         dispatch(actions.listContacts());
         dispatch(actions.listRequests());
         dispatch(actions.listRequestsSent());
-        
+
         return () => {};
     }, []);
 
     return (
-        <>
+        <div className="scroll-y flex-1">
             {/* {searchbar} */}
             <Collapse
                 style={{ overflowY: "auto" }}
@@ -239,29 +43,27 @@ const ContactList = () => {
                     <Icon type="caret-right" rotate={isActive ? 90 : 0} />
                 )}
             >
-                <Panel
-                    header={`Contact (${contacts.length})`}
-                    key="1"
-                    style={customPanelStyle}
-                >
-                    {renderContactsList()}
-                </Panel>
-                <Panel
-                    header={`Request (${requests.length})`}
-                    key="2"
-                    style={customPanelStyle}
-                >
-                    {renderRequestsList()}
-                </Panel>
-                <Panel
-                    header={`Request sent (${requestsSent.length})`}
-                    key="3"
-                    style={customPanelStyle}
-                >
-                    {renderRequestsSentList()}
-                </Panel>
+                {requests && requests.length > 0 && (
+                    <Panel
+                        header={`Request (${requests.length})`}
+                        key="2"
+                        style={{ padding: "10px 0px" }}
+                    >
+                        <ListRequest />
+                    </Panel>
+                )}
+                {requestsSent && requestsSent.length > 0 && (
+                    <Panel
+                        header={`Request sent (${requestsSent.length})`}
+                        key="3"
+                        style={{ padding: "10px 0px" }}
+                    >
+                        <ListRequestSent />
+                    </Panel>
+                )}
             </Collapse>
-        </>
+            <ListContact />
+        </div>
     );
 };
 export default ContactList;
