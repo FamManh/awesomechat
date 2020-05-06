@@ -21,6 +21,7 @@ const transporter = nodemailer.createTransport({
 transporter.verify((error) => {
   if (error) {
     console.log('error with email connection');
+    console.log(error);
   }
 });
 
@@ -48,7 +49,10 @@ exports.sendPasswordReset = async (passwordResetObject) => {
         passwordResetUrl: `http://chat.manhpham.xyz/new-password?resetToken=${passwordResetObject.resetToken}&email=${passwordResetObject.userEmail}`,
       },
     })
-    .catch(() => console.log("error sending password reset email"));
+    .catch((error) => {
+      console.log("error sending password reset email");
+      console.log(error)
+    });
 };
 
 exports.sendPasswordChangeEmail = async (user) => {
@@ -73,5 +77,9 @@ exports.sendPasswordChangeEmail = async (user) => {
         name: user.name,
       },
     })
-    .catch(() => console.log('error sending change password email'));
+    .catch(() => {
+      console.log("error sending change password email");
+      console.log(error);
+
+    });
 };
