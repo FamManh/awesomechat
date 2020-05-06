@@ -9,6 +9,7 @@ import {
 import Errors from "../shared/error/errors";
 import { socketDisconnect, configSocket } from "../rootSocket";
 import Message from "../shared/message";
+import { initSetting } from "../shared/settings";
 
 const actions = {
     doInitLoadingDone: () => {
@@ -43,6 +44,7 @@ const actions = {
             });
             getHistory().push("/");
             configSocket();
+            initSetting();
         } catch (error) {
             dispatch({
                 type: constants.SIGNIN_ERROR,

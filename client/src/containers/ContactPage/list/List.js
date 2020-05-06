@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { List, Badge, Button, Icon, Collapse, Dropdown, Menu } from "antd";
+import React, { useEffect } from "react";
+import { Icon, Collapse } from "antd";
 import Search from "antd/lib/input/Search";
 import { useDispatch, useSelector } from "react-redux";
 import actions from "../actions";
@@ -18,11 +18,11 @@ const ContactList = () => {
         dispatch(actions.list({ term }));
     };
 
-    const searchbar = (
-        <div className="py-3 px-3" style={{ backgroundColor: "#fff" }}>
-            <Search placeholder="Search contact" onSearch={handleSearch} />
-        </div>
-    );
+    // const searchbar = (
+    //     <div className="py-3 px-3" style={{ backgroundColor: "#fff" }}>
+    //         <Search placeholder="Search contact" onSearch={handleSearch} />
+    //     </div>
+    // );
 
     useEffect(() => {
         dispatch(actions.listContacts());

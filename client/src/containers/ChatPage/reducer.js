@@ -33,7 +33,6 @@ const messageReducer = (state = initialState, { type, payload }) =>
             case constants.CHAT_CLEAR_DATA:
                 draft.record = null;
                 break;
-                break;
             case constants.CHAT_SCROLL_TO_BOTTOM_TOGGLE:
                 draft.scrollToBottom = !state.scrollToBottom;
                 break;

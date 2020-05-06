@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { List, Badge, Button, Icon, Collapse, Dropdown, Menu } from "antd";
-import Search from "antd/lib/input/Search";
+import React from "react";
+import { Button, Dropdown, Menu } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import actions from "../actions";
 import selectors from "../selectors";
-import { Link } from "react-router-dom";
 import AvatarCus from "../../../components/AvatarCus";
 import WrapperListContact from "../style/WrapperListContact";
 

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
     Layout,
-    Row,
     Collapse,
     Icon,
     Button,
@@ -63,7 +62,6 @@ function RightSideBar() {
     const rightSidebarVisible = useSelector(
         layoutSelectors.selectRightSidebarVisible
     );
-    const windowWidth = useSelector(layoutSelectors.selectWindowWidth);
 
     const [imageModalShow, setImageModalShow] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -128,21 +126,9 @@ function RightSideBar() {
                 userId: member.id,
                 groupId: record.receiver.id,
                 currentUser: currentUser,
-                receiver: record.receiver.id,
+                member: member,
             })
         );
-        // dispatch(
-        //     actions.doCreate({
-        //         type: "notification",
-        //         message: `${
-        //             currentUser.firstname + " " + currentUser.lastname
-        //         } removed ${
-        //             member.firstname + " " + member.lastname
-        //         } from the group.`,
-        //         receiver: record.receiver.id,
-        //         conversationType: record.conversationType,
-        //     })
-        // );
     };
 
     const menu = (member, members) => {

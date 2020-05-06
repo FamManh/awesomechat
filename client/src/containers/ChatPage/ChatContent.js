@@ -12,7 +12,6 @@ import FileUploadList from "./FileUploadList";
 import Conversation from "./Conversation";
 import ChatContentFooter from "./ChatContentFooter";
 import ChatContentHeader from "./ChatContentHeader";
-import Spinner from '../shared/Spinner'
 import ChatStyled from "./styles/chat";
 import { useParams } from "react-router-dom";
 import actions from "./actions";
@@ -25,13 +24,11 @@ function ChatContent() {
     let { userId } = useParams();
     const record = useSelector(selectors.selectRecord);
     const inputMessage = useSelector(selectors.selectInputMessage);
-    const findLoading = useSelector(selectors.selectFindLoading)
     const isScrollToBottom = useSelector(selectors.selectScrollToBottom);
      const isMobileDevice = useSelector(layoutSelectors.selectIsMobileDevice);
      const rightSidebarVisible = useSelector(
          layoutSelectors.selectRightSidebarVisible
      );
-     const windowWidth = useSelector(layoutSelectors.selectWindowWidth)
     const onInputImageListChange = ({ fileList }) => {
         dispatch({
             type: constants.INPUT_IMAGE_LIST_CHANGE,

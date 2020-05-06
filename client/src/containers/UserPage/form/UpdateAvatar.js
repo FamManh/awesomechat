@@ -1,7 +1,5 @@
 import {  Form, Icon, Upload, message } from "antd";
-import actions from "../actions";
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import { isAuthenticated } from "../../shared/routes/permissionChecker";
 const UpdateAvatar = ({
     picture,
@@ -10,7 +8,6 @@ const UpdateAvatar = ({
 }) => {
     const [loading, setLoading] = useState(false);
     const [imageUrl, setImageUrl] = useState(picture ? picture : "");
-    const dispatch = useDispatch();
     useEffect(() => {
         setImageUrl(picture);
         return () => {};

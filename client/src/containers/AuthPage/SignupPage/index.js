@@ -37,7 +37,7 @@ const Signup = ({ form }) => {
                     <Link to="/signup">
                         <span className="brand mr-0">
                             {/* <Triangle size={32} strokeWidth={1} /> */}
-                            <img width="150" src="/logo-chat.png" />
+                            <img width="150" src="/logo-chat.png" alt="logo" />
                         </span>
                     </Link>
                     <h5 className="mb-0 mt-3">Sign up</h5>

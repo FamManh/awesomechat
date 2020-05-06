@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Button, AutoComplete, List, Input, Divider, Icon } from "antd";
-import userActions from "../UserPage/actions";
+import { Modal, Input, Divider, Icon } from "antd";
 import userSelectors from "../UserPage/selectors";
 import { useSelector, useDispatch } from "react-redux";
 import AvatarCus from "../../components/AvatarCus";
@@ -8,14 +7,12 @@ import actions from "./actions";
 import contactActions from "../ContactPage/actions";
 import contactSelectors from "../ContactPage/selectors";
 import ListUser from "./styles/ListUser";
-const { Option } = AutoComplete;
 
 function ModalCreateGroupchat({ visible, doToggle }) {
     let users = useSelector(contactSelectors.selectContacts);
     const currentUser = useSelector(userSelectors.selectCurrentUser);
     const [newMembers, setNewMembers] = useState([]);
     const [groupName, setGroupName] = useState("Group name");
-    const [term, setTerm] = useState("");
     const dispatch = useDispatch();
 
     const idNewMemberAdded = (userId) => {

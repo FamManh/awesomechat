@@ -1,13 +1,11 @@
 import React, { useState } from "react";
-import { Upload, Icon, message, Modal, Button, Input, Row } from "antd";
+import { Modal, Input, Row } from "antd";
 import UpdateAvatar from "../UserPage/form/UpdateAvatar";
 import { useSelector, useDispatch } from "react-redux";
-import selectors from "./selectors";
 import actions from './actions'
 import userSelectors from '../UserPage/selectors'
 function ModalUpdateChatGroup({ visible, doToggle, info }) {
     const dispatch = useDispatch();
-    const record = useSelector(selectors.selectRecord);
     const currentUser = useSelector(userSelectors.selectCurrentUser)
     const [groupName, setGroupName] = useState(info.name)
   

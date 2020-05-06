@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { Icon, Spin, Tooltip } from "antd";
 import { useSelector, useDispatch } from "react-redux";
 import selectors from "./selectors";
@@ -6,7 +6,6 @@ import userSelectors from "../UserPage/selectors";
 import AvatarCus from "../../components/AvatarCus";
 import TypingIndicator from "../../components/TypingIndicator";
 import Carousel, { Modal, ModalGateway } from "react-images";
-import ChatStyled from "./styles/chat";
 import actions from "./actions";
 import InfiniteScroll from "react-infinite-scroller";
 
@@ -136,6 +135,7 @@ function Conversation({ messages }) {
                                                             "underline",
                                                         color: "white",
                                                     }}
+                                                    
                                                     href={`${process.env.REACT_APP_STATIC_FILES}/${file.path}`}
                                                 >
                                                     <Icon type="paper-clip" />{" "}

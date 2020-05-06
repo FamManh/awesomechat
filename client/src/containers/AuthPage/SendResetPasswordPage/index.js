@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Form, Input, Row } from "antd";
-import { Mail, Triangle } from "react-feather";
+import { Mail} from "react-feather";
 
 import { Link } from "react-router-dom";
 import styled from "styled-components";

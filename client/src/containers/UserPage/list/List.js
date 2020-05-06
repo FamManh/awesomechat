@@ -1,13 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import {
     List,
-    Badge,
     Button,
     Tooltip
 } from "antd";
-import {
-    MessageCircle
-} from "react-feather";
 import Search from "antd/lib/input/Search";
 import { useDispatch, useSelector } from "react-redux";
 import actions from "../actions";
@@ -15,7 +11,6 @@ import selectors from "../selectors";
 import contactActions from "../../ContactPage/actions";
 import AvatarCus from "../../../components/AvatarCus";
 const UserList = () => {
-    const [selectedIndex, setSelectedIndex] = useState(0);
     const dispatch = useDispatch();
     const users = useSelector(selectors.selectUsers);
     const findLoading = useSelector(selectors.selectFindLoading);
@@ -60,7 +55,6 @@ const UserList = () => {
                 dataSource={users}
                 renderItem={(item, index) => (
                     <List.Item
-                        onClick={() => setSelectedIndex(index)}
                         className={`"border-0" border-0 px-4 py-3`}
                     >
                         <List.Item.Meta

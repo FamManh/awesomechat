@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Form, Input, Typography, Row } from "antd";
-import { Eye, Mail, User } from "react-feather";
+import { Eye } from "react-feather";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";

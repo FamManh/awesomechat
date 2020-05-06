@@ -18,9 +18,6 @@ export default function ChatPage() {
         layoutSelectors.selectRightSidebarVisible
     );
     const isMobileDevice = useSelector(layoutSelectors.selectIsMobileDevice);
-    const leftSidebarVisible = useSelector(
-        layoutSelectors.selectLeftSidebarVisible
-    );
     const record = useSelector(selectors.selectRecord);
 
     const windowOnResize = () => {

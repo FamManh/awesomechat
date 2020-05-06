@@ -1,7 +1,6 @@
 import React from "react";
 import { Button, Form, Input, Row, Typography } from "antd";
 import { Mail, Triangle } from "react-feather";
-import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
@@ -15,7 +14,6 @@ const Content = styled.div`
 `;
 
 const SendVerificationEmail = ({ form }) => {
-    const dispatch = useDispatch();
 
     const doSubmit = ({ email }) => {
         // dispatch(actions.verifyEmail(email));

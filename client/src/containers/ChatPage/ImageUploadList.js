@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Icon, Row } from "antd";
 
 function ImageUploadList({ fileList, onDelete }) {
@@ -51,6 +51,7 @@ function ImageUploadList({ fileList, onDelete }) {
                                                             file.response
                                                                 .thumbUrl : ''
                                                         }
+                                                        alt="image upload"
                                                     />
                                                 </div>
                                                 <span className="ant-upload-list-item-actions">

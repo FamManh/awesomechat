@@ -2,9 +2,10 @@ import UIfx from "uifx";
 import new_message from "./stairs.mp3";
 // import new_message from "./new-message.mp3";
 import new_message1 from "./new-message1.mp3";
-import notification from './definite.mp3'
+import notification from "./definite.mp3";
 import sent from "./all-eyes-on-me.mp3";
 import typing from "./guess-what.mp3";
+import { getSetting } from "../settings";
 
 const bellNewMessage = new UIfx(new_message, {
     volume: 0.4, // number between 0.0 ~ 1.0
@@ -31,8 +32,8 @@ const bellTyping = new UIfx(typing, {
     throttleMs: 100,
 });
 
-
 const playBell = (type = "") => {
+    if (getSetting() && !getSetting().sound) return;
     switch (type) {
         case "new-message":
             bellNewMessage.play();
@@ -53,6 +54,6 @@ const playBell = (type = "") => {
             bellNewMessage.play();
             break;
     }
-}
+};
 
 export default playBell;

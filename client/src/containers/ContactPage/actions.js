@@ -1,6 +1,5 @@
 import * as constants from "./constants";
 import * as userConstants from "../UserPage/constants";
-import Message from "../shared/message";
 import Errors from "../shared/error/errors";
 import services from "./service";
 import {emitAddNewContact, emitAcceptRequestContact} from './socket';

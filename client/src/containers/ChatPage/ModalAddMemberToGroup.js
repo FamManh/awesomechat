@@ -1,16 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import selectors from "./selectors";
-import userActions from "../UserPage/actions";
 import userSelectors from "../UserPage/selectors";
 import {
     Modal,
-    Button,
-    AutoComplete,
-    List,
-    Input,
-    Divider,
-    Checkbox,
     Icon,
 } from "antd";
 import ListUser from "./styles/ListUser";

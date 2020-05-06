@@ -21,6 +21,7 @@ import contactSelectors from '../ContactPage/selectors'
 import ModalCreateGroupchat from "./ModalCreateGroupchat";
 import AvatarCus from "../../components/AvatarCus";
 import layoutSelectors from "../Layout/selectors";
+import { getSetting, setSetting } from "../shared/settings";
 
 const { Sider, Header } = Layout;
 const { Search } = Input;
@@ -38,11 +39,12 @@ function ChatSidebar() {
         layoutSelectors.selectLeftSidebarVisible
     );
     const requests = useSelector(contactSelectors.selectRequests);
-    const messageFooter = (
-        <div className="py-3 px-3" style={{ backgroundColor: "#fff" }}>
-            <Search placeholder="Search contact" />
-        </div>
-    );
+    const [playSound, setPlaySound] = useState(getSetting().sound)
+    // const messageFooter = (
+    //     <div className="py-3 px-3" style={{ backgroundColor: "#fff" }}>
+    //         <Search placeholder="Search contact" />
+    //     </div>
+    // );
 
     const messagesSidebar = () => {
         if (currentTab === "contact") {
@@ -109,6 +111,11 @@ function ChatSidebar() {
         </Menu>
     );
 
+    const toggleMuteSound = ()=>{
+        setSetting({ sound: !playSound });
+        setPlaySound(!playSound)
+    }
+
     const menu = (
         <Menu style={{ width: "150px" }}>
             {currentUser && (
@@ -125,15 +132,15 @@ function ChatSidebar() {
                     </Link>
                 </Menu.Item>
             )}
-            <Menu.Item key="2">
-                <a>Settings</a>
+            <Menu.Item key="2" onClick={toggleMuteSound}>
+                <span>{playSound ? "Mute sounds" : "Unmute sounds"}</span>
             </Menu.Item>
             <Menu.Divider />
             <Menu.Item
                 key="3"
                 onClick={() => dispatch(authActions.doSignout())}
             >
-                <a>Sign out</a>
+                <span>Sign out</span>
             </Menu.Item>
         </Menu>
     );

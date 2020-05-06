@@ -1,5 +1,4 @@
 import constants from "./constants";
-import { getHistory } from "../configureStore";
 
 const actions = {
     doWindowResize: (windowWidth) => ({
@@ -29,6 +28,11 @@ const actions = {
     doShowLeftSidebar: () => {
         return {
             type: constants.LAYOUT_LEFT_SIDEBAR_SHOW,
+        };
+    },
+    doToggleSound: () => {
+        return {
+            type: constants.LAYOUT_SOUND_TOGGLE,
         };
     },
 };

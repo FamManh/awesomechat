@@ -1,5 +1,5 @@
 import React from 'react'
-import { Phone, Video, Info, ArrowLeft } from "react-feather";
+import { Video, Info, ArrowLeft } from "react-feather";
 import actions from "./actions";
 import selectors from "./selectors";
 import callSelectors from '../CallPage/selectors'
@@ -85,13 +85,13 @@ function ChatContentHeader() {
             <div>
                 {record && record.conversationType === "User" && peerId && (
                     <>
-                        <Button
+                        {/* <Button
                             shape="circle"
                             style={{ border: "0" }}
                             onClick={() => alert("Ban da nhan vao link")}
                         >
                             <Phone size={20} strokeWidth={1} />
-                        </Button>
+                        </Button> */}
                         <Button
                             style={{ border: "0" }}
                             shape="circle"

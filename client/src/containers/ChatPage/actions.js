@@ -181,7 +181,7 @@ const actions = {
                             data.currentUser.firstname +
                             " " +
                             data.currentUser.lastname
-                        } removed ${data.receiver.firstname + " " + data.receiver.lastname} from the group.`,
+                        } removed ${data.member.firstname + " " + data.member.lastname} from the group.`,
                         receiver: data.groupId,
                         conversationType: "ChatGroup",
                     })
