@@ -9,6 +9,9 @@ import { Link, useParams } from "react-router-dom";
 import userSelectors from "../UserPage/selectors";
 import AvatarCus from "../../components/AvatarCus";
 import InfiniteScroll from "react-infinite-scroller";
+import { formatDistanceToNowStrict } from "date-fns";
+import { textAbstract } from "../shared/helper";
+
 
 const MessageList = () => {
     const dispatch = useDispatch();
@@ -74,25 +77,52 @@ const MessageList = () => {
                                         <List.Item.Meta
                                             avatar={<AvatarCus record={user} />}
                                             title={
-                                                <small
+                                                <p
                                                     style={{
                                                         display: "flex",
+                                                        justifyContent:
+                                                            "space-between",
                                                         width: "100%",
                                                     }}
                                                 >
                                                     <span
                                                         style={{
                                                             fontSize: "14px",
+                                                            flex: 1,
+                                                            whiteSpace:
+                                                                "nowrap",
+                                                            overflow: "hidden",
+
+                                                            textOverflow:
+                                                                "ellipsis",
                                                         }}
                                                     >
                                                         {item.conversationType ===
                                                         "ChatGroup"
-                                                            ? item.receiver.name
-                                                            : user.firstname +
-                                                              " " +
-                                                              user.lastname}
+                                                            ? textAbstract(
+                                                                  item.receiver
+                                                                      .name,
+                                                                  20
+                                                              )
+                                                            : textAbstract(
+                                                                  user.firstname +
+                                                                      " " +
+                                                                      user.lastname, 20
+                                                              )}
                                                     </span>
-                                                </small>
+                                                    <small>
+                                                        {item.updatedAt
+                                                            ? formatDistanceToNowStrict(
+                                                                  new Date(
+                                                                      item.updatedAt
+                                                                  ),
+                                                                  {
+                                                                      addSuffix: false,
+                                                                  }
+                                                              )
+                                                            : ""}
+                                                    </small>
+                                                </p>
                                             }
                                             description={
                                                 <p

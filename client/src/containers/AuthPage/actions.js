@@ -1,26 +1,32 @@
 import * as constants from "./constants";
 import { getHistory } from "../configureStore";
-import { fetchSignin, fetchSignup } from "./service";
+import {
+    fetchSignin,
+    fetchSignup,
+    fetchChangePassword,
+    fetchSendResetPassword,
+} from "./service";
 import Errors from "../shared/error/errors";
-import {socketDisconnect, configSocket} from '../rootSocket';
-const actions = {
-    doInitLoadingDone: ()=>{
-        return { type: constants.SIGNIN_INIT_LOADING_DONE };
+import { socketDisconnect, configSocket } from "../rootSocket";
+import Message from "../shared/message";
 
+const actions = {
+    doInitLoadingDone: () => {
+        return { type: constants.SIGNIN_INIT_LOADING_DONE };
     },
     doClearErrorMessage: () => {
         return { type: constants.ERROR_MESSAGE_CLEAR };
     },
 
-    doSignout: () => dispatch => {
+    doSignout: () => (dispatch) => {
         window.localStorage.removeItem("asauth");
         socketDisconnect();
-        
+
         getHistory().push("/signin");
         dispatch({ type: "RESET" });
     },
 
-    doSignin: userInfo => async dispatch => {
+    doSignin: (userInfo) => async (dispatch) => {
         try {
             dispatch({ type: constants.SIGNIN_START });
 
@@ -33,18 +39,18 @@ const actions = {
             );
             dispatch({
                 type: constants.SIGNIN_SUCCESS,
-                payload: response.data
+                payload: response.data,
             });
             getHistory().push("/");
             configSocket();
         } catch (error) {
             dispatch({
                 type: constants.SIGNIN_ERROR,
-                payload: Errors.selectMessage(error)
+                payload: Errors.selectMessage(error),
             });
         }
     },
-    doSignup: userInfo => async dispatch => {
+    doSignup: (userInfo) => async (dispatch) => {
         try {
             dispatch({ type: constants.SIGNUP_START });
 
@@ -57,15 +63,55 @@ const actions = {
             );
             dispatch({
                 type: constants.SIGNUP_SUCCESS,
-                payload: response.data
+                payload: response.data,
             });
             getHistory().push("/");
         } catch (error) {
             dispatch({
                 type: constants.SIGNUP_ERROR,
-                payload: Errors.selectMessage(error)
+                payload: Errors.selectMessage(error),
             });
         }
-    }
+    },
+
+    doSendResetPassword: (email) => async (dispatch) => {
+        try {
+            dispatch({ type: constants.SEND_RESET_PASSWORD_START });
+
+            // call api: signin
+            let response = await fetchSendResetPassword(email);
+
+            dispatch({
+                type: constants.SEND_RESET_PASSWORD_SUCCESS,
+                payload: response.data,
+            });
+            Message.success("Reset email sent. Please check your inbox!");
+        } catch (error) {
+            dispatch({
+                type: constants.SEND_RESET_PASSWORD_ERROR,
+                payload: Errors.selectMessage(error),
+            });
+        }
+    },
+    doChangePassword: (data) => async (dispatch) => {
+        try {
+            dispatch({ type: constants.CHANGE_PASSWORD_START });
+
+            // call api: signin
+            let response = await fetchChangePassword(data);
+
+            dispatch({
+                type: constants.CHANGE_PASSWORD_SUCCESS,
+                payload: response.data,
+            });
+            Message.success("Your password has been changed successfully!");
+            getHistory().push("/signin");
+        } catch (error) {
+            dispatch({
+                type: constants.CHANGE_PASSWORD_ERROR,
+                payload: Errors.selectMessage(error),
+            });
+        }
+    },
 };
 export default actions;

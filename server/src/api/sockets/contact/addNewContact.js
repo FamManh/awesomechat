@@ -9,6 +9,7 @@ let addNewContact = (io, data, clients, user) => {
     picture: user.picture,
     firstname: user.firstname,
     lastname: user.lastname,
+    id: user.id
   };
   // emit notifications
   if (clients[data.contactId]) {

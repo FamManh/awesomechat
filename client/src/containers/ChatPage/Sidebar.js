@@ -9,7 +9,7 @@ import {
     Dropdown,
     Tooltip,
 } from "antd";
-import { Users, MessageCircle, Search as SearchIcon } from "react-feather";
+import { Users, MessageCircle, Search as SearchIcon, Edit } from "react-feather";
 import { Link } from "react-router-dom";
 import authActions from "../AuthPage/actions";
 import MessageList from "./MessageList";
@@ -17,6 +17,7 @@ import ContactList from "../ContactPage/list/List";
 import UserList from "../UserPage/list/List";
 import { useSelector, useDispatch } from "react-redux";
 import userSelectors from "../UserPage/selectors";
+import contactSelectors from '../ContactPage/selectors'
 import ModalCreateGroupchat from "./ModalCreateGroupchat";
 import AvatarCus from "../../components/AvatarCus";
 import layoutSelectors from "../Layout/selectors";
@@ -36,6 +37,7 @@ function ChatSidebar() {
     const leftSidebarVisible = useSelector(
         layoutSelectors.selectLeftSidebarVisible
     );
+    const requests = useSelector(contactSelectors.selectRequests);
     const messageFooter = (
         <div className="py-3 px-3" style={{ backgroundColor: "#fff" }}>
             <Search placeholder="Search contact" />
@@ -80,8 +82,9 @@ function ChatSidebar() {
                     textAlign: "center",
                 }}
             >
-                {/* <Badge dot={true}></Badge> */}
-                <Users size={20} strokeWidth={1} />
+                <Badge dot={requests && requests.length > 0}>
+                    <Users size={20} strokeWidth={1} />
+                </Badge>
             </Menu.Item>
             <Menu.Item
                 key="user"
@@ -176,7 +179,6 @@ function ChatSidebar() {
                 </Tooltip>
                 <Tooltip title="Create new group chat">
                     <Button
-                        icon="edit"
                         shape="circle"
                         style={{ border: "0" }}
                         onClick={() =>
@@ -184,7 +186,9 @@ function ChatSidebar() {
                                 !modalCreateGroupChatVisible
                             )
                         }
-                    ></Button>
+                    >
+                        <Edit size={16}/>
+                    </Button>
                 </Tooltip>
             </div>
         </Header>

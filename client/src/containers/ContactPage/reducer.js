@@ -23,8 +23,16 @@ const initialState = {
 const contactReducer = (state = initialState, { type, payload }) =>
     produce(state, draft => {
         switch (type) {
-            case constants.REQUEST_ADDED:
+            case constants.CONTACT_REQUEST_ADDED:
                 draft.requests.push(payload);
+                break;
+            case constants.CONTACT_REQUEST_ADD:
+                // Tìm trong danh sách request đã tồn tại request này chưa? 
+                let existsRequest = state.requests.filter(item=>item.id === payload.id)
+                console.log(existsRequest.length === 0);
+                if (existsRequest.length === 0) {
+                    draft.requests.push(payload);
+                } 
                 break;
             case constants.CONTACT_CREATE_START:
                 draft.saveLoading = true;
@@ -85,7 +93,7 @@ const contactReducer = (state = initialState, { type, payload }) =>
                 draft.saveLoading = false;
                 draft.contacts.push(payload);
                 draft.requests = state.requests.filter(
-                    item => item.id !== payload.id
+                    (item) => item.id !== payload.id
                 );
                 draft.error = null;
                 break;
@@ -100,7 +108,7 @@ const contactReducer = (state = initialState, { type, payload }) =>
             case constants.CONTACT_DESTROY_SUCCESS:
                 draft.destroyLoading = false;
                 draft.contacts = state.contacts.filter(
-                    contact => contact.id !== payload
+                    (contact) => contact.id !== payload
                 );
                 draft.error = null;
                 break;
@@ -115,7 +123,7 @@ const contactReducer = (state = initialState, { type, payload }) =>
             case constants.REQUEST_DESTROY_SUCCESS:
                 draft.destroyLoading = false;
                 draft.requests = state.requests.filter(
-                    contact => contact.id !== payload
+                    (contact) => contact.id !== payload
                 );
                 draft.error = null;
                 break;
@@ -130,7 +138,7 @@ const contactReducer = (state = initialState, { type, payload }) =>
             case constants.REQUEST_SENT_DESTROY_SUCCESS:
                 draft.destroyLoading = false;
                 draft.requestsSent = state.requestsSent.filter(
-                    contact => contact.id !== payload
+                    (contact) => contact.id !== payload
                 );
                 draft.error = null;
                 break;

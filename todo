@@ -2,9 +2,6 @@
 
 # xử lý delete hình ảnh
 
-# khi connect tới socket cần phải kiểm tra jwt
+# khi connect tới socket cần phải kiểm tra jwt 
 
-# tại sao message list lại loading khi mở tin nhắn bất kì. 
-
-# không cập nhật được tên group ở trên đt
-khi gửi tin nhắn trên điện thoại không được hide bàn phím đi. 
+# tắt âm thông báo 

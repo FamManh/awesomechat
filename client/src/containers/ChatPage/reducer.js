@@ -119,32 +119,30 @@ const messageReducer = (state = initialState, { type, payload }) =>
             case constants.SOCKET_SENT_MESSAGE:
                 currentUser = payload.currentUser;
                 message = payload.message;
-
-                // nếu current user là người nhận tin nhắn 
-                // hoặc curent user không phải là người nhắn tin vào group 
-                // thì bật âm thanh thông báo tin nhắn tới 
+                // nếu current user là người nhận tin nhắn
+                // hoặc curent user không phải là người nhắn tin vào group
+                // thì bật âm thanh thông báo tin nhắn tới
                 if (
-                    (state.record &&
-                        currentUser.id === message.receiver._id) ||
+                    currentUser.id === message.receiver._id ||
                     (message.conversationType === "ChatGroup" &&
                         currentUser.id !== message.sender._id)
                 ) {
                     // Nếu tin nhắn đang mở thì âm thanh nhỏ
                     if (
-                        (state.record.receiver.id === message.sender._id &&
+                        (state.record &&
+                            state.record.receiver.id === message.sender._id &&
                             message.conversationType === "User") ||
-                        (state.record.receiver.id === message.receiver._id &&
+                        (state.record && state.record.receiver.id ===
+                            message.receiver._id &&
                             message.conversationType === "ChatGroup")
                     ) {
-                        playBell("new-message1");
+                        playBell("sent");
                     } else {
                         playBell("new-message");
                     }
-                    
-                }else{
-                    // người gửi tin nhắn 
+                } else {
+                    // người gửi tin nhắn
                     playBell("sent");
-
                 }
 
                 // Nếu tin nhắn đang mở thì thêm vào tin nhắn
@@ -176,7 +174,7 @@ const messageReducer = (state = initialState, { type, payload }) =>
                         return message.receiver._id === item.receiver._id;
                     });
                 } else if (message.conversationType === "User") {
-                    // xử lý chat riêng tư 
+                    // xử lý chat riêng tư
                     receivedMessageIndex = state.messages.findIndex((item) => {
                         return (
                             (message.sender._id === item.sender._id &&
@@ -186,12 +184,12 @@ const messageReducer = (state = initialState, { type, payload }) =>
                         );
                     });
                 }
-                
 
                 if (receivedMessageIndex === 0) {
                     // Nếu tin nhắn hiện tại đã nằm đầu danh sách thì thay đổi tin nhắn cuối cùng
                     draft.messages[0].message = message.message;
                     draft.messages[0].type = message.type;
+                    draft.messages[0].updatedAt = message.createdAt;
                 } else if (receivedMessageIndex === -1) {
                     // Nếu không có tin nhắn hiện tại trong danh sách thì thêm vào đầu
                     draft.messages.unshift({
@@ -200,6 +198,7 @@ const messageReducer = (state = initialState, { type, payload }) =>
                         message: message.message,
                         type: message.type,
                         conversationType: message.conversationType,
+                        updatedAt: message.createdAt,
                     });
                 } else {
                     // Nếu tin nhắn hiện tại trong danh sách thì đưa lên đầu
@@ -211,6 +210,7 @@ const messageReducer = (state = initialState, { type, payload }) =>
                         ...removedMessge,
                         message: message.message,
                         type: message.type,
+                        updatedAt: message.createdAt,
                     });
                 }
                 break;
@@ -218,7 +218,7 @@ const messageReducer = (state = initialState, { type, payload }) =>
                 draft.typing = {};
                 draft.sending = false;
 
-                if (draft.messages){
+                if (draft.messages) {
                     draft.messages.unshift({
                         sender: {},
                         receiver: {
@@ -230,7 +230,7 @@ const messageReducer = (state = initialState, { type, payload }) =>
                         updatedAt: payload.updatedAt,
                     });
                 }
-                    
+
                 draft.error = null;
                 break;
             case constants.SOCKET_TYPING_ON:
@@ -319,6 +319,13 @@ const messageReducer = (state = initialState, { type, payload }) =>
                 draft.record.receiver.members = draft.record.receiver.members.filter(
                     (item) => item.id !== payload
                 );
+                break;
+            case constants.CHAT_GROUP_LEAVE:
+                
+                draft.messages = draft.messages.filter(
+                    (item) => item.receiver._id !== payload
+                );
+                draft.record = null;
                 break;
             case constants.CHAT_GROUP_ADD_MEMBERS_SUCCESS:
                 draft.record.receiver.members = draft.record.receiver.members.concat(

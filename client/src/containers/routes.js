@@ -70,23 +70,28 @@ const authRoutes = [
     {
         path: "/signin",
         exact: true,
-        loader: () => import("./AuthPage/SigninPage")
+        loader: () => import("./AuthPage/SigninPage"),
     },
     {
         path: "/signup",
         exact: true,
-        loader: () => import("./AuthPage/SignupPage")
+        loader: () => import("./AuthPage/SignupPage"),
     },
     {
-        path: "/forgot-password",
+        path: "/password-reset",
         exact: true,
-        loader: () => import("./AuthPage/ForgotPasswordPage")
+        loader: () => import("./AuthPage/SendResetPasswordPage"),
+    },
+    {
+        path: "/new-password",
+        exact: true,
+        loader: () => import("./AuthPage/ChangePasswordPage"),
     },
     {
         path: "/verify-email",
         exact: true,
-        loader: () => import("./AuthPage/VerifyEmailPage")
-    }
+        loader: () => import("./AuthPage/VerifyEmailPage"),
+    },
 ];
 
 

@@ -173,6 +173,26 @@ const actions = {
                 type: constants.CHAT_GROUP_REMOVE_MEMBER_SUCCESS,
                 payload: data.userId,
             });
+            if (data.currentUser.id !== data.userId) {
+                dispatch(
+                    actions.doCreate({
+                        type: "notification",
+                        message: `${
+                            data.currentUser.firstname +
+                            " " +
+                            data.currentUser.lastname
+                        } removed ${data.receiver.firstname + " " + data.receiver.lastname} from the group.`,
+                        receiver: data.groupId,
+                        conversationType: "ChatGroup",
+                    })
+                );
+            }else{
+                 dispatch({
+                     type: constants.CHAT_GROUP_LEAVE,
+                     payload: data.groupId,
+                 });
+                getHistory().push('/')
+            }
         } catch (error) {
             Errors.handle(error);
         }

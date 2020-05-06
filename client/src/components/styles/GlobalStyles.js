@@ -1846,6 +1846,10 @@ const GlobalStyles = createGlobalStyle`
   .am-weather-cloud-2 > path, [id^=cloudy-day-] > path {
     stroke-width: 0;
   }
+
+  .ant-input{
+    color: #5f5f5f;
+  }
 `;
 
 export { GlobalStyles, theme };

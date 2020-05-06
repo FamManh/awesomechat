@@ -21,6 +21,24 @@ const selectSignupLoading = createSelector(
 // select errors
 const selectSigninError = createSelector([selectRaw], auth => auth.signinError);
 const selectSigupError = createSelector([selectRaw], auth => auth.sigupError);
+const selectSendResetPasswordLoading = createSelector(
+    [selectRaw],
+    (auth) => auth.sendResetPasswordLoading
+);
+const selectSendResetPasswordError = createSelector(
+    [selectRaw],
+    (auth) => auth.sendResetPasswordError
+);
+const selectChangePasswordLoading = createSelector(
+    [selectRaw],
+    (auth) => auth.changePasswordLoading
+);
+
+const selectChangePasswordError = createSelector(
+    [selectRaw],
+    (auth) => auth.changePasswordError
+);
+
 
 
 const selectors = {
@@ -28,7 +46,11 @@ const selectors = {
     selectSigninLoading,
     selectSignupLoading,
     selectSigninError,
-    selectSigupError
+    selectSigupError,
+    selectSendResetPasswordLoading,
+    selectChangePasswordLoading,
+    selectChangePasswordError,
+    selectSendResetPasswordError,
 };
 
 export default selectors;

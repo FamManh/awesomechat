@@ -8,6 +8,7 @@ import {
     Spin,
     Menu,
     Dropdown,
+    Popconfirm,
 } from "antd";
 import { useSelector, useDispatch } from "react-redux";
 import userSelectors from "../UserPage/selectors";
@@ -22,7 +23,7 @@ import { Link } from "react-router-dom";
 import ModalAddMemberToGroup from "./ModalAddMemberToGroup";
 import ModalUpdateChatGroup from "./ModalUpdateChatGroup";
 import layoutSelectors from "../Layout/selectors";
-import layoutActions from '../Layout/actions'
+import layoutActions from "../Layout/actions";
 import { ArrowLeft } from "react-feather";
 
 const { Sider, Header } = Layout;
@@ -126,20 +127,22 @@ function RightSideBar() {
             actions.doRemoveMember({
                 userId: member.id,
                 groupId: record.receiver.id,
-            })
-        );
-        dispatch(
-            actions.doCreate({
-                type: "notification",
-                message: `${
-                    currentUser.firstname + " " + currentUser.lastname
-                } removed ${
-                    member.firstname + " " + member.lastname
-                } from the group.`,
+                currentUser: currentUser,
                 receiver: record.receiver.id,
-                conversationType: record.conversationType,
             })
         );
+        // dispatch(
+        //     actions.doCreate({
+        //         type: "notification",
+        //         message: `${
+        //             currentUser.firstname + " " + currentUser.lastname
+        //         } removed ${
+        //             member.firstname + " " + member.lastname
+        //         } from the group.`,
+        //         receiver: record.receiver.id,
+        //         conversationType: record.conversationType,
+        //     })
+        // );
     };
 
     const menu = (member, members) => {
@@ -229,6 +232,17 @@ function RightSideBar() {
         ));
     };
 
+    const leaveGroupChat = () => {
+        dispatch(
+            actions.doRemoveMember({
+                userId: currentUser.id,
+                groupId: record.receiver.id,
+                currentUser: currentUser,
+                receiver: record.receiver,
+            })
+        );
+    };
+
     const renderContent = () => {
         return (
             <Collapse
@@ -239,20 +253,27 @@ function RightSideBar() {
                 )}
                 expandIconPosition="right"
             >
-                {/* <Collapse.Panel
-                    header={
-                        <span style={{ color: "rgba(126, 126, 126, 0.85)" }}>
-                            OPTIONS
-                        </span>
-                    }
-                    key="1"
-                >
-                    <ButtonCus
-                        text="Blocks Message"
-                        icon="stop"
-                        onClick={() => alert("Clicked")}
-                    />
-                </Collapse.Panel> */}
+                {record && record.receiver && record.receiver.members && (
+                    <Collapse.Panel
+                        header={
+                            <span
+                                style={{ color: "rgba(126, 126, 126, 0.85)" }}
+                            >
+                                OPTIONS
+                            </span>
+                        }
+                        key="1"
+                    >
+                        <Popconfirm
+                            style={{ maxWidth: "300px" }}
+                            title="Are you sure to leave this conversation?"
+                            onConfirm={leaveGroupChat}
+                            okText="Leave"
+                        >
+                            <ButtonCus text="Leave Group Chat" icon="logout" />
+                        </Popconfirm>
+                    </Collapse.Panel>
+                )}
                 {record && record.receiver && record.receiver.members && (
                     <Collapse.Panel
                         header={
@@ -325,9 +346,8 @@ function RightSideBar() {
 
     return (
         <Sider
-            width={isMobileDevice ? "100vw" :  "300px"}
+            width={isMobileDevice ? "100vw" : "300px"}
             style={{ overflowY: "auto" }}
-            
         >
             <ModalGateway>
                 {imageModalShow ? (
