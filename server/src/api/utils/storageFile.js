@@ -9,11 +9,11 @@ module.exports = {
     },
     filename: (req, file, callback) => {
       const fileTypes = /pdf|docx|xlsx|csv|txt/;
-      let mimetype = fileTypes.test(file.mimetype);
+      // let mimetype = fileTypes.test(file.mimetype);
       let extname = fileTypes.test(
         path.extname(file.originalname).toLowerCase()
       );
-      if (mimetype && extname) {
+      if (extname) {
         const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
         return callback(null, uniqueSuffix + "-" + file.originalname);
       }

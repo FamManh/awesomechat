@@ -1,15 +1,16 @@
-import React, { useEffect } from "react";
+import React, { useEffect, lazy } from "react";
 import { Layout, Row, Result } from "antd";
 import layoutSelectors from "../Layout/selectors";
-import Sidebar from "./Sidebar";
-import ChatContent from "./ChatContent";
 import actions from "./actions";
 import contactActions from '../ContactPage/actions'
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import RightSideBar from "./RightSidebar";
 import selectors from "./selectors";
 import layoutActions from "../Layout/actions";
+
+const Sidebar = lazy(()=>import("./Sidebar") )
+const ChatContent = lazy(()=>import('./ChatContent'))
+const RightSideBar = lazy(()=>import('./RightSidebar'))
 
 export default function ChatPage() {
     const dispatch = useDispatch();

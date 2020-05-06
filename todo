@@ -3,3 +3,5 @@
 # xử lý delete hình ảnh
 
 # khi connect tới socket cần phải kiểm tra jwt 
+
+# trên đt để dữ liệu load xong thì mới chuyển trang.

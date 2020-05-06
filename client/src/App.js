@@ -5,13 +5,14 @@ import { ConnectedRouter } from 'connected-react-router';
 import RoutesComponent from './containers/shared/routes/RoutesComponent';
 import {GlobalStyles} from './components/styles/GlobalStyles';
 import CallPage from './containers/CallPage';
+import Spinner from './containers/shared/Spinner';
 
 
 const store = configStore();
 function App() {
 
   return (
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<Spinner/>}>
           <Provider store={store}>
             <ConnectedRouter history={getHistory()}>
               <CallPage/>

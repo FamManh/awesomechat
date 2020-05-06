@@ -320,7 +320,6 @@ const messageReducer = (state = initialState, { type, payload }) =>
                 );
                 break;
             case constants.CHAT_GROUP_LEAVE:
-                
                 draft.messages = draft.messages.filter(
                     (item) => item.receiver._id !== payload
                 );

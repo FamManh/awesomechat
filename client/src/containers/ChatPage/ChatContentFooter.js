@@ -122,7 +122,7 @@ function ChatContentFooter() {
             // gửi file
             let files = [];
             inputMessage.files.forEach((item) => {
-                if(item.status === "done"){
+                if (item.response.name) {
                     files.push({
                         name: item.name,
                         path: item.response.name,
@@ -183,8 +183,7 @@ function ChatContentFooter() {
                     fileList={inputMessage.files}
                     headers={{
                         Authorization: `Bearer ${isAuthenticated()}`,
-                        "Content-Type":
-                            "multipart/form-data; boundary=----WebKitFormBoundaryqTqJIxvkWFYqvP5s",
+                        
                     }}
                     action={`${process.env.REACT_APP_API_URI}/message/files`}
                     showUploadList={false}

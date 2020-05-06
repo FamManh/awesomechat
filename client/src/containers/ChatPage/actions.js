@@ -3,6 +3,7 @@ import getStore, { getHistory } from "../configureStore";
 import Errors from "../shared/error/errors";
 import services from "./service";
 import { emitSentMessage, emitCreateGroup } from "./socket";
+import layoutConstants from "../Layout/constants";
 
 const actions = {
     doToggleScrollToBottom: () => ({
@@ -192,6 +193,9 @@ const actions = {
                      payload: data.groupId,
                  });
                 getHistory().push('/')
+                dispatch({
+                    type: layoutConstants.LAYOUT_LEFT_SIDEBAR_SHOW
+                })
             }
         } catch (error) {
             Errors.handle(error);
