@@ -11,6 +11,7 @@ import { emitCheckListenerStatus } from '../CallPage/socket';
 import layoutActions from '../Layout/actions'
 import layoutSelectors from '../Layout/selectors'
 import {Link} from 'react-router-dom'
+import { textAbstract } from '../shared/helper';
 const { Header } = Layout;
 
 function ChatContentHeader() {
@@ -53,11 +54,10 @@ function ChatContentHeader() {
                         <Button
                             style={{ border: "0", marginLeft: "-1.2rem" }}
                             shape="circle"
-                            onClick={() =>{
+                            onClick={() => {
                                 dispatch(actions.doClear());
-                                dispatch(layoutActions.doShowLeftSidebar())
-                            }
-                            }
+                                dispatch(layoutActions.doShowLeftSidebar());
+                            }}
                         >
                             <ArrowLeft size={20} strokeWidth={2} />
                         </Button>
@@ -70,7 +70,9 @@ function ChatContentHeader() {
                     <span style={{ display: "block" }}>
                         {record
                             ? record.conversationType === "ChatGroup"
-                                ? record.receiver.name
+                                ? isMobileDevice
+                                    ? textAbstract(record.receiver.name, 25)
+                                    : record.receiver.name
                                 : `${record.receiver.firstname} ${record.receiver.lastname}`
                             : ""}
                     </span>

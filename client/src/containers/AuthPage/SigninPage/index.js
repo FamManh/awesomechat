@@ -91,7 +91,21 @@ const Signin = ({ form }) => {
                             )}
                         </FormItem>
 
-                        <FormItem label="Password">
+                        <FormItem
+                            label={
+                                <span>
+                                    <span>Password</span>
+                                    <span style={{ float: "right" }}>
+                                        <Link
+                                            tabIndex={1000}
+                                            to="/password-reset"
+                                        >
+                                            <span>Forgot password?</span>
+                                        </Link>
+                                    </span>
+                                </span>
+                            }
+                        >
                             {form.getFieldDecorator("password", {
                                 rules: [
                                     {

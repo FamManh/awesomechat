@@ -6,6 +6,7 @@ import selectors from "./selectors";
 import actions from "./actions";
 import constants from "./constants";
 import userSelectors from "../UserPage/selectors";
+import layoutSelectors from '../Layout/selectors'
 import { Picker } from "emoji-mart";
 import { emitTypingOn, emitTypingOff } from "./socket";
 import { isAuthenticated } from "../shared/routes/permissionChecker";
@@ -27,6 +28,7 @@ function ChatContentFooter() {
     const record = useSelector(selectors.selectRecord);
     const currentUser = useSelector(userSelectors.selectCurrentUser);
     const inputMessage = useSelector(selectors.selectInputMessage);
+    const isMobileDevice = useSelector(layoutSelectors.selectIsMobileDevice);
 
     const handleTypingOff = () => {
         emitTypingOff({
@@ -62,7 +64,7 @@ function ChatContentFooter() {
 
     const addEmoji = (e) => {
         onInputMessageChange(inputMessage.text + e.native);
-        inputMessageRef.current.focus();
+        if (!isMobileDevice) inputMessageRef.current.focus();
     };
 
     const sendText = () => {
@@ -205,7 +207,7 @@ function ChatContentFooter() {
                     onChange={(e) => {
                         onInputMessageChange(e.target.value);
                     }}
-                    style={{ borderRadius: "1rem" }}
+                    style={{ borderRadius: "1rem", color: 'black' }}
                     onPressEnter={handleSendClick}
                     onKeyUp={() => {
                         if (!typing) {

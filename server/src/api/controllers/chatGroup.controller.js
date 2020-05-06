@@ -200,10 +200,9 @@ exports.removeMember = async(req, res, next) => {
         status: httpStatus.BAD_REQUEST
       })
     }
-
-    if(group.admin === currentUser.id){
-      // Nếu người dùng hiện tại là admin thì xóa 
-      group.members.remove(userId)
+    if (group.admin === currentUser.id || currentUser.id === userId) {
+      // Nếu người dùng hiện tại là admin hoặc người dùng hiện tại là chính họ thì xóa 
+      group.members.remove(userId);
       await group.save();
       return res.status(httpStatus.OK).end();
     }
@@ -216,38 +215,6 @@ exports.removeMember = async(req, res, next) => {
     next(error);
   }
 }
-
-exports.removeMember = async (req, res, next) => {
-  try {
-    let groupId = req.query.group;
-    let userId = req.query.user;
-    let currentUser = req.user;
-    const group = await ChatGroup.findById(groupId);
-
-    // Nếu không tim thấy group thì đẩy lỗi về
-    if (!group) {
-      throw new APIError({
-        message: "ChatGroup does not exist",
-        status: httpStatus.BAD_REQUEST,
-      });
-    }
-
-    if (group.admin === currentUser.id) {
-      // Nếu người dùng hiện tại là admin thì xóa
-      group.members.remove(userId);
-      await group.save();
-      return res.status(httpStatus.OK).end();
-    }
-    // Nếu người dùng hiện tại không phải là admin đẩy lỗi về
-    throw new APIError({
-      message: "Something went wrong",
-      status: httpStatus.BAD_REQUEST,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
 
 exports.addMember = async (req, res, next) => {
   try {

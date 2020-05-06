@@ -64,8 +64,6 @@ const actions = {
                 type: constants.USER_UPDATE_SUCCESS,
             });
 
-            Message.success(messageUpdateSuccess);
-
             // getHistory().push("/constants.USER");
         } catch (error) {
             Errors.handle(error);
@@ -108,7 +106,7 @@ const actions = {
                 payload: response.data,
             });
 
-            Message.success(messageUpdateSuccess);
+            // Message.success(messageUpdateSuccess);
 
             // getHistory().push("/constants.USER");
         } catch (error) {

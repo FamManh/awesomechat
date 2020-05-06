@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: emailConfig.username,
     pass: emailConfig.password,
-  },
+  }, 
   secure: false, // upgrades later with STARTTLS -- change this based on the PORT
 });
 
@@ -28,7 +28,7 @@ exports.sendPasswordReset = async (passwordResetObject) => {
   const email = new Email({
     views: { root: __dirname },
     message: {
-      from: 'support@your-app.com',
+      from: "noreply.awesomechat@gmail.com",
     },
     // uncomment below to send emails in development/test env:
     send: true,
@@ -37,25 +37,25 @@ exports.sendPasswordReset = async (passwordResetObject) => {
 
   email
     .send({
-      template: 'passwordReset',
+      template: "passwordReset",
       message: {
         to: passwordResetObject.userEmail,
       },
       locals: {
-        productName: 'Test App',
+        productName: "Awesome Chat",
         // passwordResetUrl should be a URL to your app that displays a view where they
         // can enter a new password along with passing the resetToken in the params
-        passwordResetUrl: `https://your-app/new-password/view?resetToken=${passwordResetObject.resetToken}`,
+        passwordResetUrl: `http://chat.manhpham.xyz/new-password?resetToken=${passwordResetObject.resetToken}&email=${passwordResetObject.userEmail}`,
       },
     })
-    .catch(() => console.log('error sending password reset email'));
+    .catch(() => console.log("error sending password reset email"));
 };
 
 exports.sendPasswordChangeEmail = async (user) => {
   const email = new Email({
     views: { root: __dirname },
     message: {
-      from: 'support@your-app.com',
+      from: "noreply.awesomechat@gmail.com",
     },
     // uncomment below to send emails in development/test env:
     send: true,
@@ -69,7 +69,7 @@ exports.sendPasswordChangeEmail = async (user) => {
         to: user.email,
       },
       locals: {
-        productName: 'Test App',
+        productName: 'Awesome Chat',
         name: user.name,
       },
     })

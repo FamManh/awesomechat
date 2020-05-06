@@ -4,6 +4,10 @@ const initialState = {
     initLoading: true,
     signinLoading: false,
     signupLoading: false,
+    sendResetPasswordLoading: false,
+    sendResetPasswordError: null,
+    changePasswordLoading: false,
+    changePasswordError: null,
     signinError: null,
     sigupError: null
 };
@@ -37,6 +41,28 @@ const authReducer = (state = initialState, {type, payload})=>
         case constants.SIGNUP_ERROR:
             draft.signupLoading = false;
             draft.sigupError = payload || null;
+            break;
+        case constants.SEND_RESET_PASSWORD_START:
+            draft.sendResetPasswordLoading = true;
+            draft.sendResetPasswordError = null;
+            break;
+        case constants.SEND_RESET_PASSWORD_SUCCESS:
+            draft.sendResetPasswordLoading = false;
+            break;
+        case constants.SEND_RESET_PASSWORD_ERROR:
+            draft.sendResetPasswordLoading = false;
+            draft.sendResetPasswordError = payload || null;
+            break;
+        case constants.CHANGE_PASSWORD_START:
+            draft.changePasswordLoading = true;
+            draft.changePasswordError = null;
+            break;
+        case constants.CHANGE_PASSWORD_SUCCESS:
+            draft.changePasswordLoading = false;
+            break;
+        case constants.CHANGE_PASSWORD_ERROR:
+            draft.changePasswordLoading = false;
+            draft.changePasswordError = payload || null;
             break;
         default:
             break;

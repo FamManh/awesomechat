@@ -104,7 +104,7 @@ exports.sendPasswordReset = async (req, res, next) => {
       return res.json('success');
     }
     throw new APIError({
-      status: httpStatus.UNAUTHORIZED,
+      status: httpStatus.BAD_REQUEST,
       message: 'No account found with that email',
     });
   } catch (error) {
@@ -121,7 +121,7 @@ exports.resetPassword = async (req, res, next) => {
     });
 
     const err = {
-      status: httpStatus.UNAUTHORIZED,
+      status: httpStatus.BAD_REQUEST,
       isPublic: true,
     };
     if (!resetTokenObject) {

@@ -31,7 +31,7 @@ function ListRequestList() {
                 >
                     Confirm
                 </Menu.Item>
-                <Menu.Item key="1" onClick={() => handleDeleteClick(member)}>
+                <Menu.Item key="2" onClick={() => handleDeleteClick(member)}>
                     Remove
                 </Menu.Item>
             </Menu>

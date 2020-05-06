@@ -26,7 +26,6 @@ const ContactList = () => {
 
     useEffect(() => {
         dispatch(actions.listContacts());
-        dispatch(actions.listRequests());
         dispatch(actions.listRequestsSent());
 
         return () => {};

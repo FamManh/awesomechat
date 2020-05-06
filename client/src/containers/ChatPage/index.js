@@ -4,6 +4,7 @@ import layoutSelectors from "../Layout/selectors";
 import Sidebar from "./Sidebar";
 import ChatContent from "./ChatContent";
 import actions from "./actions";
+import contactActions from '../ContactPage/actions'
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import RightSideBar from "./RightSidebar";
@@ -28,6 +29,7 @@ export default function ChatPage() {
 
     useEffect(() => {
         dispatch(actions.list());
+        dispatch(contactActions.listRequests());
         windowOnResize(window.innerWidth);
         window.addEventListener("resize", windowOnResize);
         return () => {
