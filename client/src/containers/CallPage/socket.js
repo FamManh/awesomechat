@@ -120,7 +120,7 @@ export const onCallerAnwserCall = (payload) => {
         navigator.getUserMedia ||
         navigator.webkitGetUserMedia ||
         navigator.mozGetUserMedia ||
-        navigator.msGetUserMedia;
+        navigator.mediaDevices.getUserMedia;
     if (!!navigator.getUserMedia_)
         navigator.getUserMedia_(
             { video: true, audio: true },
@@ -161,7 +161,7 @@ export const onListenerAnwserCall = (payload) => {
         navigator.getUserMedia ||
         navigator.webkitGetUserMedia ||
         navigator.mozGetUserMedia ||
-        navigator.msGetUserMedia;
+        navigator.mediaDevices.getUserMedia
     
     peer.on("call", function (call) {
         navigator.getUserMedia_(
