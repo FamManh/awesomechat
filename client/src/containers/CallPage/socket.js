@@ -112,11 +112,16 @@ export const onCallerAnwserCall = (payload) => {
         type: constants.CALL_CALLER_ANSWER,
         payload: payload,
     });
-    let getUserMedia =
+    // let getUserMedia =
+    //     navigator.getUserMedia ||
+    //     navigator.webkitGetUserMedia ||
+    //     navigator.mozGetUserMedia;
+    navigator.getUserMedia =
         navigator.getUserMedia ||
         navigator.webkitGetUserMedia ||
-        navigator.mozGetUserMedia;
-    getUserMedia(
+        navigator.mozGetUserMedia ||
+        navigator.msGetUserMedia;
+    navigator.getUserMedia(
         { video: true, audio: true },
         function (stream) {
             let call = peer.call(payload.peerId, stream);
@@ -147,13 +152,18 @@ export const onListenerAnwserCall = (payload) => {
         payload: payload,
     });
 
-    let getUserMedia =
+    // let getUserMedia =
+    //     navigator.getUserMedia ||
+    //     navigator.webkitGetUserMedia ||
+    //     navigator.mozGetUserMedia;
+    navigator.getUserMedia =
         navigator.getUserMedia ||
         navigator.webkitGetUserMedia ||
-        navigator.mozGetUserMedia;
+        navigator.mozGetUserMedia ||
+        navigator.msGetUserMedia;
     if(!peer) return;
     peer.on("call", function (call) {
-        getUserMedia(
+        navigator.getUserMedia(
             { video: true, audio: true },
             function (stream) {
                 getStore().dispatch({
