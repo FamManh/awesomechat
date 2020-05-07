@@ -112,11 +112,10 @@ export const onCallerAnwserCall = (payload) => {
         type: constants.CALL_CALLER_ANSWER,
         payload: payload,
     });
-    let getUserMedia = (
+    let getUserMedia =
         navigator.getUserMedia ||
         navigator.webkitGetUserMedia ||
-        navigator.mozGetUserMedia
-    )
+        navigator.mozGetUserMedia;
     getUserMedia(
         { video: true, audio: true },
         function (stream) {
@@ -148,11 +147,10 @@ export const onListenerAnwserCall = (payload) => {
         payload: payload,
     });
 
-    let getUserMedia = (
+    let getUserMedia =
         navigator.getUserMedia ||
         navigator.webkitGetUserMedia ||
-        navigator.mozGetUserMedia
-    )
+        navigator.mozGetUserMedia;
     if(!peer) return;
     peer.on("call", function (call) {
         getUserMedia(
