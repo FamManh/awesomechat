@@ -1,6 +1,6 @@
 import Message from "../message";
 import { getHistory } from "../../configureStore";
-
+import {fetchRefreshToken} from '../../AuthPage/service'
 const DEFAULT_ERROR_MESSAGE = "Something went wrong!";
 
 function selectErrorMessage(error) {
@@ -22,6 +22,20 @@ function selectErrorMessage(error) {
     return error.message || DEFAULT_ERROR_MESSAGE;
 }
 
+async function requestRefreshToken(){
+    try{
+        let asauth = window.localStorage.getItem('asauth');
+        asauth = JSON.parse(asauth)
+        if(!asauth) return null;
+        let {email, refreshToken} = asauth;
+        if(!email || !refreshToken) return null;
+        const tokenResponse = await fetchRefreshToken({email, refreshToken})
+        return tokenResponse.data;
+    }catch(error){
+        return null;
+    }
+}
+
 function selectErrorCode(error) {
     if (error.response) {
         // The request was made and the server responded with a status code
@@ -38,14 +52,14 @@ export default class Errors {
             console.error(error);
         }
         if (selectErrorCode(error) === 401) {
+            // gửi yêu cầu token mới với refresh token và email 
             getHistory().push("/signin");
             window.localStorage.removeItem("asauth");
             return;
+           
         }
         if (selectErrorCode(error) === 403) {
-            Message.error(
-                "Xin lỗi bạn không có quyền thực hiện hành động này."
-            );
+            Message.error("You don't have permission to access this resource");
 
             return;
         }

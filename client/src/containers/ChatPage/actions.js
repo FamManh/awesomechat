@@ -4,6 +4,7 @@ import Errors from "../shared/error/errors";
 import services from "./service";
 import { emitSentMessage, emitCreateGroup } from "./socket";
 import layoutConstants from "../Layout/constants";
+import layoutActions from '../Layout/actions'
 
 const actions = {
     doToggleScrollToBottom: () => ({
@@ -39,19 +40,20 @@ const actions = {
     // lấy thông tin cuộc trò chuyện theo id
     doFind: (id, skip = 0, limit = 20) => async (dispatch) => {
         try {
-            if (!id) {
-                return;
-            }
-            dispatch({
-                type: constants.CHAT_FIND_START,
-            });
+                if (!id) {
+                    return;
+                }
+                dispatch({
+                    type: constants.CHAT_FIND_START,
+                });
 
-            const response = await services.findFn(id, skip, limit);
-            dispatch({
-                type: constants.CHAT_FIND_SUCCESS,
-                payload: { data: response.data, skip },
-            });
-        } catch (error) {
+                const response = await services.findFn(id, skip, limit);
+                dispatch({
+                    type: constants.CHAT_FIND_SUCCESS,
+                    payload: { data: response.data, skip },
+                });
+                dispatch(layoutActions.doHideLeftSidebar());
+            } catch (error) {
             Errors.handle(error);
             dispatch({
                 type: constants.CHAT_FIND_ERROR,

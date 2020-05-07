@@ -9,7 +9,7 @@ import callActions from "../CallPage/actions";
 let peer = null;
 
 // tạo peerid 
-export const getPeerId = () => {
+export const getPeerId = (iceserver) => {
     let state = getStore().getState();
     if (!state.call.peerId && !peer) {
         // Nếu peerid chưa tồn tại thì tạo peerid
@@ -19,6 +19,7 @@ export const getPeerId = () => {
             secure: "true",
             port: 443,
             debug: 3,
+            config: { iceServers: iceserver },
         });
         peer.on("open", (peerId) => {
             // get peerid
@@ -51,6 +52,7 @@ export const onListenerOffline = (payload) => {
 
 // lắng nghe sự kiện yêu cầu peerid 
 export const onRequestPeerId = (payload) => {
+    if(!peer) return;
     // showModalCallRequest(payload.caller)
     // lắng nghe yêu cầu peerid
     let state = getStore().getState();
@@ -148,6 +150,7 @@ export const onListenerAnwserCall = (payload) => {
         navigator.webkitGetUserMedia ||
         navigator.mozGetUserMedia
     ).bind(navigator);
+    if(!peer) return;
     peer.on("call", function (call) {
         getUserMedia(
             { video: true, audio: true },

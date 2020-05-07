@@ -15,6 +15,7 @@ const router = express.Router();
  */
 router.param('userId', controller.load);
 
+router.route('/iceserver').get(controller.iceServerList)
 // Cập nhật ảnh đại diện 
 router.route("/avatar").post(authorize(LOGGED_USER), controller.updateAvatar)
 

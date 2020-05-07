@@ -8,11 +8,15 @@ const initialState = {
     peerId: "",
     localStream: null,
     remoteStream: null,
+    iceServer: null
 };
 
 const callReducer = (state = initialState, { type, payload }) =>
     produce(state, (draft) => {
         switch (type) {
+            case constants.CALL_GET_ICE_SERVER_SUCCESS:
+                draft.iceServer = payload;
+                break;
             case constants.CALL_GET_PEER_ID:
                 draft.peerId = payload;
                 break;
@@ -54,16 +58,16 @@ const callReducer = (state = initialState, { type, payload }) =>
                 draft.remoteStream = payload;
                 break;
             case constants.CALL_CALL_ENDED:
-                if (state.localStream){
-                    // đã tắt stream 
+                if (state.localStream) {
+                    // đã tắt stream
                     state.localStream
                         .getTracks()
                         .forEach((track) => track.stop());
-                        console.log('Endded')
+                    console.log("Endded");
                 }
-                draft.caller= {}
-                draft.listener= {}
-                draft.status= null
+                draft.caller = {};
+                draft.listener = {};
+                draft.status = null;
                 break;
             case constants.CALL_CLEAR:
                 draft.status = null;

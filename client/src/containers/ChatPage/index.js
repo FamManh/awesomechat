@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import selectors from "./selectors";
 import layoutActions from "../Layout/actions";
-
+import callActions from '../CallPage/actions'
 const Sidebar = lazy(()=>import("./Sidebar") )
 const ChatContent = lazy(()=>import('./ChatContent'))
 const RightSideBar = lazy(()=>import('./RightSidebar'))
@@ -30,6 +30,7 @@ export default function ChatPage() {
         dispatch(contactActions.listRequests());
         windowOnResize(window.innerWidth);
         window.addEventListener("resize", windowOnResize);
+        dispatch(callActions.doGetIceServer())
         return () => {
             window.removeEventListener("resize", windowOnResize);
         };
@@ -37,12 +38,11 @@ export default function ChatPage() {
     useEffect(() => {
         if (userId) {
             dispatch(actions.doFind(userId));
-            // dispatch(layoutActions.doHideRightSidebar())
         }
     }, [userId]);
 
     if (record) {
-        dispatch(layoutActions.doHideLeftSidebar());
+        // dispatch(layoutActions.doHideLeftSidebar());
     }
 
     return (

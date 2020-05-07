@@ -8,7 +8,7 @@ const multer = require("multer");
 const fsExtra = require("fs-extra");
 const APIError = require("../utils/APIError");
 const storageAvatar = require('../utils/storageAvatar')
-
+const ICETurnServer = require('../../config/ICETurnServer')
 const {
   avatarDirectory,
   avatarTypes,
@@ -213,3 +213,9 @@ exports.updateAvatar = (req, res, next) => {
     }
   });
 };
+
+exports.iceServerList = async (req, res, next)=>{
+  ICETurnServer()
+    .then((iceServer) => res.json({ ice: iceServer }))
+    .catch((err) => next(err));
+}
