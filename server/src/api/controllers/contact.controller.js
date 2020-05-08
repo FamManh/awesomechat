@@ -119,7 +119,6 @@ exports.update = async (req, res, next) => {
         }
       ]
     });
-    console.log(contact);
     if (contact) {
       contact.status = true;
       const savedContact = await contact.save();

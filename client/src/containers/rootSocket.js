@@ -29,7 +29,6 @@ const onConnected = () => {
 
 const onDisconnect = () => {
     console.log("socket: disconnect");
-    // socket = null;
 };
 
 export const configSocket = () => {

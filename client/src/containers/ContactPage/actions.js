@@ -194,7 +194,6 @@ const actions = {
         }
     },
     doAdded: data => async dispatch => {
-        console.log(data);
         dispatch({
             type: constants.CONTACT_REQUEST_ADDED,
             payload: data

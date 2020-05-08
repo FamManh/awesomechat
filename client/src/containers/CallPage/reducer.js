@@ -63,7 +63,6 @@ const callReducer = (state = initialState, { type, payload }) =>
                     state.localStream
                         .getTracks()
                         .forEach((track) => track.stop());
-                    console.log("Endded");
                 }
                 draft.caller = {};
                 draft.listener = {};

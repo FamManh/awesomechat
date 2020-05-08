@@ -2,14 +2,6 @@ import React from "react";
 import { Icon, Row } from "antd";
 
 function ImageUploadList({ fileList, onDelete }) {
-    // useEffect(() => {
-    //     fileList.forEach((file) => {
-    //         console.log(file)
-    //         // if (file && file.status === "error") {
-    //         //     onDelete(fileList.filter((item) => item.uid !== file.uid));
-    //         // }
-    //     });
-    // }, [fileList]);
     return (
         <div
             className="clearfix"

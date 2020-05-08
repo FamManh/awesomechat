@@ -13,19 +13,15 @@ export const getPeerId = (iceserver) => {
     let state = getStore().getState();
     if (!state.call.peerId && !peer) {
         // Nếu peerid chưa tồn tại thì tạo peerid
-        console.log(iceserver);
         peer = new peerjs({
             key: "peerjs",
             // host: "peerjs-server-trungquandev.herokuapp.com",
             secure: "true",
             port: 443,
-            debug: 3,
+            debug: 0,
             config: { iceServers: iceserver },
         });
-        console.log(peer);
         peer.on("open", (peerId) => {
-            // get peerid
-            console.log(peerId);
             getStore().dispatch(callActions.getPeerId(peerId));
         });
     }

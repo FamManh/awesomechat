@@ -154,7 +154,6 @@ const actions = {
                     })
                 );
             }
-            // console.log(response.data);
 
             dispatch({
                 type: constants.CHAT_CREATE_GROUP_SUCCESS,

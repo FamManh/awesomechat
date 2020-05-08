@@ -29,7 +29,6 @@ const contactReducer = (state = initialState, { type, payload }) =>
             case constants.CONTACT_REQUEST_ADD:
                 // Tìm trong danh sách request đã tồn tại request này chưa? 
                 let existsRequest = state.requests.filter(item=>item.id === payload.id)
-                console.log(existsRequest.length === 0);
                 if (existsRequest.length === 0) {
                     draft.requests.push(payload);
                 } 

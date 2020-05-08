@@ -298,6 +298,7 @@ const VideoStream = () => {
                     className="caller-video"
                     ref={callerVideoRef}
                     autoPlay={true}
+                    muted={false}
                 ></video>
 
                 <video
@@ -313,11 +314,11 @@ const VideoStream = () => {
 function CallPage() {
     return (
         <>
+            <VideoStream />
+            <Answer />
             <Contacting />
             <Calling />
             <Reject />
-            <Answer />
-            <VideoStream />
         </>
     );
 }

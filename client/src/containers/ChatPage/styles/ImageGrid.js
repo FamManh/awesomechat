@@ -2,8 +2,8 @@ import styled from "styled-components";
 
 const ImageGrid = styled.div`
     .photo {
-        width: 80px;
-        height: 80px;
+        width: 75px;
+        height: 75px;
         line-height: 80px;
         background-color: "#d9d4d4";
         display: inline-block;

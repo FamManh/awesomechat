@@ -120,7 +120,6 @@ exports.list = async (req, res, next) => {
         tempItem.type = "you";
       } else {
         contacts.forEach((contactItem) => {
-          console.log(contactItem + " === " + userItem.id);
           if (userItem.id.toString() == contactItem.userId.toString()) {
             // request sent
             if (!!contactItem.status) {
