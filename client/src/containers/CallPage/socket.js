@@ -116,33 +116,34 @@ export const onCallerAnwserCall = (payload) => {
     //     navigator.getUserMedia ||
     //     navigator.webkitGetUserMedia ||
     //     navigator.mozGetUserMedia;
-   navigator.getMedia = (navigator.getUserMedia ||
-            navigator.webkitGetUserMedia ||
-            navigator.mediaDevices && navigator.mediaDevices.getUserMedia ||
-            navigator.msGetUserMedia);
-    if (!!navigator.getUserMedia_)
-        navigator.getMedia(
-            { video: true, audio: true },
-            function (stream) {
-                let call = peer.call(payload.peerId, stream);
-                getStore().dispatch({
-                    type: constants.CALL_LOCAL_STREAM,
-                    payload: stream,
-                });
-                call.on("stream", function (remoteStream) {
-                    getStore().dispatch({
-                        type: constants.CALL_REMOTE_STREAM,
-                        payload: remoteStream,
-                    });
+    navigator.getMedia =
+        navigator.getUserMedia ||
+        navigator.webkitGetUserMedia ||
+        (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) ||
+        navigator.msGetUserMedia;
 
-                    // Show stream in some video/canvas element.
+    navigator.getMedia(
+        { video: true, audio: true },
+        function (stream) {
+            let call = peer.call(payload.peerId, stream);
+            getStore().dispatch({
+                type: constants.CALL_LOCAL_STREAM,
+                payload: stream,
+            });
+            call.on("stream", function (remoteStream) {
+                getStore().dispatch({
+                    type: constants.CALL_REMOTE_STREAM,
+                    payload: remoteStream,
                 });
-            },
-            function (err) {
-                console.log("Failed to get local stream", err);
-                Modal.error({ title: "Error", content: err.toString() });
-            }
-        );
+
+                // Show stream in some video/canvas element.
+            });
+        },
+        function (err) {
+            console.log("Failed to get local stream", err);
+            Modal.error({ title: "Error", content: err.toString() });
+        }
+    );
 };
 
 // lắng nghe sự kiện listener nhận cuộc gọi
@@ -159,7 +160,7 @@ export const onListenerAnwserCall = (payload) => {
     navigator.getMedia =
         navigator.getUserMedia ||
         navigator.webkitGetUserMedia ||
-        navigator.mediaDevices && navigator.mediaDevices.getUserMedia ||
+        (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) ||
         navigator.msGetUserMedia;
     peer.on("call", function (call) {
         navigator.getMedia(
