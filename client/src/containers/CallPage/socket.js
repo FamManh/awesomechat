@@ -6,26 +6,12 @@ import constants from "./constants";
 import peerjs from "peerjs";
 import callActions from "../CallPage/actions";
 
+// let state = getStore() && getStore().getState();
 let peer = null;
-
-// tạo peerid
-export const getPeerId = (iceserver) => {
-    let state = getStore().getState();
-    if (!state.call.peerId && !peer) {
-        // Nếu peerid chưa tồn tại thì tạo peerid
-        peer = new peerjs({
-            key: "peerjs",
-            host: "peerjs-achat.herokuapp.com",
-            secure: "true",
-            port: 443,
-            debug: 0,
-            config: { iceServers: iceserver },
-        });
-        peer.on("open", (peerId) => {
-            getStore().dispatch(callActions.getPeerId(peerId));
-        });
-    }
-};
+ 
+export const  initPeer = (p) => {
+    peer = p
+}
 
 // emit sự kiện kiểm tra status của listener
 export const emitCheckListenerStatus = (payload) => {
@@ -103,48 +89,71 @@ export const emitAnswerCall = (payload) => {
 };
 
 // lắng nghe sự kiện nhận cuộc gọi
-export const onCallerAnwserCall = (payload) => {
+export const onCallerAnwserCall = async(payload) => {
+    let stream = null;
     getStore().dispatch({
         type: constants.CALL_CALLER_ANSWER,
         payload: payload,
     });
-    // let getUserMedia =
-    //     navigator.getUserMedia ||
+    // navigator.getUserMedia =
     //     navigator.webkitGetUserMedia ||
-    //     navigator.mozGetUserMedia;
-    navigator.getMedia =
-        navigator.getUserMedia ||
-        navigator.webkitGetUserMedia ||
-        (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) ||
-        navigator.msGetUserMedia;
+    //     navigator.mozGetUserMedia ||
+    //     navigator.msGetUserMedia ||
+    //     navigator.mediaDevices.getUserMedia;
 
-    navigator.getMedia(
-        { video: true, audio: true },
-        function (stream) {
-            let call = peer.call(payload.peerId, stream);
+    // navigator.getMedia =
+    //     navigator.webkitGetUserMedia ||
+    //     navigator.mediaDevices.getUserMedia ||
+    //     navigator.msGetUserMedia;
+    try{
+        stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: true,
+        });
+        let call = peer.call(payload.peerId, stream);
+        getStore().dispatch({
+            type: constants.CALL_LOCAL_STREAM,
+            payload: stream,
+        });
+        call.on("stream", function (remoteStream) {
             getStore().dispatch({
-                type: constants.CALL_LOCAL_STREAM,
-                payload: stream,
+                type: constants.CALL_REMOTE_STREAM,
+                payload: remoteStream,
             });
-            call.on("stream", function (remoteStream) {
-                getStore().dispatch({
-                    type: constants.CALL_REMOTE_STREAM,
-                    payload: remoteStream,
-                });
+        });
+    }catch(error){
+        console.log("Failed to get local stream", error);
+        Modal.error({ title: "Error", content: error.toString() });
+    }
+    // navigator.getUserMedia(
+    //     { video: true, audio: true },
+    //     function (stream) {
+    //         console.log(stream);
+    //         let call = peer.call(payload.peerId, stream);
+    //         getStore().dispatch({
+    //             type: constants.CALL_LOCAL_STREAM,
+    //             payload: stream,
+    //         });
+    //         call.on("stream", function (remoteStream) {
+    //             getStore().dispatch({
+    //                 type: constants.CALL_REMOTE_STREAM,
+    //                 payload: remoteStream,
+    //             });
 
-                // Show stream in some video/canvas element.
-            });
-        },
-        function (err) {
-            console.log("Failed to get local stream", err);
-            Modal.error({ title: "Error", content: err.toString() });
-        }
-    );
+    //             // Show stream in some video/canvas element.
+    //         });
+    //     },
+    //     function (err) {
+    //         console.log("Failed to get local stream", err);
+    //         Modal.error({ title: "Error", content: err.toString() });
+    //     }
+    // );
 };
 
 // lắng nghe sự kiện listener nhận cuộc gọi
 export const onListenerAnwserCall = (payload) => {
     if (!peer) return;
+    let stream = null;
     getStore().dispatch({
         type: constants.CALL_LISTENER_ANSWER,
         payload: payload,
@@ -153,36 +162,66 @@ export const onListenerAnwserCall = (payload) => {
     //     navigator.getUserMedia ||
     //     navigator.webkitGetUserMedia ||
     //     navigator.mozGetUserMedia;
-    navigator.getMedia =
-        navigator.getUserMedia ||
-        navigator.webkitGetUserMedia ||
-        (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) ||
-        navigator.msGetUserMedia;
-    peer.on("call", function (call) {
-        navigator.getMedia(
-            { video: true, audio: true },
-            function (stream) {
+    // navigator.getUserMedia =
+    //     navigator.webkitGetUserMedia ||
+    //     navigator.mozGetUserMedia ||
+    //     navigator.msGetUserMedia ||
+    //     navigator.mediaDevices.getUserMedia;
+
+    // navigator.getMedia =
+    //     navigator.webkitGetUserMedia ||
+    //     navigator.mediaDevices.getUserMedia ||
+    //     navigator.msGetUserMedia;
+    peer.on("call", async function (call) {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: true,
+                audio: true,
+            });
+            getStore().dispatch({
+                type: constants.CALL_LOCAL_STREAM,
+                payload: stream,
+            });
+            call.answer(stream); // Answer the call with an A/V stream.
+            call.on("stream", function (remoteStream) {
+                // Show stream in some video/canvas element.
                 getStore().dispatch({
-                    type: constants.CALL_LOCAL_STREAM,
-                    payload: stream,
+                    type: constants.CALL_REMOTE_STREAM,
+                    payload: remoteStream,
                 });
-                call.answer(stream); // Answer the call with an A/V stream.
-                call.on("stream", function (remoteStream) {
-                    // Show stream in some video/canvas element.
-                    getStore().dispatch({
-                        type: constants.CALL_REMOTE_STREAM,
-                        payload: remoteStream,
-                    });
-                });
-            },
-            function (err) {
-                console.log("Failed to get local stream", err);
-                Modal.error({
-                    title: "Error",
-                    content: err.toString(),
-                });
-            }
-        );
+            });
+        } catch (error) {
+            console.log("Failed to get local stream", error);
+            Modal.error({
+                title: "Error",
+                content: error.toString(),
+            });
+        }
+        // navigator.getUserMedia(
+        //     { video: true, audio: true },
+        //     function (stream) {
+        //         console.log(stream);
+        //         getStore().dispatch({
+        //             type: constants.CALL_LOCAL_STREAM,
+        //             payload: stream,
+        //         });
+        //         call.answer(stream); // Answer the call with an A/V stream.
+        //         call.on("stream", function (remoteStream) {
+        //             // Show stream in some video/canvas element.
+        //             getStore().dispatch({
+        //                 type: constants.CALL_REMOTE_STREAM,
+        //                 payload: remoteStream,
+        //             });
+        //         });
+        //     },
+        //     function (err) {
+        //         console.log("Failed to get local stream", err);
+        //         Modal.error({
+        //             title: "Error",
+        //             content: err.toString(),
+        //         });
+        //     }
+        // );
     });
 };
 

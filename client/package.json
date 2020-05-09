@@ -29,7 +29,8 @@
     "reselect": "^4.0.0",
     "socket.io-client": "^2.3.0",
     "styled-components": "^5.0.1",
-    "uifx": "^2.0.7"
+    "uifx": "^2.0.7",
+    "webrtc-adapter": "^7.6.0"
   },
   "scripts": {
     "start": "react-scripts start",

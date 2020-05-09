@@ -31,6 +31,7 @@ let initSockets = (io) => {
     })
   );
   let clients = {};
+  console.log(clients)
   io.on("connection", async (socket) => {
     try{
       const user = await getUserInfo(socket.decoded_token.sub);

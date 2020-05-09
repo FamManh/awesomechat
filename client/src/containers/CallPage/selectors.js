@@ -15,6 +15,8 @@ const selectRemoteStream = createSelector(
     (call) => call.remoteStream
 );
 
+const selectPeer = createSelector([selectRaw], call=>call.peer)
+
 const selectors = {
     selectCaller,
     selectListener,
@@ -22,6 +24,7 @@ const selectors = {
     selectPeerId,
     selectLocalStream,
     selectRemoteStream,
+    selectPeer,
 };
 
 export default selectors;

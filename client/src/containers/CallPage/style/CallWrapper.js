@@ -13,7 +13,7 @@ export const CallWrapper = styled.div`
            }
            .caller-video {
                position: fixed;
-               width: 250px;
+               height: 250px;
                top: 20px;
                right: 20px;
            }
