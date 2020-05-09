@@ -15,7 +15,7 @@ export const getPeerId = (iceserver) => {
         // Nếu peerid chưa tồn tại thì tạo peerid
         peer = new peerjs({
             key: "peerjs",
-            // host: "peerjs-server-trungquandev.herokuapp.com",
+            host: "peerjs-achat.herokuapp.com",
             secure: "true",
             port: 443,
             debug: 0,
