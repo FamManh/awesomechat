@@ -298,7 +298,7 @@ const VideoStream = () => {
                     className="caller-video"
                     ref={callerVideoRef}
                     autoPlay={true}
-                    muted={false}
+                    muted={true}
                 ></video>
 
                 <video
