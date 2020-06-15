@@ -16,14 +16,13 @@ import CallingModal from "./CallingModal";
 import ContactingModal from "./ContactingModal";
 import CallCanceledModal from "./CallCanceledModal";
 import StreamModal from "./StreamModal";
-import adapter from "webrtc-adapter";
+import "webrtc-adapter";
+import EnumDevicesModal from "./EnumDevicesModal";
 
 
 function CallPage() {
     // console.log(navigator.getUserMedia);
     // console.log(navigator.webkitGetUserMedia);
-    console.log(adapter.browserDetails.browser);
-    console.log(adapter.browserDetails.version);
     return (
         <>
             <StreamModal />

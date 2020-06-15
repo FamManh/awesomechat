@@ -27,6 +27,7 @@
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
+    "simple-peer": "^9.7.0",
     "socket.io-client": "^2.3.0",
     "styled-components": "^5.0.1",
     "uifx": "^2.0.7",

@@ -83,7 +83,7 @@ function ChatContentHeader() {
             </Row>
             <span className="mr-auto" />
             <div>
-                {record && record.conversationType === "User" && peerId && (
+                {record && record.conversationType === "User" && (
                     <>
                         {/* <Button
                             shape="circle"

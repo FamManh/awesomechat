@@ -1,26 +1,26 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { Button, Modal } from "antd";
 import { useSelector, useDispatch } from "react-redux";
 import selectors from "./selectors";
 import userSelectors from "../UserPage/selectors";
 import { CallWrapper } from "./style/CallWrapper";
-import {Phone} from 'react-feather'
-import actions from './actions'
-import {
-    emitCallEnded,
-} from "./socket";
+import { Phone } from "react-feather";
+import actions from "./actions";
+import { emitCallEnded } from "./socket";
+import EnumDevicesModal from './EnumDevicesModal'
 
 const StreamModal = () => {
     let localVideoRef = useRef();
     let remoteVideoRef = useRef();
     const dispatch = useDispatch();
     const currentUser = useSelector(userSelectors.selectCurrentUser);
+    const [settingModal, setSettingModal] = useState(false)
     const callStatus = useSelector(selectors.selectStatus);
     const caller = useSelector(selectors.selectCaller);
     const listener = useSelector(selectors.selectListener);
     const localStream = useSelector(selectors.selectLocalStream);
     const remoteStream = useSelector(selectors.selectRemoteStream);
-    const peer = useSelector(selectors.selectPeer)
+    const peer = useSelector(selectors.selectPeer);
 
     useEffect(() => {
         if (
@@ -48,24 +48,38 @@ const StreamModal = () => {
         dispatch(actions.doCallEnded());
     };
 
+    const gotDevices = (deviceInfos) => {
+        // Handles being called several times to update labels. Preserve values.
+        console.log(deviceInfos)
+    };
+    navigator.mediaDevices
+        .enumerateDevices()
+        .then(gotDevices)
+        .catch((err) => console.log(err));
+
     return (
-        <Modal
-            visible={callStatus === "streaming"}
-            footer={null}
-            closable={false}
-            width={"100%"}
-            height={"100%"}
-            centered={true}
-            bodyStyle={{
-                padding: 0,
-                width: "100vw",
-                height: "100vh",
-                overflowY: "hidden",
-            }}
-        >
-            <CallWrapper>
-                <div className="action-buttons">
-                    {/* <Button
+        <>
+            <EnumDevicesModal
+                visible={settingModal}
+                toggle={() => setSettingModal(!settingModal)}
+            />
+            <Modal
+                visible={callStatus === "streaming"}
+                footer={null}
+                closable={false}
+                width={"100%"}
+                height={"100%"}
+                centered={true}
+                bodyStyle={{
+                    padding: 0,
+                    width: "100vw",
+                    height: "100vh",
+                    overflowY: "hidden",
+                }}
+            >
+                <CallWrapper>
+                    <div className="action-buttons">
+                        {/* <Button
                         icon="camera"
                         type="primary"
                         shape="circle"
@@ -75,30 +89,41 @@ const StreamModal = () => {
                         type="primary"
                         shape="circle"
                     ></Button> */}
-                    <Button
-                        // icon="phone"
-                        type="danger"
-                        shape="round"
-                        onClick={handleCallEnded}
-                    >
-                        <Phone  strokeWidth={2}/>
-                    </Button>
-                </div>
-                <video
-                    className="caller-video"
-                    ref={localVideoRef}
-                    autoPlay={true}
-                    muted={true}
-                ></video>
+                        <Button
+                            icon="setting"
+                            type="primary"
+                            shape="circle"
+                            onClick={() => setSettingModal(!settingModal)}
+                        ></Button>
+                        <Button
+                            // icon="phone"
+                            type="danger"
+                            shape="round"
+                            onClick={handleCallEnded}
+                        >
+                            <Phone strokeWidth={2} />
+                        </Button>
+                    </div>
+                    <video
+                        playsInline
+                        className="caller-video"
+                        ref={localVideoRef}
+                        autoPlay={true}
+                        muted={true}
+                        controls={false}
+                    ></video>
 
-                <video
-                    className="listener-video"
-                    ref={remoteVideoRef}
-                    autoPlay={true}
-                ></video>
-            </CallWrapper>
-        </Modal>
+                    <video
+                        playsInline
+                        className="listener-video"
+                        ref={remoteVideoRef}
+                        controls={false}
+                        autoPlay={true}
+                    ></video>
+                </CallWrapper>
+            </Modal>
+        </>
     );
 };
 
-export default StreamModal
+export default StreamModal;

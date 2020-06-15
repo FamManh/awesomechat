@@ -17,6 +17,13 @@ const selectRemoteStream = createSelector(
 
 const selectPeer = createSelector([selectRaw], call=>call.peer)
 
+const selectAudioInput = createSelector([selectRaw], (call) => call.audioInput);
+const selectVideoInput = createSelector([selectRaw], (call) => call.videoInput);
+const selectAudioOutput = createSelector(
+    [selectRaw],
+    (call) => call.audioOuput
+);
+
 const selectors = {
     selectCaller,
     selectListener,
@@ -25,6 +32,9 @@ const selectors = {
     selectLocalStream,
     selectRemoteStream,
     selectPeer,
+    selectAudioInput,
+    selectVideoInput,
+    selectAudioOutput,
 };
 
 export default selectors;

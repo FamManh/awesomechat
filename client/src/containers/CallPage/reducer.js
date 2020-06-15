@@ -9,7 +9,10 @@ const initialState = {
     localStream: null,
     remoteStream: null,
     iceServer: null,
-    peer: null
+    peer: null,
+    audioInput: undefined,
+    videoInput: undefined,
+    audioOutput: undefined,
 };
 
 const callReducer = (state = initialState, { type, payload }) =>
@@ -17,6 +20,11 @@ const callReducer = (state = initialState, { type, payload }) =>
         switch (type) {
             case constants.CALL_GET_ICE_SERVER_SUCCESS:
                 draft.iceServer = payload;
+                break;
+            case constants.CALL_SET_AUDIO_VIDEO_SOURCE:
+                draft.audioInput = payload.audioInput || state.audioInput;
+                draft.videoInput = payload.videoInput || state.videoInput;
+                draft.audioOutput = payload.audioOutput || state.audioOutput;
                 break;
             case constants.CALL_CREATE_PEER:
                 draft.peer = payload;
@@ -66,14 +74,20 @@ const callReducer = (state = initialState, { type, payload }) =>
                     // đã tắt stream
                     state.localStream
                         .getTracks()
-                        .forEach((track) => track.stop());
+                        .forEach((track) => {
+                            track.stop()
+                            state.localStream.removeTrack(track);
+                        });
                 }
                 if (state.remoteStream) {
                     // đã tắt stream
-                    state.remoteStream
-                        .getTracks()
-                        .forEach((track) => track.stop());
+                    state.remoteStream.getTracks().forEach((track) => {
+                        track.stop();
+                        state.remoteStream.removeTrack(track);
+                    });
                 }
+                draft.localStream = null;
+                draft.remoteStream = null;
                 draft.caller = {};
                 draft.listener = {};
                 draft.status = null;
