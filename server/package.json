@@ -80,7 +80,7 @@
     "jwt-simple": "0.5.6",
     "lodash": "^4.17.15",
     "method-override": "^3.0.0",
-    "moment-timezone": "^0.5.13",
+    "moment-timezone": "^0.5.35",
     "mongoose": "^5.2.17",
     "morgan": "^1.8.1",
     "multer": "^1.4.2",
